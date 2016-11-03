@@ -6,6 +6,7 @@ CVA 3 Group project
 * Lydia Kenton
 * Fanny V. Marstrom
 * Esme Prior
+* Glenn Nygard
 
 Put all you work in this repository, you should use the wiki for all of the work and to help tracking jobs for the team members.
 
