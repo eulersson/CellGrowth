@@ -4,6 +4,7 @@ CVA 3 Group project
 CA2 Project 
 
 Lola
+Ramon Blanquer
 
 Put all you work in this repository, you should use the wiki for all of the work and to help tracking jobs for the team members.
 
