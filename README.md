@@ -10,5 +10,6 @@ Put all you work in this repository, you should use the wiki for all of the work
 
 Lydia Kenton
 Esme Prior
+Glenn Nygard
 
 You must also figure out a workflow for how the team will use GitHub and submit work. Read here for more details on approaches https://guides.github.com/
