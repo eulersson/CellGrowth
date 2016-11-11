@@ -13,7 +13,12 @@ HEADERS += \
 SOURCES += \
     src/main.cpp \
     src/viewport.cpp \
-    src/particleswindow.cpp
+    src/particleswindow.cpp \
+    src/helpers.cpp
 
 OBJECTS_DIR = build/obj
 MOC_DIR = build/moc
+
+OTHER_FILES = \
+    shaders/vertex.glsl \
+    shaders/fragment.glsl

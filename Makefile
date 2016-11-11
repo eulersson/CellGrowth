@@ -50,10 +50,12 @@ OBJECTS_DIR   = build/obj/
 
 SOURCES       = src/main.cpp \
 		src/viewport.cpp \
-		src/particleswindow.cpp build/moc/moc_viewport.cpp
+		src/particleswindow.cpp \
+		src/helpers.cpp build/moc/moc_viewport.cpp
 OBJECTS       = build/obj/main.o \
 		build/obj/viewport.o \
 		build/obj/particleswindow.o \
+		build/obj/helpers.o \
 		build/obj/moc_viewport.o
 DIST          = /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/common/unix.conf \
@@ -211,7 +213,8 @@ DIST          = /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		partycles.pro include/particleswindow.h \
 		include/viewport.h src/main.cpp \
 		src/viewport.cpp \
-		src/particleswindow.cpp
+		src/particleswindow.cpp \
+		src/helpers.cpp
 QMAKE_TARGET  = Partycles
 DESTDIR       = 
 TARGET        = Partycles
@@ -553,7 +556,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents include/particleswindow.h include/viewport.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/viewport.cpp src/particleswindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/viewport.cpp src/particleswindow.cpp src/helpers.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -1051,109 +1054,48 @@ build/obj/particleswindow.o: src/particleswindow.cpp /opt/Qt5.7.0/5.7/gcc_64/inc
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qopenglcontext.h \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/QScopedPointer \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QSurfaceFormat \
-		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qopenglversionfunctions.h \
-		../../libraries/glm-0.9.8.2/glm/glm.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/_fixes.hpp \
-		../../libraries/glm-0.9.8.2/glm/fwd.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_int.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/setup.hpp \
-		../../libraries/glm-0.9.8.2/glm/simd/platform.h \
-		../../libraries/glm-0.9.8.2/glm/detail/type_float.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/precision.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat.hpp \
-		../../libraries/glm-0.9.8.2/glm/vec2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/_swizzle.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/_swizzle_func.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec2.inl \
-		../../libraries/glm-0.9.8.2/glm/vec3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec3.inl \
-		../../libraries/glm-0.9.8.2/glm/vec4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec4.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec4_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/mat2x2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat2x2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat2x2.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_matrix.hpp \
-		../../libraries/glm-0.9.8.2/glm/mat2x3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat2x3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat2x3.inl \
-		../../libraries/glm-0.9.8.2/glm/mat2x4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat2x4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat2x4.inl \
-		../../libraries/glm-0.9.8.2/glm/mat3x2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat3x2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat3x2.inl \
-		../../libraries/glm-0.9.8.2/glm/mat3x3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat3x3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat3x3.inl \
-		../../libraries/glm-0.9.8.2/glm/mat3x4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat3x4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat3x4.inl \
-		../../libraries/glm-0.9.8.2/glm/mat4x2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat4x2.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat4x2.inl \
-		../../libraries/glm-0.9.8.2/glm/mat4x3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat4x3.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat4x3.inl \
-		../../libraries/glm-0.9.8.2/glm/mat4x4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat4x4.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat4x4.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/type_mat4x4_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_matrix.inl \
-		../../libraries/glm-0.9.8.2/glm/geometric.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_geometric.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_geometric.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_exponential.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec1.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_vec1.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_exponential.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_vector_relational.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_vector_relational.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_vector_relational_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/_vectorize.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_exponential_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/simd/exponential.h \
-		../../libraries/glm-0.9.8.2/glm/detail/func_common.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_common.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_common_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/simd/common.h \
-		../../libraries/glm-0.9.8.2/glm/detail/func_geometric_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/simd/geometric.h \
-		../../libraries/glm-0.9.8.2/glm/detail/func_matrix_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/simd/matrix.h \
-		../../libraries/glm-0.9.8.2/glm/trigonometric.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_trigonometric.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_trigonometric.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_trigonometric_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/exponential.hpp \
-		../../libraries/glm-0.9.8.2/glm/common.hpp \
-		../../libraries/glm-0.9.8.2/glm/packing.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_packing.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_packing.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/type_half.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/type_half.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_packing_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/matrix.hpp \
-		../../libraries/glm-0.9.8.2/glm/vector_relational.hpp \
-		../../libraries/glm-0.9.8.2/glm/integer.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_integer.hpp \
-		../../libraries/glm-0.9.8.2/glm/detail/func_integer.inl \
-		../../libraries/glm-0.9.8.2/glm/detail/func_integer_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/simd/integer.h \
-		../../libraries/glm-0.9.8.2/glm/gtc/matrix_transform.hpp \
-		../../libraries/glm-0.9.8.2/glm/gtc/constants.hpp \
-		../../libraries/glm-0.9.8.2/glm/gtc/constants.inl \
-		../../libraries/glm-0.9.8.2/glm/gtc/matrix_transform.inl \
-		../../libraries/glm-0.9.8.2/glm/gtc/type_ptr.hpp \
-		../../libraries/glm-0.9.8.2/glm/gtc/quaternion.hpp \
-		../../libraries/glm-0.9.8.2/glm/gtc/quaternion.inl \
-		../../libraries/glm-0.9.8.2/glm/gtc/quaternion_simd.inl \
-		../../libraries/glm-0.9.8.2/glm/gtc/type_ptr.inl
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qopenglversionfunctions.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/particleswindow.o src/particleswindow.cpp
+
+build/obj/helpers.o: src/helpers.cpp /opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QVector3D \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qvector3d.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qfeatures.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qtypetraits.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qisenum.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qobjectdefs_impl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/helpers.o src/helpers.cpp
 
 build/obj/moc_viewport.o: build/moc/moc_viewport.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_viewport.o build/moc/moc_viewport.cpp

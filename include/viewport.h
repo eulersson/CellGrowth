@@ -1,8 +1,23 @@
+/*
+ * You won't be using the Viewport class, instead you will need to
+ * subclass it and override the render() and initialize() functions.
+ * The viewport class will allow us Qt to be handling all the OpenGL
+ * functionality. So the preparation and initialization is kept simple.
+ * Also notice that we will be using OpenGL ES, it's the one that Qt
+ * supports.
+ *
+ * If you want to understand what is going on check out this Qt
+ * tutorial, I basically followed the steps to get the Viewport
+ * class:
+ *
+ *   http://doc.qt.io/qt-5/qtgui-openglwindow-example.html
+ * */
+
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
-#include <QtGui/QWindow>
-#include <QtGui/QOpenGLFunctions>
+#include <QWindow>
+#include <QOpenGLFunctions>
 
 class QPainter;
 class QOpenGLFunctions;

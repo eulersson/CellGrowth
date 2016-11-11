@@ -1,10 +1,9 @@
 #include "viewport.h"
 
-#include <QtCore/QCoreApplication>
-
-#include <QtGui/QOpenGLContext>
-#include <QtGui/QOpenGLPaintDevice>
-#include <QtGui/QPainter>
+#include <QCoreApplication>
+#include <QOpenGLContext>
+#include <QOpenGLPaintDevice>
+#include <QPainter>
 
 Viewport::Viewport(QWindow *parent)
     : QWindow(parent)

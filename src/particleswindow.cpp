@@ -1,76 +1,20 @@
 #include <iostream>
-
-#include <QtGui/QOpenGLShaderProgram>
-#include <QMatrix4x4>
-#include <QVector3D>
-
+#include <QOpenGLShaderProgram>
 #include "particleswindow.h"
 
-void push_indices(std::vector<GLushort>& indices, int sectors, int r, int s) {
-    int curRow = r * sectors;
-    int nextRow = (r+1) * sectors;
-    int nextS = (s+1) % sectors;
+// Pre-declaring the functions in helpers.cpp so that compiler is aware of their existance.
+// Read on helpers.cpp to see how it works... You don't need to.
+std::string readFile(const char *filePath);
+void createSpherePoints(
+    std::vector<QVector3D>& vertices,
+    float radius,
+    unsigned int rings,
+    unsigned int sectors);
 
-    indices.push_back(curRow + s);
-    indices.push_back(nextRow + s);
-    indices.push_back(nextRow + nextS);
-
-    indices.push_back(curRow + s);
-    indices.push_back(nextRow + nextS);
-    indices.push_back(curRow + nextS);
-}
-
-void createSpherePoints(std::vector<QVector3D>& vertices,
-                  float radius, unsigned int rings, unsigned int sectors)
-{
-    float const R = 1./(float)(rings-1);
-    float const S = 1./(float)(sectors-1);
-
-    for(int r = 0; r < rings; ++r) {
-        for(int s = 0; s < sectors; ++s) {
-            float const y = sin( -M_PI_2 + M_PI * r * R );
-            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-
-            vertices.push_back(QVector3D(x,y,z) * radius);
-        }
-    }
-}
-
-void createSphere(std::vector<QVector3D>& vertices, std::vector<GLushort>& indices,
-                  float radius, unsigned int rings, unsigned int sectors)
-{
-    float const R = 1./(float)(rings-1);
-    float const S = 1./(float)(sectors-1);
-
-    for(int r = 0; r < rings; ++r) {
-        for(int s = 0; s < sectors; ++s) {
-            float const y = sin( -M_PI_2 + M_PI * r * R );
-            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-
-            vertices.push_back(QVector3D(x,y,z) * radius);
-            if(r < rings-1)
-                push_indices(indices, sectors, r, s);
-        }
-    }
-}
-
-static const char *vertexShaderSource =
-    "attribute highp vec3 posAttr;\n"
-    "uniform mediump mat4 transformation;\n"
-    "void main() {\n"
-    "   gl_PointSize = 10.0;\n"
-    "   gl_Position = transformation * vec4(posAttr, 1.0);\n"
-    "}\n";
-
-static const char *fragmentShaderSource =
-    "void main() {\n"
-    "   gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
-    "}\n";
-
+// Constructor method needs to set up the format. Someone could work out how to update and resize
+// the context when resizing the window.
 ParticlesWindow::ParticlesWindow()
-    : m_program(0)
+    : m_program_particles(0)
     , m_frame(0)
 {
     QSurfaceFormat format;
@@ -79,93 +23,120 @@ ParticlesWindow::ParticlesWindow()
     this->setFormat(format);
 }
 
+// Initialization
 void ParticlesWindow::initialize()
 {
-    std::vector<GLushort> indices;
-    std::vector<QVector3D> vertices;
-
-    createSphere(vertices, indices, 0.01, 5, 5);
-
-    m_sphere_vertices = new GLfloat[3*vertices.size()];
-    m_sphere_indices = new GLuint[indices.size()];
-    m_number_of_indices = indices.size();
-
-    for (int i = 0; i < vertices.size(); i++)
-    {
-        m_sphere_vertices[3*i+0] = vertices[i].x();
-        m_sphere_vertices[3*i+1] = vertices[i].y();
-        m_sphere_vertices[3*i+2] = vertices[i].z();
-    }
-    for (int i = 0; i < indices.size(); i++)
-    {
-        m_sphere_indices[i] = indices[i];
-    }
-
-
-    // positions where to instance the spheres
-    createSpherePoints(m_positions, 0.5, 100, 100);
-
+    // set the glViewport to be the same as the QWindow
     glViewport(0, 0, width(), height());
 
-    m_program = new QOpenGLShaderProgram(this);
-    m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
-    m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
-    m_program->link();
+    // Depth is needed otherwise the ones in the back appear on top, interesting though...
+    glEnable (GL_DEPTH_TEST);
 
-    m_VAO = new QOpenGLVertexArrayObject(this);
-    m_VBO = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    m_EBO = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+    // Get the vertex data as strings
+    std::string vertexShaderString = readFile("shaders/vertex.glsl");
+    std::string fragmentShaderString = readFile("shaders/fragment.glsl");
+    const char *vertexShaderSource = vertexShaderString.c_str();
+    const char *fragmentShaderSource = fragmentShaderString.c_str();
 
-    m_VAO->create();
-    m_VBO->create();
-    m_EBO->create();
+    // Similar to NGL way of initializing, compiling and linking shaders. Simpler.
+    m_program_particles = new QOpenGLShaderProgram(this);
+    m_program_particles->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
+    m_program_particles->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
+    m_program_particles->link();
 
-    m_VBO->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+    // Populate the vector of positions (QVector3D) with points layed out in a spherical way
+    m_positions_particles = std::vector<QVector3D>(0);
+    createSpherePoints(m_positions_particles, 0.4, 50, 60);
 
-    m_VAO->bind();
-    m_VBO->bind();
-    m_EBO->bind();
-
-    m_VBO->allocate(m_sphere_vertices, vertices.size() * 3 * sizeof(GLfloat));
-    m_EBO->allocate(m_sphere_indices, indices.size() * sizeof(GLuint));
-
-    m_program->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
-    m_program->enableAttributeArray("posAttr");
-
-    m_VBO->release();
-    m_VAO->release();
-    m_EBO->release();
-}
-
-void ParticlesWindow::render()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-    m_program->bind();
-    m_VAO->bind();
-
-    for (unsigned int i = 0; i < m_positions.size(); i++)
+    // OpenGL wants a flat array of GLfloats so we transverse through the positions and flatten the coordinates
+    unsigned int numParticles = m_positions_particles.size();
+    GLfloat verts[3*numParticles];
+    for (unsigned int i = 0; i < numParticles; i++)
     {
-        QMatrix4x4 model;
-        model.translate(m_positions[i].x(), m_positions[i].y(), m_positions[i].z());
-        model.rotate((float)m_frame/2.0f, 0.0f, 1.0f, 0.0f);
-
-        m_program->setUniformValue("transformation", model);
-
-        glEnable(GL_PROGRAM_POINT_SIZE);
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        glDrawElements(GL_TRIANGLES, m_number_of_indices, GL_UNSIGNED_INT, 0);
+        verts[3*i+0] = m_positions_particles[i].x();
+        verts[3*i+1] = m_positions_particles[i].y();
+        verts[3*i+2] = m_positions_particles[i].z();
     }
 
-    m_VAO->release();
-    m_program->release();
+    // Initialize VAO and VBO Qt objects
+    m_VAO_particles = new QOpenGLVertexArrayObject(this);
+    m_VBO_particles = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 
+    // Create the actual OpenGL VAO and VBO
+    m_VAO_particles->create();
+    m_VBO_particles->create(); m_VBO_particles->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    // Bind them so we can buffer the data to the VBO while the VAO will remember the currently bound VBO
+    m_VAO_particles->bind();
+    m_VBO_particles->bind();
+
+    // Buffering... PRESS F1 OVER THE ALLOCATE FUNCTION TO OPEN QT'S DOCUMENTATION ON THAT METHOD! IT'S GREAT!
+    m_VBO_particles->allocate(verts, 3 * m_positions_particles.size() * sizeof(GLfloat));
+
+    // Configure the right attributes that this data will be bound to
+    m_program_particles->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
+    m_program_particles->enableAttributeArray("posAttr");
+
+    // Release before finishing initialization (will be bound/released again in render() method, the game loop)
+    m_VBO_particles->release();
+    m_VAO_particles->release();
+
+}
+
+// Rendering
+void ParticlesWindow::render()
+{
+    // Clear the buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Bind the right program with the right VAO
+    m_program_particles->bind();
+    m_VAO_particles->bind();
+
+    // Do the drawing
+    glEnable(GL_POINT_SPRITE);
+    glPointSize(12.0f);
+    glDrawArrays(GL_POINTS, 0, m_positions_particles.size());
+
+    // Unbound (release)
+    m_VAO_particles->release();
+    m_program_particles->release();
+
+    // Increment time.
     ++m_frame;
 }
 
+/* FOR THE EVENTS:
+ * Imagine you would like tell OpenGL that the vertices are changed on a specific event.
+ * You will need to bind the right VBO and update (aka buffer) the data again.
+ *   m_VBO->bind();
+ *   m_VBO->allocate(pointerToVerts, numberOfVerts * sizeof(GLfloat));  // I think you could use m_VBO.write(...) as well
+ *   m_VBO->release();
+ * */
+
+// Intercepting the events
 void ParticlesWindow::keyPressEvent(QKeyEvent *ev)
 {
-    m_VBO->bind();
-    m_positions.push_back(QVector3D(0.0f, -0.5f, 0.0f));
-    //m_VBO->allocate(&m_vertices[0], 3 * m_particle_system.numParts * sizeof(GLfloat));
-    m_VBO->release();
+    // READ DOCS: QKeyEvent http://doc.qt.io/qt-5/qkeyevent.html
+
+}
+
+void ParticlesWindow::mouseMoveEvent(QMouseEvent *ev)
+{
+    // READ DOCS: QMouseEvent http://doc.qt.io/qt-5/qmouseevent.html
+}
+
+void ParticlesWindow::mousePressEvent(QMouseEvent *ev)
+{
+    // READ DOCS: QMouseEvent http://doc.qt.io/qt-5/qmouseevent.html
+}
+
+void ParticlesWindow::mouseReleaseEvent(QMouseEvent *ev)
+{
+    // READ DOCS: QMouseEvent http://doc.qt.io/qt-5/qmouseevent.html
+}
+
+void ParticlesWindow::resizeEvent(QResizeEvent *ev)
+{
+    // READ DOCS: QResizeEvent http://doc.qt.io/qt-4.8/qresizeevent.html
 }
