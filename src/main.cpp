@@ -1,4 +1,7 @@
+// Qt
 #include <QtGui/QGuiApplication>
+
+// Custom
 #include "particleswindow.h"
 
 int main(int argc, char **argv)

@@ -1,10 +1,9 @@
-TARGET = Partycles
+TARGET = boilerplate
 
 QT += core gui widgets
 
 INCLUDEPATH += \
-    $$PWD/include \
-    /home/i7243466/libraries/glm-0.9.8.2
+    $$PWD/include
 
 HEADERS += \
     include/particleswindow.h \

@@ -1,4 +1,5 @@
 .qmake.stash
-Partycles
-partycles.pro.user
 build/*
+boilerplate
+boilerplate.pro.user
+Makefile
