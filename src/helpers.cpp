@@ -1,6 +1,10 @@
+#define PI 3.14159265
+#define PI_2 1.57079632
+
 #include <iostream>
 #include <fstream>
 #include <QVector3D>
+#include <cmath>
 
 // For reading the shader files
 std::string readFile(const char *filePath) {
@@ -36,9 +40,9 @@ void createSpherePoints(
 
     for(unsigned int r = 0; r < rings; ++r) {
         for(unsigned int s = 0; s < sectors; ++s) {
-            float const y = sin( -M_PI_2 + M_PI * r * R );
-            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+            float const y = sin( -PI_2 + PI * r * R );
+            float const x = cos(2*PI * s * S) * sin( PI * r * R );
+            float const z = sin(2*PI * s * S) * sin( PI * r * R );
 
             vertices.push_back(QVector3D(x,y,z) * radius);
         }

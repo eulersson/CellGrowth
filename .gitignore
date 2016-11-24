@@ -3,3 +3,5 @@ build/*
 boilerplate
 boilerplate.pro.user
 Makefile
+Users/
+boilerplate.app/
