@@ -42,16 +42,24 @@ void ParticlesWindow::initialize()
   glEnable (GL_DEPTH_TEST);
 
   // Get the vertex data as strings
-  std::string vertexShaderString = readFile("shaders/vertex.glsl");
+  std::string vertexShaderString   = readFile("shaders/vertex.glsl");
   std::string fragmentShaderString = readFile("shaders/fragment.glsl");
-  const char *vertexShaderSource = vertexShaderString.c_str();
+  std::string linesShaderString    = readFile("shaders/lines.glsl");
+  const char *vertexShaderSource   = vertexShaderString.c_str();
   const char *fragmentShaderSource = fragmentShaderString.c_str();
+  const char *linesShaderSource    = linesShaderString.c_str();
 
-  // Similar to NGL way of initializing, compiling and linking shaders.
+  // Program shader for rendering the points as spheres
   m_program_particles = new QOpenGLShaderProgram(this);
   m_program_particles->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
   m_program_particles->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
   m_program_particles->link();
+
+  // Program to render the links between the particles
+  m_program_lines = new QOpenGLShaderProgram(this);
+  m_program_lines->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
+  m_program_lines->addShaderFromSourceCode(QOpenGLShader::Fragment, linesShaderSource);
+  m_program_lines->link();
 
   // Populate positions (QVector3D) with points layed out in a spherical way
   m_particlePos = std::vector<QVector3D>(0);
@@ -89,8 +97,14 @@ void ParticlesWindow::initialize()
   // 5. Unbind VAO
   m_VBO_particlePos->bind();
   m_VBO_particlePos->allocate(&m_particlePosArray[0], 3 * m_numberOfParticles * sizeof(GLfloat));
+
+  // Set the current bound buffer data to this attribute pointers
   m_program_particles->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
   m_program_particles->enableAttributeArray("posAttr");
+
+  // In this case we will be reusing the same positions for the lines
+  m_program_lines->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
+  m_program_lines->enableAttributeArray("posAttr");
 
   // VAO unbinding (will be bound/released again in render() method, the game loop)
   m_VAO_particle->release();
@@ -103,18 +117,26 @@ void ParticlesWindow::render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Bind the right program with the right VAO
-  m_program_particles->bind();
   m_VAO_particle->bind();
 
-  // Do the drawing
+  // Draw the LINKS between particles for visual debugging
+  m_program_lines->bind();
+  glDepthRange(0.1, 1.0);
+  glDrawArrays(GL_LINES, 0, m_numberOfParticles);
+  m_program_lines->release();
+
+  // Draw the POINTS as spheres
+  m_program_particles->bind();
   glEnable(GL_POINT_SPRITE);
   glPointSize(12.0f);
+  glDepthRange(0.0, 1.0);
   glDrawArrays(GL_POINTS, 0, m_numberOfParticles);
-
-  // Unbound (release)
-  m_VAO_particle->release();
   m_program_particles->release();
 
+  // Unbind (release)
+  m_VAO_particle->release();
+
+  // Make the particle system step in this case... Create your own functions for changing state
   update_stuff();
 
   // Increment time.

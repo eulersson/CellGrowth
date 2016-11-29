@@ -17,7 +17,7 @@ void LinkedParticle::advance()
 
 void LinkedParticle::calculate()
 {
-  m_vel = 0.0001 * m_pos.normalized();
+  m_vel = 0.0005 * m_pos.normalized();
 }
 
 void LinkedParticle::setPos(qreal _x,qreal _y,qreal _z)

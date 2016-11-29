@@ -26,5 +26,7 @@ SOURCES += \
 
 OTHER_FILES = \
   shaders/vertex.glsl \
-  shaders/fragment.glsl \
-  shaders/line.glsl
+  shaders/fragment.glsl
+
+DISTFILES += \
+    shaders/lines.glsl

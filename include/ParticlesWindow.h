@@ -53,8 +53,9 @@ private:
     // This VAO is used to draw the particles
     QOpenGLVertexArrayObject* m_VAO_particle;
 
-    // The program we will be using. This is specific to the particles.
+    // One program will be drawing the particles and the other the links between them
     QOpenGLShaderProgram *m_program_particles;
+    QOpenGLShaderProgram *m_program_lines;
 
     // Particle System the window will be rendering
     ParticleSystem m_ps;
