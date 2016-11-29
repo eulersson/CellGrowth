@@ -2,16 +2,19 @@
 
 #include "include/ParticleSystem.h"
 
+// Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
     fill(50, 50, 0.3);
 }
 
+// For custom number of particles
 ParticleSystem::ParticleSystem(int _rings, int _sectors, float _radius)
 {
   fill(_rings, _sectors, _radius);
 }
 
+// Calculates new forces on each particles and advects them
 void ParticleSystem::advance()
 {
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -21,6 +24,8 @@ void ParticleSystem::advance()
   }
 }
 
+// Initializes the system with a spherical distribution of particles. This will be
+// replaced with a geodesic dome sphere (different topology)
 void ParticleSystem::fill(int _rings, int _sectors, float _radius)
 {
   m_particleCount = _rings * _sectors;
@@ -41,11 +46,15 @@ void ParticleSystem::fill(int _rings, int _sectors, float _radius)
   }
 }
 
+// Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
+// the copy constructor triggered by the = (assignment) operator would trigger
+// a change of ownership. We do not want that. Read on unique_ptr and shared_ptr.
 LinkedParticle* ParticleSystem::get_particle(unsigned int _idx)
 {
   return m_particles[_idx].get();
 }
 
+// Gets the total number of particles
 unsigned int ParticleSystem::get_size()
 {
   return m_particleCount;

@@ -99,10 +99,12 @@ void ParticlesWindow::initialize()
   m_VBO_particlePos->allocate(&m_particlePosArray[0], 3 * m_numberOfParticles * sizeof(GLfloat));
 
   // Set the current bound buffer data to this attribute pointers
+  m_program_particles->setUniformValue("delta", 0.0f);
   m_program_particles->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
   m_program_particles->enableAttributeArray("posAttr");
 
   // In this case we will be reusing the same positions for the lines
+  m_program_lines->setUniformValue("delta", 0.0f);
   m_program_lines->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
   m_program_lines->enableAttributeArray("posAttr");
 
@@ -121,12 +123,14 @@ void ParticlesWindow::render()
 
   // Draw the LINKS between particles for visual debugging
   m_program_lines->bind();
+  m_program_lines->setUniformValue("delta", (float)m_frame / 100.0f);
   glDepthRange(0.1, 1.0);
   glDrawArrays(GL_LINES, 0, m_numberOfParticles);
   m_program_lines->release();
 
   // Draw the POINTS as spheres
   m_program_particles->bind();
+  m_program_particles->setUniformValue("delta", (float)m_frame / 100.0f);
   glEnable(GL_POINT_SPRITE);
   glPointSize(12.0f);
   glDepthRange(0.0, 1.0);
