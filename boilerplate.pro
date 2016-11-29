@@ -6,15 +6,15 @@ INCLUDEPATH += \
     $$PWD/include
 
 HEADERS += \
-    include/particleswindow.h \
-    include/viewport.h \
+    include/ParticlesWindow.h \
+    include/Viewport.h \
     include/LinkedParticle.h \
     include/ParticleSystem.h
 
 SOURCES += \
     src/main.cpp \
-    src/viewport.cpp \
-    src/particleswindow.cpp \
+    src/Viewport.cpp \
+    src/ParticlesWindow.cpp \
     src/helpers.cpp \
     src/LinkedParticle.cpp \
     src/ParticleSystem.cpp
