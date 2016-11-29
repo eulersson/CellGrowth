@@ -14,8 +14,7 @@
 // Custom
 #include "particleswindow.h"
 
-// Pre-declaring the functions in helpers.cpp so that compiler is aware that
-// they exist. Read on helpers.cpp to see how these guys work...
+// Pre-declaring the functions in helpers.cpp
 std::string readFile(const char *filePath);
 int WindowDump(void);
 

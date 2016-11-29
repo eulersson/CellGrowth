@@ -1,5 +1,5 @@
 // Qt
-#include <QtGui/QGuiApplication>
+#include <QGuiApplication>
 
 // Custom
 #include "particleswindow.h"
