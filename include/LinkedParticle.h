@@ -6,12 +6,16 @@
 class LinkedParticle
 {
 public:
-  LinkedParticle();// default constructor placing the particle at the 0,0,0
+  LinkedParticle();
   LinkedParticle(qreal _x,qreal _y,qreal _z);
+  void advance();
+  void calculate();
+  void getPos(QVector3D &_vector);
   void setPos(qreal _x,qreal _y,qreal _z);
-  void getPos(QVector3D* _vector);
+
 private:
   QVector3D m_pos;
+  QVector3D m_vel;
 };
 
 #endif // LINKEDPARTICLE_H

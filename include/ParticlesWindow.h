@@ -7,7 +7,8 @@
 #include <QOpenGLVertexArrayObject>
 
 // Custom
-#include "viewport.h"
+#include "ParticleSystem.h"
+#include "Viewport.h"
 
 // NOTE: Get familiarized with these classes:
 //   - QWindow                        http://doc.qt.io/qt-5/qwindow.html
@@ -28,16 +29,14 @@ public:
     // Do the drawing
     void render() Q_DECL_OVERRIDE;
 
-    // For changing data and buffering it back to the right VBO...
-    // Feel free to create your own
+    // For changing data and buffering it back to the right VBO... Edit to your own needs or create your own
     void update_stuff();
 
     // For demonstrating how to use key events. When 's' is pressed we save a .bmp
     void saveImage();
 
 private:
-    // Self explanatory. Note that each particle has 3 components (x,y,z) so the
-    // m_particlePos length will be m_numberOfParticles*3
+    // Note that each particle has 3 components (x,y,z)
     unsigned int m_numberOfParticles;
 
     // Mocking up all the positions the particles will need to be drawn to.
@@ -57,10 +56,14 @@ private:
     // The program we will be using. This is specific to the particles.
     QOpenGLShaderProgram *m_program_particles;
 
+    // Particle System the window will be rendering
+    ParticleSystem m_ps;
+
     // Increments by 1 each time the render loop finishes.
     int m_frame;
 
 protected:
+    // For GUI interation with the lights and camera system
     void keyPressEvent(QKeyEvent* ev);
     void mouseMoveEvent(QMouseEvent *ev);
     void mousePressEvent(QMouseEvent *ev);
