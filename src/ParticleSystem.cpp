@@ -5,7 +5,7 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-    fill(50, 50, 0.3);
+    fill(4, 4, 0.1);
 }
 
 // For custom number of particles
@@ -37,9 +37,12 @@ void ParticleSystem::fill(int _rings, int _sectors, float _radius)
   {
     for (unsigned int s = 0; s < _sectors; ++s)
     {
-      float y = sin( -M_PI_2 + M_PI * r * R );
-      float x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-      float z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+      //float y = sin( -M_PI_2 + M_PI * r * R );
+      //float x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
+      //float z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+      float y = 2;
+      float x = 2;
+      float z = 2;
       x *= _radius; y *= _radius; z *= _radius;
       m_particles.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x, y, z)));
     }

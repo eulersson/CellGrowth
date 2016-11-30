@@ -2,7 +2,7 @@
 #include <QGuiApplication>
 
 // Custom
-#include "particleswindow.h"
+#include "ParticlesWindow.h"
 
 int main(int argc, char **argv)
 {

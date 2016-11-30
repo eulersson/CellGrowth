@@ -12,7 +12,7 @@
 #include <QOpenGLShaderProgram>
 
 // Custom
-#include "particleswindow.h"
+#include "ParticlesWindow.h"
 
 // Pre-declaring the functions in helpers.cpp
 std::string readFile(const char *filePath);
