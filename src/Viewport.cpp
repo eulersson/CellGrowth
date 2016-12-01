@@ -1,4 +1,4 @@
-#include "viewport.h"
+#include "Viewport.h"
 
 #include <QCoreApplication>
 #include <QOpenGLContext>
