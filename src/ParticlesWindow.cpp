@@ -154,6 +154,8 @@ void ParticlesWindow::update_stuff()
 
   // We first change the dataand after we buffer it to the right buffer
   m_numberOfParticles = m_ps.get_size();
+
+  //Jon says we should be using the container size instead of the particle
   for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;

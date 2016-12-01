@@ -1,17 +1,20 @@
 #include <math.h>
-
+#include <iostream>
 #include "include/ParticleSystem.h"
 
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-    fill(50, 50, 0.3);
+    m_particleCount=0;
+    fill(4);
 }
 
 // For custom number of particles
-ParticleSystem::ParticleSystem(int _rings, int _sectors, float _radius)
+ParticleSystem::ParticleSystem(int _amount)
 {
-  fill(_rings, _sectors, _radius);
+  m_particleCount=0;
+  fill(_amount);
+
 }
 
 // Calculates new forces on each particles and advects them
@@ -20,29 +23,25 @@ void ParticleSystem::advance()
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     m_particles[i]->calculate();
+  }
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
     m_particles[i]->advance();
   }
 }
 
-// Initializes the system with a spherical distribution of particles. This will be
-// replaced with a geodesic dome sphere (different topology)
-void ParticleSystem::fill(int _rings, int _sectors, float _radius)
+// Starting with 4 particles that are all linked together
+void ParticleSystem::fill(int _amount)
 {
-  m_particleCount = _rings * _sectors;
-
-  float const R = 1.0f / (float)(_rings - 1);
-  float const S = 1.0f / (float)(_sectors - 1);
-
-  for (unsigned int r = 0; r < _rings; ++r)
+  for(int i=0;i<_amount;i++)
   {
-    for (unsigned int s = 0; s < _sectors; ++s)
-    {
-      float y = sin( -M_PI_2 + M_PI * r * R );
-      float x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-      float z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-      x *= _radius; y *= _radius; z *= _radius;
-      m_particles.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x, y, z)));
-    }
+    qreal x=float(std::rand() % 10)/30;
+    qreal y=float(std::rand() % 10)/30;
+    qreal z=float(std::rand() % 10)/30;
+    std::cout<<x<<" ,"<<y<<" ,"<<z<<"\n";
+    m_particles.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x, y, z)));
+    m_particleCount++;
   }
 }
 

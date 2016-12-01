@@ -17,5 +17,5 @@ mat4 rotationMatrix(vec3 axis, float angle)
 void main()
 {
     mat4 rotationMatrix = rotationMatrix(vec3(1.0, 1.0, 0.0), delta);
-    gl_Position = rotationMatrix * vec4(posAttr, 1.0);
+    gl_Position = vec4(posAttr, 1.0);
 }

@@ -1,15 +1,26 @@
 #include "LinkedParticle.h"
 
 // Default constructor puts it at origin
-LinkedParticle::LinkedParticle()
+LinkedParticle::LinkedParticle():
+  m_ID(m_ID_counter++)
 {
   m_pos = QVector3D(0, 0, 0);
+
 }
 
 // Specify the location where we want to place it
 LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z)
+: m_ID(m_ID_counter++)
 {
   m_pos = QVector3D(_x, _y, _z);
+}
+
+
+LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _linkedParticles)
+: m_ID(m_ID_counter++)
+{
+  m_pos = QVector3D(_x, _y, _z);
+  m_linkedParticles=_linkedParticles;
 }
 
 // After force calculations are done, we advect the position
@@ -21,7 +32,7 @@ void LinkedParticle::advance()
 // All the force calculation should happen in here
 void LinkedParticle::calculate()
 {
-  m_vel = 0.0005 * m_pos.normalized();
+  //m_vel = 0.0005 * m_pos.normalized();
 }
 
 // For modifying the position of the particle
@@ -39,3 +50,21 @@ void LinkedParticle::getPos(QVector3D &_vector)
   _vector.setY(m_pos.y());
   _vector.setZ(m_pos.z());
 }
+
+
+void LinkedParticle::link(int _ID)
+{
+
+}
+
+void LinkedParticle::deleteLinke(int _ID)
+{
+
+}
+
+int LinkedParticle::getID()
+{
+
+}
+
+int LinkedParticle::m_ID_counter(0);
