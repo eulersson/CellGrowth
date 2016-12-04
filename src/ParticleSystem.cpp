@@ -5,13 +5,15 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-    m_particleCount=0;
-    fill(4);
+  std::cout<<"Calling Default Constructor\n";
+  m_particleCount=0;
+  fill(4);
 }
 
 // For custom number of particles
 ParticleSystem::ParticleSystem(int _amount)
 {
+  std::cout<<"Calling Costum Constructor\n";
   m_particleCount=0;
   fill(_amount);
 
@@ -34,14 +36,16 @@ void ParticleSystem::advance()
 // Starting with 4 particles that are all linked together
 void ParticleSystem::fill(int _amount)
 {
+
   for(int i=0;i<_amount;i++)
   {
     qreal x=float(std::rand() % 10)/30;
     qreal y=float(std::rand() % 10)/30;
     qreal z=float(std::rand() % 10)/30;
-    std::cout<<x<<" ,"<<y<<" ,"<<z<<"\n";
     m_particles.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x, y, z)));
     m_particleCount++;
+    std::cout<<m_particles[i]->getID()<<"\n";
+    std::cout<<"i= "<<i<<"\n";
   }
 }
 

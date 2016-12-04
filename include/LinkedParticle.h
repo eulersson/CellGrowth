@@ -22,21 +22,34 @@ public:
   // Sets the current position of the linked particle
   void setPos(qreal _x,qreal _y,qreal _z);
 
+  // Can be used by other particles to link a particle with this particle
   void link(int _ID);
+
+  //deletes a linked particle from the linked particle list and so destroys the link
   void deleteLinke(int _ID);
+  //queries the ID of the particle
+
+  //Computes all the relinking and creates a new particle
+  void split(std::vector<LinkedParticle> _particleList);
+
   int getID();
 private:
   QVector3D m_pos;
   QVector3D m_vel;
-  static int m_ID_counter;
-  int m_ID;//used to identify particle
 
-  // counts the how many objects have been created and is used for the ID
+  //used to keep an object count and give unique Id's to each particle
+  static int m_ID_counter;
+
+  //used to identify particle and is stored in the the linked particle list of other particles
+  //unique to each particle
+  int m_ID;
+
   //flag that can be sat to true when particle is meant to be split
   bool m_split;
-  // The links are stored by their index number in the particle system vector
+
+  // The links are stored by their ID number
   // I decided to not use pointers as the memory adress might change
-  // we can think about a diffrent way of storing them later possibly using ID's looke at shared pointers as well
+  // we can think about a diffrent way of storing them later
   std::vector<int> m_linkedParticles;
 };
 

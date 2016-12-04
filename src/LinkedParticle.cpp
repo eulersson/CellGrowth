@@ -51,18 +51,31 @@ void LinkedParticle::getPos(QVector3D &_vector)
   _vector.setZ(m_pos.z());
 }
 
-
+//adds linkedParticles ID to the linked Particle List
 void LinkedParticle::link(int _ID)
 {
-
+  m_linkedParticles.push_back(_ID);
 }
 
+//Iterates through linked P. list and erases the input ID
 void LinkedParticle::deleteLinke(int _ID)
 {
-
+  for(int i=0; i<m_linkedParticles.size();i++)
+  {
+    if(m_linkedParticles[i]==_ID)
+      m_linkedParticles.erase(m_linkedParticles.begin()+i);
+  }
 }
 
+//returns ID
 int LinkedParticle::getID()
+{
+ return m_ID;
+}
+
+
+void LinkedParticle::split(std::vector<LinkedParticle> _particleList)
+
 {
 
 }
