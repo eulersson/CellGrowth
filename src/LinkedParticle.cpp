@@ -73,11 +73,20 @@ int LinkedParticle::getID()
  return m_ID;
 }
 
+void LinkedParticle::getLinks(std::vector<int> &_returnList)
+{
+  _returnList=m_linkedParticles;
+}
 
-void LinkedParticle::split(std::vector<LinkedParticle> _particleList)
+void LinkedParticle::split(std::vector<LinkedParticle> &_particleList)
 
 {
 
+}
+
+int LinkedParticle::getLinkCount()
+{
+  return m_linkedParticles.size();
 }
 
 int LinkedParticle::m_ID_counter(0);

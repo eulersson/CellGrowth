@@ -33,7 +33,12 @@ ParticlesWindow::ParticlesWindow()
 void ParticlesWindow::initialize()
 {
   // Initialize a particle system
-  ParticleSystem ps;
+
+  //I commented this out because it made two particle systems
+  //ParticleSystem m_ps;
+
+
+
 
   // Set the glViewport to be the same as QWindow's size
   glViewport(0, 0, width(), height());
@@ -66,7 +71,7 @@ void ParticlesWindow::initialize()
 
   // OpenGL wants a flat array of GLfloats
   m_numberOfParticles = m_ps.get_size();
-  for (unsigned int i = 0; i < m_numberOfParticles; i++)
+  /*for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;
     LinkedParticle* lp = m_ps.get_particle(i);
@@ -76,6 +81,23 @@ void ParticlesWindow::initialize()
     m_particlePosArray.push_back(position.y());
     m_particlePosArray.push_back(position.z());
   }
+  */
+
+  std::cout<<m_numberOfParticles<<std::endl;
+  std::vector<QVector3D> lines;
+  m_ps.getLinksForDraw(lines);
+
+  for (unsigned int i = 0; i < lines.size(); i++)
+  {
+    std::cout<<lines[i].x()<<','<<lines[i].y()<<','<<lines[i].z()<<std::endl;
+    m_particlePosArray.push_back(lines[i].x());
+    m_particlePosArray.push_back(lines[i].y());
+    m_particlePosArray.push_back(lines[i].z());
+
+  }
+
+
+
 
   // Initialize VAO and VBO Qt objects
   m_VAO_particle = new QOpenGLVertexArrayObject(this);
@@ -119,6 +141,7 @@ void ParticlesWindow::render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Bind the right program with the right VAO
+
   m_VAO_particle->bind();
 
   // Draw the LINKS between particles for visual debugging
@@ -156,7 +179,8 @@ void ParticlesWindow::update_stuff()
   m_numberOfParticles = m_ps.get_size();
 
   //Jon says we should be using the container size instead of the particle
-  for (unsigned int i = 0; i < m_numberOfParticles; i++)
+
+  /*for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;
     LinkedParticle* lp = m_ps.get_particle(i);
@@ -166,6 +190,23 @@ void ParticlesWindow::update_stuff()
     m_particlePosArray[3*i+1] = position.y();
     m_particlePosArray[3*i+2] = position.z();
   }
+*/
+
+
+
+  std::vector<QVector3D> lines;
+  m_ps.getLinksForDraw(lines);
+
+  for (unsigned int i = 0; i < lines.size(); i++)
+  {
+
+    m_particlePosArray[3*i  ] = lines[i].x();
+    m_particlePosArray[3*i+1] = lines[i].y();
+    m_particlePosArray[3*i+2] = lines[i].z();
+  }
+
+
+
 
   m_VBO_particlePos->bind();
   // For buffering you can pick the write() or allocate() method.

@@ -30,9 +30,16 @@ public:
   //queries the ID of the particle
 
   //Computes all the relinking and creates a new particle
-  void split(std::vector<LinkedParticle> _particleList);
+  void split(std::vector<LinkedParticle> &_particleList);
 
+  int getLinkCount();
+  //returns ID
   int getID();
+
+  //returns links from linkedParticleList , list contains ID's not positions
+  // could be changed to return positions
+  void getLinks(std::vector<int> &_returnList);
+
 private:
   QVector3D m_pos;
   QVector3D m_vel;

@@ -26,6 +26,8 @@ public:
   // Get the number of particles in the system
   unsigned int get_size();
 
+  //returns positions ready to draw type QVector3D might need to be changed
+  void getLinksForDraw(std::vector<QVector3D> &_returnList);
 private:
   std::vector<std::unique_ptr<LinkedParticle>> m_particles;
   unsigned int m_particleCount;
