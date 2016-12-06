@@ -70,7 +70,7 @@ void ParticlesWindow::initialize()
   m_particlePos = std::vector<QVector3D>(0);
 
   // OpenGL wants a flat array of GLfloats
-  m_numberOfParticles = m_ps.get_size();
+  //m_numberOfParticles = m_ps.get_size();
   /*for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;
@@ -83,10 +83,10 @@ void ParticlesWindow::initialize()
   }
   */
 
-  std::cout<<m_numberOfParticles<<std::endl;
+
   std::vector<QVector3D> lines;
   m_ps.getLinksForDraw(lines);
-
+  m_numberOfParticles=lines.size();
   for (unsigned int i = 0; i < lines.size(); i++)
   {
     std::cout<<lines[i].x()<<','<<lines[i].y()<<','<<lines[i].z()<<std::endl;
@@ -176,7 +176,7 @@ void ParticlesWindow::update_stuff()
   m_ps.advance();
 
   // We first change the dataand after we buffer it to the right buffer
-  m_numberOfParticles = m_ps.get_size();
+  //m_numberOfParticles = m_ps.get_size();
 
   //Jon says we should be using the container size instead of the particle
 
@@ -196,7 +196,7 @@ void ParticlesWindow::update_stuff()
 
   std::vector<QVector3D> lines;
   m_ps.getLinksForDraw(lines);
-
+  m_numberOfParticles=lines.size();
   for (unsigned int i = 0; i < lines.size(); i++)
   {
 
