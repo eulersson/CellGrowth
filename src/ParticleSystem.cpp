@@ -40,13 +40,9 @@ void ParticleSystem::fill(int _amount)
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,0.5);
 
-      distribution(gen);
 
   for(int i=0;i<_amount;i++)
   {
-//    qreal x=float(std::rand() % 10)/10;
-//    qreal y=float(std::rand() % 10)/10;
-//    qreal z=float(std::rand() % 10)/10;
 
     qreal x=distribution(gen);
     qreal y=distribution(gen);
@@ -54,8 +50,6 @@ void ParticleSystem::fill(int _amount)
 
     m_particles.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x, y, z)));
     m_particleCount++;
-    //std::cout<<m_particles[i]->getID()<<"\n";
-    //std::cout<<"i= "<<i<<"\n";
   }
 
   if(_amount<=4)

@@ -42,7 +42,9 @@ public:
   //returns position of links
   void getPosFromLinks(std::vector<QVector3D> &_linkPos, std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
 private:
-  //void planeSorting();
+  //private methode used by the split methode to sort particles depending on what side of a plane they are on
+  //returns the distance to the plane
+  int planeSorting(QVector3D _normal,QVector3D _planePoint,QVector3D _testPoint);
   QVector3D m_pos;
   QVector3D m_vel;
 

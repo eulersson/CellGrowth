@@ -78,9 +78,69 @@ void LinkedParticle::getLinks(std::vector<int> &_returnList)
   _returnList=m_linkedParticles;
 }
 
+int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
+{
+  int d=_normal.x()*_planePoint.x()+_normal.y()*_planePoint.y()+_normal.z()*_planePoint.z();
+  int r=_normal.x()*_testPoint.x()+_normal.y()*_testPoint.y()+_normal.z()*_testPoint.z()-d;
+  return r;
+}
+
 void LinkedParticle::split(std::vector<LinkedParticle> &_particleList)
 
 {
+
+  std::random_device rd;
+  std::mt19937_64 gen(rd());
+  std::uniform_int_distribution<int> distribution(0,m_linkedParticles.size());
+  //holds all ID's of the partciles that are keept by the current particle
+  std::vector<int> keepList;
+  //holds all the ID's of the particles that are linked to the new particle
+  std::vector<int> relinkList;
+  // holds the positions of the linked particles
+  std::vector<QVector3D> linkPosition;
+  getPosFromLinks(linkPosition,_particleList);
+
+
+  //pick two random particles out of the particle list
+  //saving index number of it in list not Id or Pos
+  int a=distribution(gen);
+  int b=distribution(gen);
+
+  QVector3D normal=QVector3D::normal(linkPosition[a],linkPosition[b]);
+
+  //filling two arrays with links based on there position relative to the plane created by the two first particles
+  for(int i=0;i<m_linkedParticles.size();i++)
+  {
+    if(i==a || i == b)
+    {
+      //the two plane particles are linked too both old and new particle
+      keepList.push_back(m_linkedParticles[i]);
+      relinkList.push_back(m_linkedParticles[i]);
+    }
+    else
+    {
+      int r=planeSorting(normal,linkPosition[a],linkPosition[i]);
+      if(r<=0)
+      {
+        keepList.push_back(m_linkedParticles[i]);
+      }
+      else
+      {
+        relinkList.push_back(m_linkedParticles[i]);
+      }
+    }
+  }
+
+  //
+  m_linkedParticles=keepList;
+
+  //delete links from to old particle
+
+
+
+
+
+
 
 }
 
