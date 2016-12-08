@@ -89,7 +89,6 @@ void ParticlesWindow::initialize()
   m_numberOfParticles=lines.size();
   for (unsigned int i = 0; i < lines.size(); i++)
   {
-    std::cout<<lines[i].x()<<','<<lines[i].y()<<','<<lines[i].z()<<std::endl;
     m_particlePosArray.push_back(lines[i].x());
     m_particlePosArray.push_back(lines[i].y());
     m_particlePosArray.push_back(lines[i].z());

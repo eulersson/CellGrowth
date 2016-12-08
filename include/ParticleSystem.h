@@ -3,7 +3,6 @@
 
 // Native
 #include <vector>
-#include <memory>
 
 // Custom
 #include "LinkedParticle.h"

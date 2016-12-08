@@ -89,4 +89,26 @@ int LinkedParticle::getLinkCount()
   return m_linkedParticles.size();
 }
 
+void LinkedParticle::getPosFromLinks(std::vector<QVector3D> &_linkPos,std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
+{
+  //looks for the Id in the particleList of the particle system and than gets the position
+  //there should be a more efficient way of doing this
+  _linkPos.clear();
+  QVector3D tempVec;
+
+  for(int i =0; i<m_linkedParticles.size();i++)
+  {
+    for(int j=0;j<_particleList.size();j++)
+    {
+      if(_particleList[j]->getID()==m_linkedParticles[i])
+      {
+        _particleList[j]->getPos(tempVec);
+        _linkPos.push_back(tempVec);
+        break;
+
+      }
+    }
+  }
+}
+
 int LinkedParticle::m_ID_counter(0);

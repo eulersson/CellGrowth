@@ -2,7 +2,7 @@
 #define LINKEDPARTICLE_H
 
 #include<QVector3D>
-
+#include<memory>
 class LinkedParticle
 {
 public:
@@ -39,8 +39,10 @@ public:
   //returns links from linkedParticleList , list contains ID's not positions
   // could be changed to return positions
   void getLinks(std::vector<int> &_returnList);
-
+  //returns position of links
+  void getPosFromLinks(std::vector<QVector3D> &_linkPos, std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
 private:
+  //void planeSorting();
   QVector3D m_pos;
   QVector3D m_vel;
 
