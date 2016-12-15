@@ -86,7 +86,7 @@ void ParticlesWindow::initialize()
 
   for (unsigned int i = 0; i < m_numberOfLinePositions; i++)
   {
-    //std::cout << lines[i].x() << ',' << lines[i].y( )<< ',' << lines[i].z() << std::endl;
+
     m_particleLinesPosArray.push_back(lines[i].x());
     m_particleLinesPosArray.push_back(lines[i].y());
     m_particleLinesPosArray.push_back(lines[i].z());
@@ -143,7 +143,6 @@ void ParticlesWindow::initialize()
   // Bind them so we can buffer the data to the VBO while the VAO will remember
   // the currently bound VBO (so don't unbound the VBO)
   m_VAO_lines->bind();
-  //std::cout << m_numberOfLinePositions << std::endl;
   m_VBO_particleLinePos->bind();
   m_VBO_particleLinePos->allocate(&m_particleLinesPosArray[0], 3 * m_numberOfLinePositions * sizeof(GLfloat));
 
@@ -280,7 +279,6 @@ void ParticlesWindow::keyPressEvent(QKeyEvent *ev)
 
   if (ev->key() == Qt::Key_Space)
   {
-    std::cout << "Trying to split" <<std::endl;
     m_ps.splitRandomParticle();
     update_stuff();
 
