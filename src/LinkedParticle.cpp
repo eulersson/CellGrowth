@@ -6,6 +6,8 @@ LinkedParticle::LinkedParticle():
 {
   std::cout<<"Calling Linked Particle Default Constructor"<<std::endl;
   m_pos = QVector3D(0, 0, 0);
+  m_foodLevel=0;
+  m_foodTreshold=100;
 
 }
 
@@ -14,6 +16,8 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z)
 : m_ID(m_ID_counter++)
 {
   m_pos = QVector3D(_x, _y, _z);
+  m_foodLevel=0;
+  m_foodTreshold=100;
 }
 
 
@@ -21,13 +25,15 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _link
 : m_ID(m_ID_counter++)
 {
   m_pos = QVector3D(_x, _y, _z);
+  m_foodLevel=0;
+  m_foodTreshold=100;
   m_linkedParticles=_linkedParticles;
   if(m_linkedParticles.size()<3)
     std::cout<<"Warning not enough links in Particle when Constructed"<<std::endl;
 
-  //std::cout<<"my linked particle amount"<<m_linkedParticles.size()<<std::endl;
-  //std::cout<<"input linked particle amount"<<_linkedParticles.size()<<std::endl;
 }
+
+
 
 // After force calculations are done, we advect the position
 void LinkedParticle::advance()
@@ -39,6 +45,14 @@ void LinkedParticle::advance()
 void LinkedParticle::calculate()
 {
   //m_vel = 0.0005 * m_pos.normalized();
+}
+
+bool LinkedParticle::testForSplit()
+{
+  if(m_foodLevel>=m_foodTreshold)
+    return true;
+  else return false;
+
 }
 
 // For modifying the position of the particle
@@ -98,7 +112,6 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
 void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
 
 {
-  //WIP
 
   std::random_device rd;
   std::mt19937_64 gen(rd());
@@ -123,7 +136,6 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
     std::cout<<"WARNING unvalid link choice in splitting function"<<std::endl;
 
 
-  //std::cout<<"random particles "<<a<<' '<<b<<std::endl;
 
   QVector3D normal=QVector3D::normal(linkPosition[a],linkPosition[b]);
 
@@ -212,6 +224,8 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
     }
   }
   link(newPartID);
+
+  m_foodLevel=0;
 
 
 

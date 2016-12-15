@@ -9,12 +9,16 @@ public:
   LinkedParticle();
   LinkedParticle(qreal _x,qreal _y,qreal _z);
   LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _linkedParticles);
+
   // Updates the position after forces (velocities) are computed only called after all new position for particles are calculated
 
   void advance();
 
   // Computes the forces that act on this particle
   void calculate();
+
+  //returns true if the particle is meant to be split
+  bool testForSplit();
 
   // Writes the position to the QVector3D that is passed by reference
   void getPos(QVector3D &_vector);
@@ -66,6 +70,10 @@ private:
   // we can think about a diffrent way of storing them later
   std::vector<int> m_linkedParticles;
 
+  //this will keep track of the food level that is increased by the sun
+  unsigned int m_foodLevel;
+  //This variable could be made diffrent to immitate diffrent Cell types
+  unsigned int m_foodTreshold;
 };
 
 #endif // LINKEDPARTICLE_H

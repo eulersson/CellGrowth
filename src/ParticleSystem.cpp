@@ -22,6 +22,17 @@ ParticleSystem::ParticleSystem(int _amount)
 // Calculates new forces on each particles and advects them
 void ParticleSystem::advance()
 {
+  //first splitting
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    if(m_particles[i]->testForSplit())
+    {
+      m_particles[i]->split(m_particles);
+    }
+  }
+
+
+  //than moving
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     m_particles[i]->calculate();
@@ -128,9 +139,9 @@ void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
   }
 }
 
+
 void ParticleSystem::splitRandomParticle()
 {
-  //WIP
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
@@ -140,5 +151,25 @@ void ParticleSystem::splitRandomParticle()
   QVector3D vec;
   m_particles[m_particles.size()-1]->getPos(vec);
   m_particleCount++;
+
+}
+
+void ParticleSystem::deleteParticle(unsigned int _index)
+{
+ std::vector<int> deleteList;
+ m_particles[_index]->getLinks(deleteList);
+ int ID=m_particles[_index]->getID();
+ for(unsigned int i=0;i<deleteList.size();i++)
+ {
+    for(unsigned int j=0;j<m_particles.size();j++)
+    {
+      if(m_particles[j]->getID()==deleteList[i])
+      {
+        m_particles[j]->deleteLink(ID);
+        break;
+      }
+
+    }
+ }
 
 }
