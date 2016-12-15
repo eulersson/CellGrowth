@@ -86,7 +86,7 @@ void ParticlesWindow::initialize()
 
   for (unsigned int i = 0; i < m_numberOfLinePositions; i++)
   {
-    std::cout << lines[i].x() << ',' << lines[i].y( )<< ',' << lines[i].z() << std::endl;
+    //std::cout << lines[i].x() << ',' << lines[i].y( )<< ',' << lines[i].z() << std::endl;
     m_particleLinesPosArray.push_back(lines[i].x());
     m_particleLinesPosArray.push_back(lines[i].y());
     m_particleLinesPosArray.push_back(lines[i].z());
@@ -143,7 +143,7 @@ void ParticlesWindow::initialize()
   // Bind them so we can buffer the data to the VBO while the VAO will remember
   // the currently bound VBO (so don't unbound the VBO)
   m_VAO_lines->bind();
-  std::cout << m_numberOfLinePositions << std::endl;
+  //std::cout << m_numberOfLinePositions << std::endl;
   m_VBO_particleLinePos->bind();
   m_VBO_particleLinePos->allocate(&m_particleLinesPosArray[0], 3 * m_numberOfLinePositions * sizeof(GLfloat));
 
@@ -205,8 +205,7 @@ void ParticlesWindow::update_stuff()
 
   // POSITIONS
   m_numberOfParticles = m_ps.get_size();
-
-  std::cout << "*.*.*.*" << m_numberOfParticles;
+  m_particlePosArray.resize(m_numberOfParticles * 3);
 
   //Jon says we should be using the container size instead of the particle
   for (unsigned int i = 0; i < m_numberOfParticles; i++)
@@ -215,24 +214,21 @@ void ParticlesWindow::update_stuff()
     LinkedParticle* lp = m_ps.get_particle(i);
     lp->getPos(position);
 
-    if (i == m_numberOfParticles - 1)
-      std::cout << "----" << position.x() << std::endl;
 
     m_particlePosArray[3*i  ] = position.x();
     m_particlePosArray[3*i+1] = position.y();
     m_particlePosArray[3*i+2] = position.z();
 
-    if (i == m_numberOfParticles - 1)
-      std::cout << "----" << m_particlePosArray[3*i  ] << std::endl;
-
   }
-
-  m_VBO_particlePos->write(0, &m_particlePosArray[0], m_numberOfParticles * 3 * sizeof(GLfloat));
+  m_VBO_particlePos->bind();
+  m_VBO_particlePos->allocate(&m_particlePosArray[0], m_numberOfParticles * 3 * sizeof(GLfloat));
+  m_VBO_particlePos->release();
 
   // LINKS
   std::vector<QVector3D> lines;
   m_ps.getLinksForDraw(lines);
   m_numberOfLinePositions = lines.size();
+  m_particleLinesPosArray.resize(m_numberOfLinePositions*3);
 
   for (unsigned int i = 0; i < m_numberOfLinePositions; i++)
   {
@@ -242,7 +238,9 @@ void ParticlesWindow::update_stuff()
     m_particleLinesPosArray[3*i+2] = lines[i].z();
   }
 
-  m_VBO_particleLinePos->write(0, &m_particleLinesPosArray[0], m_numberOfLinePositions * 3 * sizeof(GLfloat));
+  m_VBO_particleLinePos->bind();
+  m_VBO_particleLinePos->allocate(&m_particleLinesPosArray[0], m_numberOfLinePositions * 3 * sizeof(GLfloat));
+  m_VBO_particleLinePos->release();
 
 }
 

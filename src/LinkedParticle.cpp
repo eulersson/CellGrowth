@@ -22,6 +22,9 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _link
 {
   m_pos = QVector3D(_x, _y, _z);
   m_linkedParticles=_linkedParticles;
+  if(m_linkedParticles.size()<3)
+    std::cout<<"Warning not enough links in Particle when Constructed"<<std::endl;
+
   //std::cout<<"my linked particle amount"<<m_linkedParticles.size()<<std::endl;
   //std::cout<<"input linked particle amount"<<_linkedParticles.size()<<std::endl;
 }
@@ -68,6 +71,9 @@ void LinkedParticle::deleteLink(int _ID)
     if(m_linkedParticles[i]==_ID)
       m_linkedParticles.erase(m_linkedParticles.begin()+i);
   }
+
+  //if(m_linkedParticles.size()<3)
+    //std::cout<<"Warning not enough links in Particle"<<std::endl;
 }
 
 //returns ID
@@ -95,7 +101,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
 
   std::random_device rd;
   std::mt19937_64 gen(rd());
-  std::uniform_int_distribution<int> distribution(0,m_linkedParticles.size());
+  std::uniform_int_distribution<int> distribution(1,m_linkedParticles.size());
   //holds all ID's of the partciles that are keept by the current particle
   std::vector<int> keepList;
   //holds all the ID's of the particles that are linked to the new particle
@@ -107,19 +113,28 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
 
   //pick two random particles out of the particle list
   //saving index number of it in list not Id or Pos
-  int a=distribution(gen);
+
+  int a=0;
+
   int b=distribution(gen);
+
+  if(a==b)
+    std::cout<<"WARNING unvalid link choice in splitting function"<<std::endl;
+
+
+  std::cout<<"random particles "<<a<<' '<<b<<std::endl;
 
   QVector3D normal=QVector3D::normal(linkPosition[a],linkPosition[b]);
 
   //filling two arrays with links based on there position relative to the plane created by the two first particles
   for(int i=0;i<m_linkedParticles.size();i++)
   {
-    if(i==a || i == b)
+    if(i == a || i == b)
     {
       //the two plane particles are linked too both old and new particle
       keepList.push_back(m_linkedParticles[i]);
       relinkList.push_back(m_linkedParticles[i]);
+      std::cout<<"adding split particles to both lists"<<std::endl;
     }
     else
     {
@@ -155,15 +170,16 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
 
   normal.normalize();
   //create new particle
-  qreal x=m_pos.x()+normal.x()/2;
-  qreal y=m_pos.y()+normal.y()/2;
-  qreal z=m_pos.z()+normal.z()/2;
+  qreal x=m_pos.x()+normal.x()/20;
+  qreal y=m_pos.y()+normal.y()/20;
+  qreal z=m_pos.z()+normal.z()/20;
 
-  std::cout<<"pos "<<x<<','<<y<<','<<z<<std::endl;
+  //std::cout<<"pos "<<x<<','<<y<<','<<z<<std::endl;
   //std::cout<<m_pos.x()<<','<<m_pos.y()<<','<<m_pos.z()<<std::endl;
 
   //std::cout<<relinkList.size()<<std::endl;
 
+  relinkList.push_back(m_ID);
   //creating new particle
   _particleList.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x,y,z,relinkList)));
 
@@ -187,7 +203,6 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
   //link both, parent and child, to each other
 
   link(newPartID);
-  _particleList[_particleList.size()-1]->link(m_ID);
 
 
 
@@ -225,3 +240,13 @@ void LinkedParticle::getPosFromLinks(std::vector<QVector3D> &_linkPos,std::vecto
 }
 
 int LinkedParticle::m_ID_counter(0);
+
+
+int LinkedParticle::getPosInPS(std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
+{
+  for(int i=0;i<_particleList.size();i++)
+  {
+    if(_particleList[i]->getID()==m_ID)
+      return i;
+  }
+}

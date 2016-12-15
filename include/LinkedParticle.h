@@ -41,6 +41,9 @@ public:
   void getLinks(std::vector<int> &_returnList);
   //returns position of links
   void getPosFromLinks(std::vector<QVector3D> &_linkPos, std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
+  // gets the position in the particle system list
+  int getPosInPS(std::vector<std::unique_ptr<LinkedParticle> > &_particleList);
+
 private:
   //private methode used by the split methode to sort particles depending on what side of a plane they are on
   //returns the distance to the plane
@@ -62,6 +65,7 @@ private:
   // I decided to not use pointers as the memory adress might change
   // we can think about a diffrent way of storing them later
   std::vector<int> m_linkedParticles;
+
 };
 
 #endif // LINKEDPARTICLE_H
