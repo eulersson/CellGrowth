@@ -33,12 +33,7 @@ ParticlesWindow::ParticlesWindow()
 void ParticlesWindow::initialize()
 {
   // Initialize a particle system
-
-  //I commented this out because it made two particle systems
-  //ParticleSystem m_ps;
-
-
-
+//  m_ps = ParticleSystem(7);
 
   // Set the glViewport to be the same as QWindow's size
   glViewport(0, 0, width(), height());
@@ -66,38 +61,40 @@ void ParticlesWindow::initialize()
   m_program_lines->addShaderFromSourceCode(QOpenGLShader::Fragment, linesShaderSource);
   m_program_lines->link();
 
-  // Populate positions (QVector3D) with points layed out in a spherical way
+  //
+  // PARTICLES //////
+  //
   m_particlePos = std::vector<QVector3D>(0);
+  m_numberOfParticles = m_ps.get_size();
 
-  // OpenGL wants a flat array of GLfloats
-  //m_numberOfParticles = m_ps.get_size();
-  /*for (unsigned int i = 0; i < m_numberOfParticles; i++)
+  for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;
     LinkedParticle* lp = m_ps.get_particle(i);
     lp->getPos(position);
-
     m_particlePosArray.push_back(position.x());
     m_particlePosArray.push_back(position.y());
     m_particlePosArray.push_back(position.z());
   }
-  */
 
-
+  //
+  // LINKS //////
+  //
   std::vector<QVector3D> lines;
   m_ps.getLinksForDraw(lines);
-  m_numberOfParticles=lines.size();
-  for (unsigned int i = 0; i < lines.size(); i++)
-  {
-    m_particlePosArray.push_back(lines[i].x());
-    m_particlePosArray.push_back(lines[i].y());
-    m_particlePosArray.push_back(lines[i].z());
+  m_numberOfLinePositions = lines.size();
 
+  for (unsigned int i = 0; i < m_numberOfLinePositions; i++)
+  {
+    std::cout << lines[i].x() << ',' << lines[i].y( )<< ',' << lines[i].z() << std::endl;
+    m_particleLinesPosArray.push_back(lines[i].x());
+    m_particleLinesPosArray.push_back(lines[i].y());
+    m_particleLinesPosArray.push_back(lines[i].z());
   }
 
-
-
-
+  //
+  // PARTICLES //////
+  //
   // Initialize VAO and VBO Qt objects
   m_VAO_particle = new QOpenGLVertexArrayObject(this);
   m_VBO_particlePos = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
@@ -124,13 +121,40 @@ void ParticlesWindow::initialize()
   m_program_particles->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
   m_program_particles->enableAttributeArray("posAttr");
 
+  // VAO unbinding (will be bound/released again in render() method, the game loop)
+  m_VAO_particle->release();
+
+
+
+
+
+
+  //
+  // LINKS //////
+  //
+  // Initialize VAO and VBO Qt objects
+  m_VAO_lines = new QOpenGLVertexArrayObject(this);
+  m_VBO_particleLinePos = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+
+  // Create the actual OpenGL VAO and VBO
+  m_VAO_lines->create();
+  m_VBO_particleLinePos->create(); m_VBO_particleLinePos->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+  // Bind them so we can buffer the data to the VBO while the VAO will remember
+  // the currently bound VBO (so don't unbound the VBO)
+  m_VAO_lines->bind();
+  std::cout << m_numberOfLinePositions << std::endl;
+  m_VBO_particleLinePos->bind();
+  m_VBO_particleLinePos->allocate(&m_particleLinesPosArray[0], 3 * m_numberOfLinePositions * sizeof(GLfloat));
+
   // In this case we will be reusing the same positions for the lines
   m_program_lines->setUniformValue("delta", 0.0f);
   m_program_lines->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
   m_program_lines->enableAttributeArray("posAttr");
 
   // VAO unbinding (will be bound/released again in render() method, the game loop)
-  m_VAO_particle->release();
+  m_VAO_lines->release();
+
 }
 
 // Rendering
@@ -141,14 +165,18 @@ void ParticlesWindow::render()
 
   // Bind the right program with the right VAO
 
-  m_VAO_particle->bind();
+  m_VAO_lines->bind();
 
   // Draw the LINKS between particles for visual debugging
   m_program_lines->bind();
   m_program_lines->setUniformValue("delta", (float)m_frame / 100.0f);
   glDepthRange(0.1, 1.0);
-  glDrawArrays(GL_LINES, 0, m_numberOfParticles);
+  glDrawArrays(GL_LINES, 0, m_numberOfLinePositions);
   m_program_lines->release();
+
+  m_VAO_lines->release();
+
+  m_VAO_particle->bind();
 
   // Draw the POINTS as spheres
   m_program_particles->bind();
@@ -163,7 +191,7 @@ void ParticlesWindow::render()
   m_VAO_particle->release();
 
   // Make the particle system step in this case... Create your own functions for changing state
-  update_stuff();
+  // update_stuff();
 
   // Increment time.
   ++m_frame;
@@ -174,48 +202,48 @@ void ParticlesWindow::update_stuff()
 {
   m_ps.advance();
 
-  // We first change the dataand after we buffer it to the right buffer
-  //m_numberOfParticles = m_ps.get_size();
+
+  // POSITIONS
+  m_numberOfParticles = m_ps.get_size();
+
+  std::cout << "*.*.*.*" << m_numberOfParticles;
 
   //Jon says we should be using the container size instead of the particle
-
-  /*for (unsigned int i = 0; i < m_numberOfParticles; i++)
+  for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;
     LinkedParticle* lp = m_ps.get_particle(i);
     lp->getPos(position);
 
+    if (i == m_numberOfParticles - 1)
+      std::cout << "----" << position.x() << std::endl;
+
     m_particlePosArray[3*i  ] = position.x();
     m_particlePosArray[3*i+1] = position.y();
     m_particlePosArray[3*i+2] = position.z();
+
+    if (i == m_numberOfParticles - 1)
+      std::cout << "----" << m_particlePosArray[3*i  ] << std::endl;
+
   }
-*/
 
+  m_VBO_particlePos->write(0, &m_particlePosArray[0], m_numberOfParticles * 3 * sizeof(GLfloat));
 
-
+  // LINKS
   std::vector<QVector3D> lines;
   m_ps.getLinksForDraw(lines);
-  m_numberOfParticles=lines.size();
-  for (unsigned int i = 0; i < lines.size(); i++)
+  m_numberOfLinePositions = lines.size();
+
+  for (unsigned int i = 0; i < m_numberOfLinePositions; i++)
   {
 
-    m_particlePosArray[3*i  ] = lines[i].x();
-    m_particlePosArray[3*i+1] = lines[i].y();
-    m_particlePosArray[3*i+2] = lines[i].z();
+    m_particleLinesPosArray[3*i  ] = lines[i].x();
+    m_particleLinesPosArray[3*i+1] = lines[i].y();
+    m_particleLinesPosArray[3*i+2] = lines[i].z();
   }
 
+  m_VBO_particleLinePos->write(0, &m_particleLinesPosArray[0], m_numberOfLinePositions * 3 * sizeof(GLfloat));
 
-
-
-  m_VBO_particlePos->bind();
-  // For buffering you can pick the write() or allocate() method.
-  // http://doc.qt.io/qt-5/qopenglbuffer.html#write
-  // http://doc.qt.io/qt-5/qopenglbuffer.html#allocate
-  // Remember that you can place your cursor on a function and press F1 to open the docs within Qt!
-  //     m_VBO_particlePos->write(0, &m_particlePosArray[0], m_numberOfParticles * 3 * sizeof(GLfloat));
-  //     m_VBO_particlePos->allocate(&m_particlePosArray[0], m_numberOfParticles * 3 * sizeof(GLfloat));
-  m_VBO_particlePos->write(0, &m_particlePosArray[0], m_numberOfParticles * 3 * sizeof(GLfloat));
-  m_VBO_particlePos->release();
 }
 
 // Save current frame buffer as a .bmp file
@@ -251,6 +279,14 @@ void ParticlesWindow::keyPressEvent(QKeyEvent *ev)
 
   if (ev->key() == Qt::Key_A)
     std::cout << "Key A has been pressed";
+
+  if (ev->key() == Qt::Key_Space)
+  {
+    std::cout << "Trying to split" <<std::endl;
+    m_ps.splitRandomParticle();
+    update_stuff();
+
+  }
 
 }
 

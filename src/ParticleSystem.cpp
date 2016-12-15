@@ -89,7 +89,8 @@ LinkedParticle* ParticleSystem::get_particle(unsigned int _idx)
 // Gets the total number of particles
 unsigned int ParticleSystem::get_size()
 {
-  return m_particleCount;
+  //changed this to querz the size
+  return m_particles.size();
 }
 
 void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
@@ -125,4 +126,20 @@ void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
       }
     }
   }
+}
+
+void ParticleSystem::splitRandomParticle()
+{
+  //WIP
+  std::random_device rd;
+  std::mt19937_64 gen(rd());
+  std::uniform_real_distribution<float> distribution(0,m_particles.size());
+
+  m_particles[distribution(gen)]->split(m_particles);
+
+  QVector3D vec;
+  m_particles[m_particles.size()-1]->getPos(vec);
+  std::cout<<"actual position "<<vec.x()<<','<<vec.y()<<','<<vec.z()<<std::endl;
+  m_particleCount++;
+
 }

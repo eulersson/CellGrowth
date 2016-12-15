@@ -1,9 +1,10 @@
 #include "LinkedParticle.h"
-
+#include <iostream>
 // Default constructor puts it at origin
 LinkedParticle::LinkedParticle():
   m_ID(m_ID_counter++)
 {
+  std::cout<<"Calling Linked Particle Default Constructor"<<std::endl;
   m_pos = QVector3D(0, 0, 0);
 
 }
@@ -21,6 +22,8 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _link
 {
   m_pos = QVector3D(_x, _y, _z);
   m_linkedParticles=_linkedParticles;
+  //std::cout<<"my linked particle amount"<<m_linkedParticles.size()<<std::endl;
+  //std::cout<<"input linked particle amount"<<_linkedParticles.size()<<std::endl;
 }
 
 // After force calculations are done, we advect the position
@@ -58,7 +61,7 @@ void LinkedParticle::link(int _ID)
 }
 
 //Iterates through linked P. list and erases the input ID
-void LinkedParticle::deleteLinke(int _ID)
+void LinkedParticle::deleteLink(int _ID)
 {
   for(int i=0; i<m_linkedParticles.size();i++)
   {
@@ -85,9 +88,10 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
   return r;
 }
 
-void LinkedParticle::split(std::vector<LinkedParticle> &_particleList)
+void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
 
 {
+  //WIP
 
   std::random_device rd;
   std::mt19937_64 gen(rd());
@@ -134,7 +138,56 @@ void LinkedParticle::split(std::vector<LinkedParticle> &_particleList)
   //
   m_linkedParticles=keepList;
 
-  //delete links from to old particle
+  //delete links from to old particles
+
+  for(int i=0;i<relinkList.size();i++)
+  {
+    //find correct linked particle in particle list
+    for(int j=0;j<_particleList.size();j++)
+    {
+      if(_particleList[j]->getID()==relinkList[i])
+      {
+        _particleList[j]->deleteLink(m_ID);
+        break;
+      }
+    }
+  }
+
+  normal.normalize();
+  //create new particle
+  qreal x=m_pos.x()+normal.x()/2;
+  qreal y=m_pos.y()+normal.y()/2;
+  qreal z=m_pos.z()+normal.z()/2;
+
+  std::cout<<"pos "<<x<<','<<y<<','<<z<<std::endl;
+  //std::cout<<m_pos.x()<<','<<m_pos.y()<<','<<m_pos.z()<<std::endl;
+
+  //std::cout<<relinkList.size()<<std::endl;
+
+  //creating new particle
+  _particleList.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x,y,z,relinkList)));
+
+  //get the new particles ID
+
+  int newPartID=_particleList[_particleList.size()-1]->getID();
+
+  //link all the particles to the new particle
+  for(int i=0;i<relinkList.size();i++)
+  {
+    for(int j=0;j<_particleList.size();j++)
+    {
+      if(_particleList[j]->getID()==relinkList[i])
+      {
+        _particleList[j]->link(newPartID);
+        break;
+      }
+    }
+  }
+
+  //link both, parent and child, to each other
+
+  link(newPartID);
+  _particleList[_particleList.size()-1]->link(m_ID);
 
 
 

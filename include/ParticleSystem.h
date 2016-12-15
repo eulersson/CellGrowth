@@ -27,6 +27,7 @@ public:
 
   //returns positions ready to draw type QVector3D might need to be changed
   void getLinksForDraw(std::vector<QVector3D> &_returnList);
+  void splitRandomParticle();
 private:
   std::vector<std::unique_ptr<LinkedParticle>> m_particles;
   unsigned int m_particleCount;

@@ -26,11 +26,11 @@ public:
   void link(int _ID);
 
   //deletes a linked particle from the linked particle list and so destroys the link
-  void deleteLinke(int _ID);
+  void deleteLink(int _ID);
   //queries the ID of the particle
 
   //Computes all the relinking and creates a new particle
-  void split(std::vector<LinkedParticle> &_particleList);
+  void split(std::vector<std::unique_ptr<LinkedParticle> > &_particleList);
 
   int getLinkCount();
   //returns ID

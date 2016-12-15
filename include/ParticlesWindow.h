@@ -39,6 +39,9 @@ private:
     // Note that each particle has 3 components (x,y,z)
     unsigned int m_numberOfParticles;
 
+    // Note that each particle has 3 components (x,y,z)
+    unsigned int m_numberOfLinePositions;
+
     // Mocking up all the positions the particles will need to be drawn to.
     // Of this form: [particle0Pos, particle1Pos, particle2Pos, particle3Pos...]
     std::vector<QVector3D> m_particlePos;
@@ -47,11 +50,19 @@ private:
     // Of this form: [particle0PosX, particle0PosY, particle0PosZ, particle1PosX, ...]
     std::vector<GLfloat> m_particlePosArray;
 
+    // write comment later herew
+    std::vector<GLfloat> m_particleLinesPosArray;
+
     // We will buffer m_particlePosArray (a GLfloat array) to this VBO
     QOpenGLBuffer* m_VBO_particlePos;
 
+    QOpenGLBuffer* m_VBO_particleLinePos;
+
     // This VAO is used to draw the particles
     QOpenGLVertexArrayObject* m_VAO_particle;
+
+    // This VAO is used to draw the particle links
+    QOpenGLVertexArrayObject* m_VAO_lines;
 
     // One program will be drawing the particles and the other the links between them
     QOpenGLShaderProgram *m_program_particles;
