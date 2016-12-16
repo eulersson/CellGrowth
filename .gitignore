@@ -24,6 +24,18 @@
 *.lib
 
 # Executables
+boilerplate
 *.exe
 *.out
 *.app
+
+# Qt
+.qmake.stash
+
+# Build files
+*.pro.user
+build/*
+Makefile
+
+# Other files
+.DS_Store
