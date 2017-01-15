@@ -10,6 +10,7 @@
 class ParticleSystem
 {
 public:
+  // Constructors
   ParticleSystem();
   ParticleSystem(int _amount);
 
@@ -17,7 +18,7 @@ public:
   void advance();
 
   // Initializes _rings * _sectors number of particles
-  void fill(int _amount);
+  void fill(unsigned int _amount);
 
   // Retrieves the particle at that index, returns a pointer
   LinkedParticle* get_particle(unsigned int _idx);
@@ -25,14 +26,18 @@ public:
   // Get the number of particles in the system
   unsigned int get_size();
 
-  //returns positions ready to draw type QVector3D might need to be changed
+  // Returns positions ready to draw type QVector3D might need to be changed
   void getLinksForDraw(std::vector<QVector3D> &_returnList);
   void splitRandomParticle();
-  //this will delete a partcle and all the links to that particle
+
+  // This will delete a partcle and all the links to that particle
   void deleteParticle(unsigned int _index);
 
 private:
+  // Stores the list of particles in the system
   std::vector<std::unique_ptr<LinkedParticle>> m_particles;
+
+  // Keeps track of the number of particles
   unsigned int m_particleCount;
 };
 

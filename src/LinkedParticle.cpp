@@ -1,67 +1,87 @@
 #include "LinkedParticle.h"
 #include <iostream>
-// Default constructor puts it at origin
-LinkedParticle::LinkedParticle():
-  m_ID(m_ID_counter++)
-{
-  std::cout<<"Calling Linked Particle Default Constructor"<<std::endl;
-  m_pos = QVector3D(0, 0, 0);
-  m_foodLevel=0;
-  m_foodTreshold=100;
+#include <random>
 
+
+// Default constructor puts it at origin
+LinkedParticle::LinkedParticle()
+  : m_ID(m_ID_counter++)
+  , m_foodLevel(0)
+  , m_foodTreshold(0)
+  , m_pos(QVector3D(0,0,0))
+{
+  std::cout << "Calling Linked Particle Default Constructor" << std::endl;
 }
+
 
 // Specify the location where we want to place it
 LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z)
-: m_ID(m_ID_counter++)
+  : m_ID(m_ID_counter++)
+  , m_foodLevel(0)
+  , m_foodTreshold(100)
+  , m_pos(QVector3D(_x, _y, _z))
 {
-  m_pos = QVector3D(_x, _y, _z);
-  m_foodLevel=0;
-  m_foodTreshold=100;
+  std::cout
+      << "LinkedParticle Constructor with positions "
+      << _x << ", " << _y << ", " << _z
+      << std::endl;
 }
 
 
 LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _linkedParticles)
-: m_ID(m_ID_counter++)
+  : m_ID(m_ID_counter++)
+  , m_foodLevel(0)
+  , m_foodTreshold(100)
+  , m_pos(QVector3D(_x, _y, _z))
 {
-  m_pos = QVector3D(_x, _y, _z);
-  m_foodLevel=0;
-  m_foodTreshold=100;
-  m_linkedParticles=_linkedParticles;
-  if(m_linkedParticles.size()<3)
-    std::cout<<"Warning not enough links in Particle when Constructed"<<std::endl;
+  std::cout
+      << "LinkedParticle Constructor passing a list of linked particles"
+      << std::endl;
 
+  m_linkedParticles = _linkedParticles;
+  if (m_linkedParticles.size() < 3)
+  {
+    std::cout << "Warning not enough links in Particle when Constructed" << std::endl;
+  }
 }
-
 
 
 // After force calculations are done, we advect the position
 void LinkedParticle::advance()
 {
+  // Call calculate() to do all the maths to update the forces and update the
+  // velocity. When we are done:
   m_pos += m_vel;
 }
+
 
 // All the force calculation should happen in here
 void LinkedParticle::calculate()
 {
-  //m_vel = 0.0005 * m_pos.normalized();
 }
+
 
 bool LinkedParticle::testForSplit()
 {
-  if(m_foodLevel>=m_foodTreshold)
+  if (m_foodLevel >= m_foodTreshold)
+  {
     return true;
-  else return false;
-
+  }
+  else
+  {
+    return false;
+  }
 }
 
+
 // For modifying the position of the particle
-void LinkedParticle::setPos(qreal _x,qreal _y,qreal _z)
+void LinkedParticle::setPos(qreal _x, qreal _y, qreal _z)
 {
   m_pos.setX(_x);
   m_pos.setY(_y);
   m_pos.setZ(_z);
 }
+
 
 // Position getter
 void LinkedParticle::getPos(QVector3D &_vector)
@@ -71,37 +91,46 @@ void LinkedParticle::getPos(QVector3D &_vector)
   _vector.setZ(m_pos.z());
 }
 
-//adds linkedParticles ID to the linked Particle List
+
+// Adds linkedParticles ID to the linked Particle List
 void LinkedParticle::link(int _ID)
 {
   m_linkedParticles.push_back(_ID);
 }
 
-//Iterates through linked P. list and erases the input ID
+
+// Iterates through linked particles. List and erases the input ID
 void LinkedParticle::deleteLink(int _ID)
 {
-  for(unsigned int i=0; i<m_linkedParticles.size();i++)
+  for (unsigned int i = 0; i < m_linkedParticles.size(); i++)
   {
-    if(m_linkedParticles[i]==_ID)
-      m_linkedParticles.erase(m_linkedParticles.begin()+i);
-      break;
+    if (m_linkedParticles[i] == _ID)
+    {
+      m_linkedParticles.erase(m_linkedParticles.begin() + i);
+    }
+    break;
   }
 
   //if(m_linkedParticles.size()<3)
     //std::cout<<"Warning not enough links in Particle"<<std::endl;
 }
 
-//returns ID
+
+// ID getter
 int LinkedParticle::getID()
 {
  return m_ID;
 }
 
+
+// Links getter (in form of IDs)
 void LinkedParticle::getLinks(std::vector<int> &_returnList)
 {
   _returnList=m_linkedParticles;
 }
 
+
+// Returns the distance of a plane defined by a normal and a point
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
 {
   int d=_normal.x()*_planePoint.x()+_normal.y()*_planePoint.y()+_normal.z()*_planePoint.z();
@@ -109,20 +138,26 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
   return r;
 }
 
-void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
 
+// Splits
+void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
 {
+  std::cout << "Splitting particle " << m_ID << std::endl;
 
   std::random_device rd;
   std::mt19937_64 gen(rd());
-  std::uniform_int_distribution<int> distribution(1,m_linkedParticles.size()-1);
+  std::uniform_int_distribution<int> distribution(1, m_linkedParticles.size() - 1);
+
   //holds all ID's of the partciles that are keept by the current particle
   std::vector<int> keepList;
+
   //holds all the ID's of the particles that are linked to the new particle
   std::vector<int> relinkList;
+
   // holds the positions of the linked particles
   std::vector<QVector3D> linkPosition;
-  getPosFromLinks(linkPosition,_particleList);
+
+  getPosFromLinks(linkPosition, _particleList);
 
 
   //pick two random particles out of the particle list
@@ -132,12 +167,12 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
 
   unsigned int b=distribution(gen);
 
-  if(a==b)
-    std::cout<<"WARNING unvalid link choice in splitting function"<<std::endl;
+  if (a == b)
+  {
+    std::cout << "WARNING you can't split between a particle and itself" << std::endl;
+  }
 
-
-
-  QVector3D normal=QVector3D::normal(linkPosition[a],linkPosition[b]);
+  QVector3D normal = QVector3D::normal(linkPosition[a], linkPosition[b]);
 
   //filling two arrays with links based on there position relative to the plane created by the two first particles
   for(unsigned int i=0;i<m_linkedParticles.size();i++)
@@ -226,19 +261,14 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
   link(newPartID);
 
   m_foodLevel=0;
-
-
-
-
-
-
-
 }
+
 
 int LinkedParticle::getLinkCount()
 {
   return m_linkedParticles.size();
 }
+
 
 void LinkedParticle::getPosFromLinks(std::vector<QVector3D> &_linkPos,std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
 {
@@ -262,14 +292,19 @@ void LinkedParticle::getPosFromLinks(std::vector<QVector3D> &_linkPos,std::vecto
   }
 }
 
+
+// Initializes the counter (static member) to zero
 int LinkedParticle::m_ID_counter(0);
 
 
+// Gets the position of the particle in the list vector
 int LinkedParticle::getPosInPS(std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
 {
-  for(unsigned int i=0;i<_particleList.size();i++)
+  for (unsigned int i=0; i < _particleList.size(); i++)
   {
-    if(_particleList[i]->getID()==m_ID)
+    if (_particleList[i]->getID() == m_ID)
+    {
       return i;
+    }
   }
 }

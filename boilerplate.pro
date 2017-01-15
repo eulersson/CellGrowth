@@ -2,6 +2,8 @@ TARGET = boilerplate
 
 QT += core gui widgets
 
+CONFIG -= app_bundle # Don't create name.app/ bundle
+
 CONFIG += c++11
 
 INCLUDEPATH += \

@@ -18,6 +18,7 @@
 std::string readFile(const char *filePath);
 int WindowDump(void);
 
+
 // Constructor method needs to set up the format.
 ParticlesWindow::ParticlesWindow()
   : m_program_particles(0)
@@ -32,14 +33,8 @@ ParticlesWindow::ParticlesWindow()
 // OpenGL & member initialization
 void ParticlesWindow::initialize()
 {
-  // Initialize a particle system
-//  m_ps = ParticleSystem(7);
-
   // Set the glViewport to be the same as QWindow's size
   glViewport(0, 0, width(), height());
-
-  // Depth is needed otherwise the ones in the back appear on top
-  glEnable (GL_DEPTH_TEST);
 
   // Get the vertex data as strings
   std::string vertexShaderString   = readFile("shaders/vertex.glsl");
@@ -124,10 +119,10 @@ void ParticlesWindow::initialize()
   // VAO unbinding (will be bound/released again in render() method, the game loop)
   m_VAO_particle->release();
 
-
-
-
-
+  // Depth is needed otherwise the ones in the back appear on top
+  glEnable (GL_DEPTH_TEST);
+  glDepthMask(GL_FALSE);
+  glDepthFunc (GL_LEQUAL);
 
   //
   // LINKS //////
@@ -153,23 +148,21 @@ void ParticlesWindow::initialize()
 
   // VAO unbinding (will be bound/released again in render() method, the game loop)
   m_VAO_lines->release();
-
 }
 
 // Rendering
 void ParticlesWindow::render()
 {
+
   // Clear the buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Bind the right program with the right VAO
-
   m_VAO_lines->bind();
 
   // Draw the LINKS between particles for visual debugging
   m_program_lines->bind();
   m_program_lines->setUniformValue("delta", (float)m_frame / 100.0f);
-  glDepthRange(0.1, 1.0);
   glDrawArrays(GL_LINES, 0, m_numberOfLinePositions);
   m_program_lines->release();
 
@@ -181,8 +174,7 @@ void ParticlesWindow::render()
   m_program_particles->bind();
   m_program_particles->setUniformValue("delta", (float)m_frame / 100.0f);
   glEnable(GL_POINT_SPRITE);
-  glPointSize(12.0f);
-  glDepthRange(0.0, 1.0);
+  glEnable(GL_PROGRAM_POINT_SIZE);
   glDrawArrays(GL_POINTS, 0, m_numberOfParticles);
   m_program_particles->release();
 
@@ -200,7 +192,6 @@ void ParticlesWindow::render()
 void ParticlesWindow::update_stuff()
 {
   m_ps.advance();
-
 
   // POSITIONS
   m_numberOfParticles = m_ps.get_size();
@@ -281,9 +272,7 @@ void ParticlesWindow::keyPressEvent(QKeyEvent *ev)
   {
     m_ps.splitRandomParticle();
     update_stuff();
-
   }
-
 }
 
 void ParticlesWindow::mouseMoveEvent(QMouseEvent *ev)
