@@ -182,7 +182,7 @@ void ParticlesWindow::render()
   m_VAO_particle->release();
 
   // Make the particle system step in this case... Create your own functions for changing state
-  // update_stuff();
+   update_stuff();
 
   // Increment time.
   ++m_frame;

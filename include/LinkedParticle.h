@@ -22,6 +22,9 @@ public:
   // Computes the forces that act on this particle
   void calculate();
 
+  //alternative calculate function
+  void split(QVector3D _lightDirection,std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
+
   // Returns true if the particle is meant to be split
   bool testForSplit();
 
@@ -51,6 +54,9 @@ public:
   void getLinks(std::vector<int> &_returnList);
 
   // Returns position of links
+
+  //This will be used by Esme and Lydia
+
   void getPosFromLinks(
       std::vector<QVector3D> &_linkPos,
       std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
@@ -66,6 +72,7 @@ private:
   // Position of the particle
   QVector3D m_pos;
 
+
   // Velocity of the particle (will be calculated based on forces and will
   // update the current position)
   QVector3D m_vel;
@@ -76,6 +83,8 @@ private:
   // Used to identify particle and is stored in the the linked particle list of
   // other particles. Unique to each particle.
   int m_ID;
+
+  float m_size;
 
   // Flag that can be sat to true when particle is meant to be split
   bool m_split;
@@ -90,6 +99,8 @@ private:
 
   // This variable could be made different to emulate different cell types
   unsigned int m_foodTreshold;
+
+  int m_particleTreshold;
 };
 
 #endif // LINKEDPARTICLE_H

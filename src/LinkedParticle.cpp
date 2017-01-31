@@ -9,6 +9,8 @@ LinkedParticle::LinkedParticle()
   , m_foodLevel(0)
   , m_foodTreshold(0)
   , m_pos(QVector3D(0,0,0))
+  , m_particleTreshold(3)
+  , m_size(0.1)
 {
   std::cout << "Calling Linked Particle Default Constructor" << std::endl;
 }
@@ -20,6 +22,8 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z)
   , m_foodLevel(0)
   , m_foodTreshold(100)
   , m_pos(QVector3D(_x, _y, _z))
+  , m_particleTreshold(3)
+  , m_size(0.1)
 {
   std::cout
       << "LinkedParticle Constructor with positions "
@@ -33,16 +37,16 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _link
   , m_foodLevel(0)
   , m_foodTreshold(100)
   , m_pos(QVector3D(_x, _y, _z))
+  , m_particleTreshold(3)
+  , m_size(0.1)
 {
-  std::cout
-      << "LinkedParticle Constructor passing a list of linked particles"
-      << std::endl;
+
 
   m_linkedParticles = _linkedParticles;
-  if (m_linkedParticles.size() < 3)
-  {
-    std::cout << "Warning not enough links in Particle when Constructed" << std::endl;
-  }
+  //if (m_linkedParticles.size() < 3)
+//  {
+//    std::cout << "Warning not enough links in Particle when Constructed" << std::endl;
+//  }
 }
 
 
@@ -60,6 +64,71 @@ void LinkedParticle::calculate()
 {
 }
 
+//alternative calculate function
+void LinkedParticle::split(QVector3D _lightPosition,std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
+{
+
+  std::random_device rd;
+  std::mt19937_64 gen(rd());
+
+  //triggered by reaching the threshold
+  //check length of linked list to see if the max particle treshold is reached
+  if(m_linkedParticles.size()>=m_particleTreshold)
+  {return;}
+
+  //create new particle
+
+    //creating list for new particlen including mother particle
+    std::vector<int> newLinkedParticles;
+    newLinkedParticles.push_back(m_ID);
+    std::uniform_real_distribution<float> distributionX(m_pos[0]+0.001,_lightPosition[0]);
+    std::uniform_real_distribution<float> distributionY(m_pos[1]+0.001,_lightPosition[1]);
+    std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightPosition[2]);
+
+
+
+
+
+  //place new particle on side in  direction of light
+
+    //loop
+    //choose random point on side of light
+
+    float x= distributionX(gen);
+    float y= distributionY(gen);
+    float z= distributionZ(gen);
+
+    //calculate vector
+    QVector3D direction;
+    direction[0]=m_pos[0]-x;
+    direction[1]=m_pos[1]-y;
+    direction[2]=m_pos[2]-z;
+
+    //place new particle in direction of vector mutilplied by size of particle
+    direction.normalize();
+
+    direction[0]*=m_size;
+    direction[1]*=m_size;
+    direction[2]*=m_size;
+    std::cout<<direction[0]<<","<<direction[1]<<","<<direction[2]<<std::endl;
+    x=m_pos[0]+direction[0];
+    y=m_pos[1]+direction[1];
+    z=m_pos[2]+direction[2];
+    //check for collision
+
+
+
+
+
+    // create new particle and add to particle list
+
+    _particleList.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x,y,z,newLinkedParticles)));
+    // add particle to links in original particle
+    int new_ID = _particleList[_particleList.size()-1 ]->getID();
+    m_linkedParticles.push_back(new_ID);
+
+
+}
 
 bool LinkedParticle::testForSplit()
 {

@@ -11,7 +11,7 @@ ParticleSystem::ParticleSystem()
 {
   std::cout<<"Calling Default Constructor\n";
   m_particleCount=0;
-  fill(4);
+  fill(1);
 }
 
 // For custom number of particles
@@ -29,10 +29,10 @@ void ParticleSystem::advance()
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    if(m_particles[i]->testForSplit())
-    {
-      m_particles[i]->split(m_particles);
-    }
+//    if(m_particles[i]->testForSplit())
+//    {
+//      m_particles[i]->split(m_particles);
+//    }
   }
 
   // Then moving
@@ -146,11 +146,12 @@ void ParticleSystem::splitRandomParticle()
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
-  m_particles[distribution(gen)]->split(m_particles);
-
-  QVector3D vec;
-  m_particles[m_particles.size() - 1]->getPos(vec);
+  QVector3D light(-100,- 100,0);
+  m_particles[distribution(gen)]->split(light,m_particles);
   m_particleCount++;
+//  QVector3D vec;
+//  m_particles[m_particles.size() - 1]->getPos(vec);
+
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)
