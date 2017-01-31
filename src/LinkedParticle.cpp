@@ -10,7 +10,7 @@ LinkedParticle::LinkedParticle()
   , m_foodTreshold(0)
   , m_pos(QVector3D(0,0,0))
   , m_particleTreshold(3)
-  , m_size(0.1)
+  , m_size(0.05)
 {
   std::cout << "Calling Linked Particle Default Constructor" << std::endl;
 }
@@ -23,7 +23,7 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z)
   , m_foodTreshold(100)
   , m_pos(QVector3D(_x, _y, _z))
   , m_particleTreshold(3)
-  , m_size(0.1)
+  , m_size(0.05)
 {
   std::cout
       << "LinkedParticle Constructor with positions "
@@ -38,7 +38,7 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _link
   , m_foodTreshold(100)
   , m_pos(QVector3D(_x, _y, _z))
   , m_particleTreshold(3)
-  , m_size(0.1)
+  , m_size(0.05)
 {
 
 
@@ -110,7 +110,6 @@ void LinkedParticle::split(QVector3D _lightPosition,std::vector<std::unique_ptr<
     direction[0]*=m_size;
     direction[1]*=m_size;
     direction[2]*=m_size;
-    std::cout<<direction[0]<<","<<direction[1]<<","<<direction[2]<<std::endl;
     x=m_pos[0]+direction[0];
     y=m_pos[1]+direction[1];
     z=m_pos[2]+direction[2];

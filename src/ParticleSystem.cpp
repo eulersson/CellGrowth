@@ -26,6 +26,7 @@ ParticleSystem::ParticleSystem(int _amount)
 // Calculates new forces on each particles and advects them
 void ParticleSystem::advance()
 {
+  m_particleCount=m_particles.size();
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
@@ -146,7 +147,7 @@ void ParticleSystem::splitRandomParticle()
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
-  QVector3D light(-100,- 100,0);
+  QVector3D light(-100*sin(m_particleCount*10),- 100,100+sin(m_particleCount*10));
   m_particles[distribution(gen)]->split(light,m_particles);
   m_particleCount++;
 //  QVector3D vec;
