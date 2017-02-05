@@ -20,7 +20,8 @@ int main(int argc, char *argv[])
 
   Window window;
   QSurfaceFormat fmt;
-  fmt.setProfile(QSurfaceFormat::CoreProfile);
+  //fmt.setProfile(QSurfaceFormat::CoreProfile);
+  //fmt.setVersion(3,3);
   fmt.setSamples(16);
   fmt.setSwapInterval(1);
   window.setFormat(fmt);

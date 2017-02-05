@@ -39,3 +39,6 @@ Makefile
 
 # Other files
 .DS_Store
+
+# Custom
+cells
