@@ -1,11 +1,15 @@
 //------------------------------------------------------------------------------
 /// @file main.cpp
+/// @author Lola Gille
+/// @author Glenn Nygard
+/// @author Lydia Kenton
+/// @author Esme Prior
+/// @author Valeria Marstrom
 /// @author Ramon Blanquer
 /// @version 0.0.1
 //------------------------------------------------------------------------------
 
 #include <QGuiApplication>
-#include <QPropertyAnimation>
 
 #include "Scene.h"
 #include "Window.h"
@@ -16,6 +20,7 @@ int main(int argc, char *argv[])
 
   Window window;
   QSurfaceFormat fmt;
+  fmt.setProfile(QSurfaceFormat::CoreProfile);
   fmt.setSamples(16);
   fmt.setSwapInterval(1);
   window.setFormat(fmt);
