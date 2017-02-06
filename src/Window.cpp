@@ -4,6 +4,10 @@
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
+// Qt
+#include <QKeyEvent>
+
+// Project
 #include "Window.h"
 
 Window::Window(QWindow *parent) : QOpenGLWindow(NoPartialUpdate, parent)
@@ -47,5 +51,11 @@ void Window::paintGL()
 
 void Window::resizeGL(int _w, int _h)
 {
-  qDebug("New window size: %d, %d", _w, _h);
+  scene()->windowResized(_w, _h);
+
+}
+
+void Window::keyPressEvent(QKeyEvent* ev)
+{
+  scene()->keyPressed(ev);
 }

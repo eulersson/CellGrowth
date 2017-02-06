@@ -1,7 +1,11 @@
-attribute vec3 position;
-attribute vec2 uv;
+#version 450 core
 
-varying vec2 texCoord;
+// Ins
+in vec3 position;
+in vec2 uv;
+
+// Outs
+out vec2 texCoord;
 
 void main(void)
 {

@@ -9,7 +9,6 @@ CONFIG -= app_bundle
 SOURCES += \
     src/main.cpp \
     src/AbstractScene.cpp \
-    src/Quad.cpp \
     src/Scene.cpp \
     src/Window.cpp
 
@@ -20,7 +19,6 @@ INCLUDEPATH += include
 
 HEADERS += \
     include/AbstractScene.h \
-    include/Quad.h \
     include/Scene.h \
     include/Window.h
 
@@ -30,5 +28,7 @@ OTHER_FILES += \
     README.md
 
 DISTFILES += \
+    shaders/particles.vert \
+    shaders/particles.frag \
     shaders/quad.vert \
     shaders/quad.frag
