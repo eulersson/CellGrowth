@@ -19,11 +19,20 @@ public:
   // position for particles are calculated
   void advance();
 
+  bool collision(int _levels,QVector3D _testPosition,std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
+  //test if two particles are colliding
+  bool testCollision(QVector3D _particle,float _size);
+
+  //returns a list with the Id's of the particle that need to be tested for collision
+  bool recursiveCollision(QVector3D _particle,std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
   // Computes the forces that act on this particle
   void calculate();
 
   //alternative calculate function
   void split(QVector3D _lightDirection,std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
+
+  // Computes all the relinking and creates a new particle
+  void split(std::vector<std::unique_ptr<LinkedParticle> > &_particleList);
 
   // Returns true if the particle is meant to be split
   bool testForSplit();
@@ -40,9 +49,7 @@ public:
   // Deletes a linked particle from the linked particle list, destroys the link
   void deleteLink(int _ID);
 
-  // Computes all the relinking and creates a new particle
-  void split(std::vector<std::unique_ptr<LinkedParticle> > &_particleList);
-
+  int findParent(std::vector<std::unique_ptr<LinkedParticle>> &_particleList);
   // Gives the number of links to a particle
   int getLinkCount();
 

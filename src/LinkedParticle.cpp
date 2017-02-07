@@ -10,7 +10,7 @@ LinkedParticle::LinkedParticle()
   , m_foodTreshold(0)
   , m_pos(QVector3D(0,0,0))
   , m_particleTreshold(3)
-  , m_size(0.05)
+  , m_size(0.1)
 {
   std::cout << "Calling Linked Particle Default Constructor" << std::endl;
 }
@@ -23,7 +23,7 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z)
   , m_foodTreshold(100)
   , m_pos(QVector3D(_x, _y, _z))
   , m_particleTreshold(3)
-  , m_size(0.05)
+  , m_size(0.1)
 {
   std::cout
       << "LinkedParticle Constructor with positions "
@@ -38,10 +38,10 @@ LinkedParticle::LinkedParticle(qreal _x,qreal _y,qreal _z,std::vector<int> _link
   , m_foodTreshold(100)
   , m_pos(QVector3D(_x, _y, _z))
   , m_particleTreshold(3)
-  , m_size(0.05)
+  , m_size(0.1)
 {
 
-
+  std::cout << "Calling Linked Particle Costume Constructor" << std::endl;
   m_linkedParticles = _linkedParticles;
   //if (m_linkedParticles.size() < 3)
 //  {
@@ -80,10 +80,13 @@ void LinkedParticle::split(QVector3D _lightPosition,std::vector<std::unique_ptr<
 
     //creating list for new particlen including mother particle
     std::vector<int> newLinkedParticles;
+    //appends mother ID
     newLinkedParticles.push_back(m_ID);
+
     std::uniform_real_distribution<float> distributionX(m_pos[0]+0.001,_lightPosition[0]);
     std::uniform_real_distribution<float> distributionY(m_pos[1]+0.001,_lightPosition[1]);
     std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightPosition[2]);
+
 
 
 
@@ -93,10 +96,18 @@ void LinkedParticle::split(QVector3D _lightPosition,std::vector<std::unique_ptr<
 
     //loop
     //choose random point on side of light
+    float x;
+    float y;
+    float z;
+    QVector3D pos;
+    do{
 
-    float x= distributionX(gen);
-    float y= distributionY(gen);
-    float z= distributionZ(gen);
+
+
+    x= distributionX(gen);
+    y= distributionY(gen);
+    z= distributionZ(gen);
+
 
     //calculate vector
     QVector3D direction;
@@ -115,11 +126,18 @@ void LinkedParticle::split(QVector3D _lightPosition,std::vector<std::unique_ptr<
     z=m_pos[2]+direction[2];
     //check for collision
 
+    pos[0]=x;
+    pos[1]=y;
+    pos[2]=z;
 
+
+    }
+    while(collision(2,pos,_particleList));
 
 
 
     // create new particle and add to particle list
+    //qDebug("%f ,// %f ,// %f", x, y, z);
 
     _particleList.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x,y,z,newLinkedParticles)));
     // add particle to links in original particle
@@ -187,6 +205,7 @@ void LinkedParticle::deleteLink(int _ID)
 // ID getter
 int LinkedParticle::getID()
 {
+
  return m_ID;
 }
 
@@ -275,10 +294,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<LinkedParticle>> &_partic
   qreal y=m_pos.y()+normal.y()/20;
   qreal z=m_pos.z()+normal.z()/20;
 
-  //std::cout<<"pos "<<x<<','<<y<<','<<z<<std::endl;
-  //std::cout<<m_pos.x()<<','<<m_pos.y()<<','<<m_pos.z()<<std::endl;
 
-  //std::cout<<relinkList.size()<<std::endl;
 
   relinkList.push_back(m_ID);
   //creating new particle
@@ -376,3 +392,88 @@ int LinkedParticle::getPosInPS(std::vector<std::unique_ptr<LinkedParticle>> &_pa
     }
   }
 }
+
+
+bool LinkedParticle::collision(int _levels,QVector3D _testPosition,std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
+{
+  int parent=getPosInPS(_particleList);
+  //std::cout<<parent<<std::endl;
+  std::vector<int> links;
+
+  for(int j=0;j<=_levels;j++)
+  {
+
+    _particleList[parent]->getLinks(links);
+    //for first particle
+    if(links.size()==0){break;}
+    if(parent==0){break;}
+     //find parent in particle system
+    for(int i=0;i<_particleList.size();i++)
+    {
+
+      if(_particleList[i]->getID()==links[0])
+      {
+        parent=i;
+        break;
+      }
+    }
+  }
+
+
+  return _particleList[parent]->recursiveCollision(_testPosition,_particleList);
+
+
+
+}
+
+
+
+
+bool LinkedParticle::testCollision(QVector3D _particle,float _size)
+{
+  float distance=_particle.distanceToPoint(m_pos);
+  if (distance<=_size/2)
+  {
+    //std::cout<<distance<<std::endl;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+
+}
+
+bool LinkedParticle::recursiveCollision(QVector3D _particle,std::vector<std::unique_ptr<LinkedParticle>> &_particleList)
+{
+  //tests for collision of the current particle
+  if(testCollision(_particle,m_size))
+  {
+     return true;
+  }
+
+  //if the particle doesn't have any children it will return
+  if(m_linkedParticles.size()<=1){return false;}
+
+  //starting from 1 as first particle is mother particle
+  for(int i=1;i<m_linkedParticles.size();i++)
+  {
+    //find particle in particle list
+    for(int j=0;j<_particleList.size();j++)
+    {
+      if(_particleList[j]->getID()==m_linkedParticles[i])
+      {
+        //call the function recursivly
+        if(_particleList[j]->recursiveCollision(_particle,_particleList))
+        {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+
+
+}
+
+
