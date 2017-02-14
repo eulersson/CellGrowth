@@ -1,55 +1,58 @@
-#include "Particle.h"
+////////////////////////////////////////////////////////////////////////////////
+/// @file Particle.cpp
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
+// Native
 #include <iostream>
 #include <random>
 
-//--------------------------------------------------------------------------------------------------------------------
-/// @file Particle.h
-/// @brief this class is a base particle class providing common methods and attributes
-/// @author Carola Gille, Ramon B *i don't know how to spell your last name*
-/// @version 1.0
-/// @date 14/02/17
-//--------------------------------------------------------------------------------------------------------------------
+// Project
+#include "Particle.h"
+
+
+// Initialize static member
+unsigned int Particle::m_ID_counter(0);
 
 
 Particle::Particle()
-  : m_ID(m_ID_counter++)
-  , m_foodLevel(0)
-  , m_foodTreshold(0)
-  , m_pos(QVector3D(0,0,0))
-  , m_size(0.1)
+    : m_pos(QVector3D(0,0,0))
+    , m_ID(m_ID_counter++)
+    , m_size(0.1)
+    , m_foodLevel(0)
+    , m_foodTreshold(0)
 {
-  std::cout << "Calling Particle Default Constructor" << std::endl;
+  qDebug("Particle default constructor.");
 }
 
 
-
-Particle::Particle(qreal _x,qreal _y,qreal _z)
-  : m_ID(m_ID_counter++)
-  , m_foodLevel(0)
-  , m_foodTreshold(100)
-  , m_pos(QVector3D(_x, _y, _z))
-  , m_size(0.1)
+Particle::Particle(qreal _x, qreal _y, qreal _z)
+    : m_pos(QVector3D(_x, _y, _z))
+    , m_ID(m_ID_counter++)
+    , m_size(0.1)
+    , m_foodLevel(0)
+    , m_foodTreshold(100)
 {
-  std::cout
-      << "Calling Particle Constructor with positions "
-      << _x << ", " << _y << ", " << _z
-      << std::endl;
+  qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
-Particle::Particle(qreal _x,qreal _y,qreal _z,std::vector<int> _connectedParticles)
-  : m_ID(m_ID_counter++)
-  , m_foodLevel(0)
-  , m_foodTreshold(100)
-  , m_pos(QVector3D(_x, _y, _z))
-  , m_size(0.1)
+Particle::Particle(qreal _x,
+    qreal _y,
+    qreal _z,
+    std::vector<unsigned int> _connectedParticles)
+    : m_pos(QVector3D(_x, _y, _z))
+    , m_ID(m_ID_counter++)
+    , m_size(0.1)
+    , m_foodLevel(0)
+    , m_foodTreshold(100)
 {
-
-  std::cout << "Calling Particle Custom Constructor" << std::endl;
+  qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
+         "particles", _x, _y, _z);
   m_connectedParticles = _connectedParticles;
-
 }
-
 
 
 void Particle::advance()
@@ -58,25 +61,12 @@ void Particle::advance()
 }
 
 
-
-
 void Particle::testForSplit()
 {
   if (m_foodLevel >= m_foodTreshold)
-  {
     m_split=true;
-  }
   else
-  {
     m_split=false;
-  }
-}
-
-void Particle::setPos(qreal _x, qreal _y, qreal _z)
-{
-  m_pos.setX(_x);
-  m_pos.setY(_y);
-  m_pos.setZ(_z);
 }
 
 
@@ -88,15 +78,23 @@ void Particle::getPos(QVector3D &_pos)
 }
 
 
-void Particle::connect(int _ID)
+void Particle::setPos(qreal _x, qreal _y, qreal _z)
+{
+  m_pos.setX(_x);
+  m_pos.setY(_y);
+  m_pos.setZ(_z);
+}
+
+
+void Particle::connect(unsigned int _ID)
 {
   m_connectedParticles.push_back(_ID);
 }
 
 
-void Particle::deleteConnection(int _ID)
+void Particle::deleteConnection(unsigned int _ID)
 {
-  for (unsigned int i = 0; i < m_connectedParticles.size(); i++)
+  for (size_t i = 0; i < m_connectedParticles.size(); i++)
   {
     if (m_connectedParticles[i] == _ID)
     {
@@ -104,22 +102,19 @@ void Particle::deleteConnection(int _ID)
     }
     break;
   }
-
 }
 
 
-int Particle::getID()
+unsigned int Particle::getID()
 {
-
  return m_ID;
 }
 
 
-void Particle::getConnectionsID(std::vector<int> &_returnList)
+void Particle::getConnectionsID(std::vector<unsigned int> &_returnList)
 {
   _returnList=m_connectedParticles;
 }
-
 
 
 int Particle::getConnectionCount()
@@ -130,29 +125,23 @@ int Particle::getConnectionCount()
 
 void Particle::getPosFromConnections(std::vector<QVector3D> &_linkPos,std::vector<std::unique_ptr<Particle>> &_particleList)
 {
-  //looks for the Id in the particleList of the particle system and than gets the position
-
+  // Looks for the Id in the particleList of the particle system and then gets the position
   _linkPos.clear();
   QVector3D tempVec;
 
-  for(unsigned int i =0; i<m_connectedParticles.size();i++)
+  for(size_t i = 0; i < m_connectedParticles.size(); i++)
   {
-    for(unsigned int j=0;j<_particleList.size();j++)
+    for(size_t j = 0; j < _particleList.size(); j++)
     {
-      if(_particleList[j]->getID()==m_connectedParticles[i])
+      if(_particleList[j]->getID() == m_connectedParticles[i])
       {
         _particleList[j]->getPos(tempVec);
         _linkPos.push_back(tempVec);
         break;
-
       }
     }
   }
 }
-
-
-// Initializes the counter (static member) to zero
-int Particle::m_ID_counter(0);
 
 
 int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
@@ -160,9 +149,7 @@ int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
   for (unsigned int i=0; i < _particleList.size(); i++)
   {
     if (_particleList[i]->getID() == m_ID)
-    {
       return i;
-    }
   }
+  return -1; // Return negative one if none is found.
 }
-s
