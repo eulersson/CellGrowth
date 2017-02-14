@@ -16,7 +16,9 @@ HEADERS += \
   include/ParticlesWindow.h \
   include/Viewport.h \
   include/LinkedParticle.h \
-  include/ParticleSystem.h
+  include/ParticleSystem.h \
+  include/GrowthParticle.h \
+  include/Particle.h
 
 SOURCES += \
   src/main.cpp \
@@ -24,7 +26,9 @@ SOURCES += \
   src/ParticlesWindow.cpp \
   src/helpers.cpp \
   src/LinkedParticle.cpp \
-  src/ParticleSystem.cpp
+  src/ParticleSystem.cpp \
+  src/GrowthParticle.cpp \
+  src/Particle.cpp
 
 OTHER_FILES = \
   shaders/vertex.glsl \
