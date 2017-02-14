@@ -6,3 +6,4 @@ Makefile
 Users/
 boilerplate.app/
 .DS_Store
+boilerplate.debug
