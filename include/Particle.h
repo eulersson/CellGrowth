@@ -14,7 +14,7 @@
 /// @author Carola Gille, Ramon B *i don't know how to spell your last name*
 /// @version 1.0
 /// @date 14/02/17
-
+//--------------------------------------------------------------------------------------------------------------------
 
 
 class Particle
@@ -43,10 +43,10 @@ public:
            std::vector<int> _connectedParticles);
 
   /// @brief adds the velocity to the position, could be overwritten if inherited
-  void advance();//overwrite this function in inherited class
+  virtual void advance();
 
   /// @brief Particle dependent function for splitting, needs to be overwritten if inherited
-  void split();//overwrite function in inheritade class
+  virtual void split() = 0;
 
   /// @brief tests if the particle has reached its food treshold and therefor needs to be split
   void testForSplit();
@@ -94,7 +94,8 @@ public:
   /// @param[in] list from the particle system holding all existing particles
   /// @param[out] index number of the the particle in the particle system
   int getPosInPS(std::vector<std::unique_ptr<Particle> > &_particleList);
-private:
+
+protected:
 
   /// @brief particles position
   QVector3D m_pos;

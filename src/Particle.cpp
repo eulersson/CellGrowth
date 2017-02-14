@@ -2,6 +2,14 @@
 #include <iostream>
 #include <random>
 
+//--------------------------------------------------------------------------------------------------------------------
+/// @file Particle.h
+/// @brief this class is a base particle class providing common methods and attributes
+/// @author Carola Gille, Ramon B *i don't know how to spell your last name*
+/// @version 1.0
+/// @date 14/02/17
+//--------------------------------------------------------------------------------------------------------------------
+
 
 Particle::Particle()
   : m_ID(m_ID_counter++)
@@ -50,10 +58,7 @@ void Particle::advance()
 }
 
 
-void Particle::split()
-{
 
-}
 
 void Particle::testForSplit()
 {
