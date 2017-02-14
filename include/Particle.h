@@ -104,13 +104,13 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns the number of connections.
-  /// @returns The number of connections.
+  /// @return The number of connections.
   //////////////////////////////////////////////////////////////////////////////
   int getConnectionCount();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns the particles ID.
-  /// @returns ID of the particle.
+  /// @return ID of the particle.
   //////////////////////////////////////////////////////////////////////////////
   unsigned int getID();
 
@@ -133,7 +133,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns the index of the particle in the particle system.
   /// @param[in] List from the particle system holding all existing particles.
-  /// @returns Index number of the the particle in the particle system.
+  /// @return Index number of the the particle in the particle system.
   //////////////////////////////////////////////////////////////////////////////
   int getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList);
 

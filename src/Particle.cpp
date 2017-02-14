@@ -99,8 +99,8 @@ void Particle::deleteConnection(unsigned int _ID)
     if (m_connectedParticles[i] == _ID)
     {
       m_connectedParticles.erase(m_connectedParticles.begin() + i);
+      break;
     }
-    break;
   }
 }
 
@@ -146,7 +146,7 @@ void Particle::getPosFromConnections(std::vector<QVector3D> &_linkPos,std::vecto
 
 int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
 {
-  for (unsigned int i=0; i < _particleList.size(); i++)
+  for (unsigned int i = 0; i < _particleList.size(); i++)
   {
     if (_particleList[i]->getID() == m_ID)
       return i;
