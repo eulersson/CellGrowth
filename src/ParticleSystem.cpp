@@ -11,7 +11,7 @@ ParticleSystem::ParticleSystem()
 {
   std::cout<<"Calling Default Constructor\n";
   m_particleCount=0;
-  fill(1);
+  fill(3);
 }
 
 // For custom number of particles
@@ -39,7 +39,7 @@ void ParticleSystem::advance()
   // Then moving
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate();
+    //m_particles[i]->calculate();
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -61,7 +61,7 @@ void ParticleSystem::fill(unsigned int _amount)
     qreal y=distribution(gen);
     qreal z=distribution(gen);
 
-    m_particles.push_back(std::unique_ptr<LinkedParticle> (new LinkedParticle(x, y, z)));
+    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     m_particleCount++;
   }
 
@@ -74,7 +74,7 @@ void ParticleSystem::fill(unsigned int _amount)
       for (unsigned int j = 0; j < m_particles.size(); j++)
       {
         if (j == i) { continue; }
-        m_particles[i]->link(m_particles[j]->getID());
+        m_particles[i]->connect(m_particles[j]->getID());
       }
     }
   }
@@ -89,7 +89,7 @@ void ParticleSystem::fill(unsigned int _amount)
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
 // the copy constructor triggered by the = (assignment) operator would trigger
 // a change of ownership. We do not want that. Read on unique_ptr and shared_ptr.
-LinkedParticle* ParticleSystem::get_particle(unsigned int _idx)
+Particle* ParticleSystem::get_particle(unsigned int _idx)
 {
   return m_particles[_idx].get();
 }
@@ -114,8 +114,8 @@ void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
   {
     // Gets the links from the current particle and than looks for the position
     // dependent on the particles ID
-    std::vector<int> tempList;
-    m_particles[i]->getLinks(tempList);
+    std::vector<unsigned int> tempList;
+    m_particles[i]->getConnectionsID(tempList);
     for (unsigned int j = 0; j < tempList.size(); j++)
     {
       // Adding the positions to the return list making every second item the
@@ -148,7 +148,10 @@ void ParticleSystem::splitRandomParticle()
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
   QVector3D light(-100*sin(m_particleCount*10),- 100,100+sin(m_particleCount*10));
-  m_particles[distribution(gen)]->split(light,m_particles);
+
+  // !!!!!!  ATTENTION SPLIT FUNCTION SHOULD BE BASED ON PARTICLE TYPE
+
+  m_particles[distribution(gen)]->split(m_particles);
   m_particleCount++;
 //  QVector3D vec;
 //  m_particles[m_particles.size() - 1]->getPos(vec);
@@ -157,8 +160,8 @@ void ParticleSystem::splitRandomParticle()
 
 void ParticleSystem::deleteParticle(unsigned int _index)
 {
-  std::vector<int> deleteList;
-  m_particles[_index]->getLinks(deleteList);
+  std::vector<unsigned int> deleteList;
+  m_particles[_index]->getConnectionsID(deleteList);
   int ID = m_particles[_index]->getID();
   for (unsigned int i = 0; i < deleteList.size(); i++)
   {
@@ -166,7 +169,7 @@ void ParticleSystem::deleteParticle(unsigned int _index)
      {
        if (m_particles[j]->getID() == deleteList[i])
        {
-         m_particles[j]->deleteLink(ID);
+         m_particles[j]->deleteConnection(ID);
          break;
        }
      }

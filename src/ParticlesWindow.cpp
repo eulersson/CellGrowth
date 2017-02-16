@@ -65,7 +65,7 @@ void ParticlesWindow::initialize()
   for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;
-    LinkedParticle* lp = m_ps.get_particle(i);
+    Particle* lp = m_ps.get_particle(i);
     lp->getPos(position);
     m_particlePosArray.push_back(position.x());
     m_particlePosArray.push_back(position.y());
@@ -201,7 +201,7 @@ void ParticlesWindow::update_stuff()
   for (unsigned int i = 0; i < m_numberOfParticles; i++)
   {
     QVector3D position;
-    LinkedParticle* lp = m_ps.get_particle(i);
+    Particle* lp = m_ps.get_particle(i);
     lp->getPos(position);
 
 

@@ -54,7 +54,6 @@ Particle::Particle(qreal _x,
   m_connectedParticles = _connectedParticles;
 }
 
-
 void Particle::advance()
 {
   m_pos += m_vel;
@@ -152,4 +151,20 @@ int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
       return i;
   }
   return -1; // Return negative one if none is found.
+}
+
+
+void Particle::split(QVector3D,std::vector<std::unique_ptr<Particle> >&)
+{
+
+}
+
+void Particle::split(std::vector<std::unique_ptr<Particle> >&)
+{
+
+}
+
+bool Particle::recursiveCollision(QVector3D,std::vector<std::unique_ptr<Particle> > &)
+{
+
 }

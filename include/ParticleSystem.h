@@ -6,6 +6,7 @@
 
 // Custom
 #include "LinkedParticle.h"
+#include "GrowthParticle.h"
 
 class ParticleSystem
 {
@@ -21,7 +22,7 @@ public:
   void fill(unsigned int _amount);
 
   // Retrieves the particle at that index, returns a pointer
-  LinkedParticle* get_particle(unsigned int _idx);
+  Particle *get_particle(unsigned int _idx);
 
   // Get the number of particles in the system
   unsigned int get_size();
@@ -35,7 +36,7 @@ public:
 
 private:
   // Stores the list of particles in the system
-  std::vector<std::unique_ptr<LinkedParticle>> m_particles;
+  std::vector<std::unique_ptr<Particle> > m_particles;
 
   // Keeps track of the number of particles
   unsigned int m_particleCount;

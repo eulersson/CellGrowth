@@ -20,6 +20,8 @@ class Particle
 {
 
 public:
+
+  ~Particle() = default;
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Default constructor placing particle at the origin.
   //////////////////////////////////////////////////////////////////////////////
@@ -55,14 +57,16 @@ public:
   /// @brief Adds the velocity to the position, could be overwritten if
   /// inherited if other custom behaviours would be needed.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void advance();
+  void advance();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split() = 0;
+  virtual void split(QVector3D,std::vector<std::unique_ptr<Particle> >&);
+  virtual void split(std::vector<std::unique_ptr<Particle> >&);
 
+  virtual bool recursiveCollision(QVector3D,std::vector<std::unique_ptr<Particle> >&);
   //////////////////////////////////////////////////////////////////////////////
   /// @brief checks if the particle has reached its food treshold and therefore
   /// needs to be split.
@@ -135,7 +139,7 @@ public:
   /// @param[in] List from the particle system holding all existing particles.
   /// @return Index number of the the particle in the particle system.
   //////////////////////////////////////////////////////////////////////////////
-  int getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList);
+  int getPosInPS(std::vector<std::unique_ptr<Particle> > &_particleList);
 
 protected:
   //////////////////////////////////////////////////////////////////////////////
