@@ -20,8 +20,6 @@ class Particle
 {
 
 public:
-
-  ~Particle() = default;
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Default constructor placing particle at the origin.
   //////////////////////////////////////////////////////////////////////////////
@@ -54,6 +52,11 @@ public:
       std::vector<unsigned int> _connectedParticles);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// @brief Default constructor.
+  //////////////////////////////////////////////////////////////////////////////
+  ~Particle() = default;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// @brief Adds the velocity to the position, could be overwritten if
   /// inherited if other custom behaviours would be needed.
   //////////////////////////////////////////////////////////////////////////////
@@ -63,10 +66,20 @@ public:
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(QVector3D,std::vector<std::unique_ptr<Particle> >&);
-  virtual void split(std::vector<std::unique_ptr<Particle> >&);
+  virtual void split(QVector3D, std::vector<std::unique_ptr<Particle>>&);
 
-  virtual bool recursiveCollision(QVector3D,std::vector<std::unique_ptr<Particle> >&);
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Particle dependent function for splitting, needs to be overwritten
+  /// on subclasses. Each type of particle will have a different one.
+  //////////////////////////////////////////////////////////////////////////////
+  virtual void split(std::vector<std::unique_ptr<Particle>>&);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Checks the current particle and its children recursively to see if
+  /// they collide with anything.
+  //////////////////////////////////////////////////////////////////////////////
+  virtual bool recursiveCollision(QVector3D,std::vector<std::unique_ptr<Particle>>&);
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief checks if the particle has reached its food treshold and therefore
   /// needs to be split.
