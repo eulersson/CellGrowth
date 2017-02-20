@@ -24,12 +24,14 @@ void Scene::initialize()
   // Projection matrix for the particles
     glViewport(0, 0, window()->width(), window()->height());
   m_projectionMatrix.setToIdentity();
-  m_projectionMatrix.perspective(70.0f, (float)window()->width()/(float)window()->height(), 0.01f, 100.0f);
+  m_projectionMatrix.perspective(89.0f, (float)window()->width()/(float)window()->height(), 0.01f, 100.0f);
 
   // Prepare for deferred rendering
   prepareQuad();
   prepareParticles();
   setupFBO();
+
+  qDebug("%d", m_ps.get_size());
 }
 
 void Scene::paint()
@@ -96,15 +98,6 @@ void Scene::prepareQuad()
 
 void Scene::prepareParticles()
 {
-  static const float particles[] = {
-  // Position              Radius
-     4.0f,  2.0f, -9.0f,   2.0f,
-     2.0f,  5.0f, -19.0f,  2.0f,
-    10.0f,  0.0f, -29.0f,  2.0f,
-     0.0f, -1.5f, -3.0f,   2.0f,
-    -3.0f,  0.0f, -9.0f,   2.0f
-  };
-
   m_part_program = new QOpenGLShaderProgram(this);
   m_part_program->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/particles.vert");
   m_part_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/particles.frag");
@@ -114,21 +107,9 @@ void Scene::prepareParticles()
 
   m_part_vao->create();
   m_part_vbo.create();
-  m_part_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+  m_part_vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-  m_part_vao->bind();
-  m_part_vbo.bind();
-
-  m_part_vbo.allocate(particles, (5 * 3 + 5 * 1) * sizeof(GLfloat));
-
-  m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 4 * sizeof(GLfloat));
-  m_part_program->enableAttributeArray("position");
-
-  m_part_program->setAttributeBuffer("radius", GL_FLOAT, 3 * sizeof(GLfloat), 1, 4 * sizeof(GLfloat));
-  m_part_program->enableAttributeArray("radius");
-
-  m_part_vbo.release();
-  m_part_vao->release();
+  sendParticleDataToOpenGL();
 }
 
 void Scene::drawQuad()
@@ -150,7 +131,7 @@ void Scene::drawParticles()
   m_part_vao->bind();
   glEnable(GL_POINT_SPRITE);
   glEnable(GL_PROGRAM_POINT_SIZE);
-  glDrawArrays(GL_POINTS, 0, 5);
+  glDrawArrays(GL_POINTS, 0, m_ps.get_size());
   m_part_vao->release();
   m_part_program->release();
 }
@@ -180,6 +161,8 @@ void Scene::keyPressed(QKeyEvent *ev)
   case Qt::Key_P:
     m_activeRenderPassIndex = m_positionShadingIndex;
     break;
+  case Qt::Key_Space:
+    updateParticleSystem();
   default:
     break;
   }
@@ -188,4 +171,38 @@ void Scene::keyPressed(QKeyEvent *ev)
 void Scene::windowResized(int _w, int _h)
 {
   qDebug("Window rezised to %d and %d", _w, _h);
+}
+
+void Scene::updateParticleSystem()
+{
+  m_ps.splitRandomParticle();
+  m_ps.advance();
+  sendParticleDataToOpenGL();
+}
+
+void Scene::sendParticleDataToOpenGL()
+{
+  // Tell particle system to populate us a flattened float array for OpenGL
+  m_ps.packageDataForDrawing(m_packagedParticleData);
+
+  // Print x, y, z, radius of each particle for debugging. This is the actual
+  // data that gets sent to OpenGL.
+  for_each(m_packagedParticleData.begin(), m_packagedParticleData.end(), [](float f)
+  {
+    qDebug("%f", f);
+  });
+
+  m_part_vao->bind();
+  m_part_vbo.bind();
+
+  m_part_vbo.allocate(&m_packagedParticleData[0], m_ps.get_size() * 4 * sizeof(GLfloat));
+
+  m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 4 * sizeof(GLfloat));
+  m_part_program->enableAttributeArray("position");
+
+  m_part_program->setAttributeBuffer("radius", GL_FLOAT, 3 * sizeof(GLfloat), 1, 4 * sizeof(GLfloat));
+  m_part_program->enableAttributeArray("radius");
+
+  m_part_vbo.release();
+  m_part_vao->release();
 }

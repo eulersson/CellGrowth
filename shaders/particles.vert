@@ -17,10 +17,13 @@ const float radius_multiplier = 40.0;
 // The further the particle is the smaller the bitmap is drawn
 const float radius_distance_decay = 0.2;
 
+
+
 void main(void)
-{
+{    
     worldPosition = position;
     partRadius = radius;
+
 
     gl_Position = ProjectionMatrix * vec4(position, 1.0);
     gl_PointSize = radius_multiplier * radius / (radius_distance_decay * abs(position.z));

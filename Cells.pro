@@ -9,6 +9,10 @@ CONFIG -= app_bundle
 SOURCES += \
     src/main.cpp \
     src/AbstractScene.cpp \
+    src/GrowthParticle.cpp \
+    src/LinkedParticle.cpp \
+    src/Particle.cpp \
+    src/ParticleSystem.cpp \
     src/Scene.cpp \
     src/Window.cpp
 
@@ -19,6 +23,10 @@ INCLUDEPATH += include
 
 HEADERS += \
     include/AbstractScene.h \
+    include/GrowthParticle.h \
+    include/LinkedParticle.h \
+    include/Particle.h \
+    include/ParticleSystem.h \
     include/Scene.h \
     include/Window.h
 
