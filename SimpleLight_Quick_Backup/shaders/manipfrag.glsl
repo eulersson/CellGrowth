@@ -7,6 +7,7 @@ in vec3 vPos;
 out vec4 fColour;
 
 uniform vec3 baseColour;
+uniform vec3 renderColour;
 uniform bool backRender=false;
 
 const vec3 AMBIENT_LIGHT=vec3(0.3,0.3,0.3);
@@ -24,23 +25,23 @@ void main() {
     vec3 n = vNorm;
 //    // diffuse coefficient (Kd) and color (diffuseColor)
     float Kd = max(0.0, dot(lightDir, n));
-    vec3 diffuseColor = vec3(0.8);
+    vec3 diffuseColor = vec3(.4);
 
     // Currently setting fragment to plain colour
-    vec3 renderColour = Kd * diffuseColor;
-    renderColour+=AMBIENT_LIGHT;
+    vec3 finalColour = Kd * diffuseColor;
+    finalColour+=renderColour;
 
 
     // Must be last part of shading
     if(backRender)
     {
-        renderColour=baseColour/255;
+        finalColour=baseColour/255;
     }
 
 
 
     // If you want, output N as color to see that the normals are right :)
     //gl_FragColor = vec4(color, 1.0);
-    fColour = vec4(renderColour, 1.0);
+    fColour = vec4(finalColour, 1.0);
 
 }

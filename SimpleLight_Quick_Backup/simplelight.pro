@@ -11,7 +11,6 @@ HEADERS +=  \
         headers/openglwindow.h \
         headers/manipulator.h \
         headers/camera.h \
-        headers/arcball.h \
         headers/pointlight.h \
         headers/input.h \
         headers/viewport.h
@@ -21,7 +20,6 @@ SOURCES += \
         src/main.cpp \
         src/openglwindow.cpp \
         src/manipulator.cpp \
-        src/input.cpp \
         src/viewport.cpp
 
 OTHER_FILES += \

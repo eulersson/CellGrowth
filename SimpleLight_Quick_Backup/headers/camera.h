@@ -1,16 +1,14 @@
-#ifndef CAMERA_H
-#define CAMERA_H
-
 #pragma once
 
 // Std. Includes
 #include <vector>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 // QT
 #include <QVector3D>
-#include <QMatrix4x4>
-#include <QtMath>
 
 
 
@@ -24,7 +22,7 @@ enum Camera_Movement {
 };
 
 // Default camera values
-const GLfloat YAW        =  -90.0f;
+const GLfloat YAW        = -90.0f;
 const GLfloat PITCH      =  0.0f;
 const GLfloat SPEED      =  0.2f;
 const GLfloat SENSITIVTY =  0.25f;
@@ -36,11 +34,11 @@ class Camera
 {
 public:
     // Camera Attributes
-    QVector3D Position;
-    QVector3D Front;
-    QVector3D Up;
-    QVector3D Right;
-    QVector3D WorldUp;
+    glm::vec3 Position;
+    glm::vec3 Front;
+    glm::vec3 Up;
+    glm::vec3 Right;
+    glm::vec3 WorldUp;
     // Eular Angles
     GLfloat Yaw; // Left and right
     GLfloat Pitch; // Up and down
@@ -50,9 +48,9 @@ public:
     GLfloat Zoom;
 
     // Constructor with vectors
-    Camera(QVector3D position = QVector3D(0.0f, 0.0f, 0.0f), QVector3D up = QVector3D(0.0f, 1.0f, 0.0f), GLfloat yaw = YAW,
+    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), GLfloat yaw = YAW,
            GLfloat pitch = PITCH) :
-        Front(QVector3D(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), Zoom(ZOOM)
+        Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), Zoom(ZOOM)
     {
         this->Position = position;
         this->WorldUp = up;
@@ -60,35 +58,23 @@ public:
         this->Pitch = pitch;
         this->updateCameraVectors();
     }
-
     // Constructor with scalar values
-    Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) : Front(QVector3D(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), Zoom(ZOOM)
+    Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVTY), Zoom(ZOOM)
     {
-        this->Position = QVector3D(posX, posY, posZ);
-        this->WorldUp = QVector3D(upX, upY, upZ);
+        this->Position = glm::vec3(posX, posY, posZ);
+        this->WorldUp = glm::vec3(upX, upY, upZ);
         this->Yaw = yaw;
         this->Pitch = pitch;
         this->updateCameraVectors();
     }
 
-
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-    QMatrix4x4 GetViewMatrix()
+    glm::mat4 GetViewMatrix()
     {
-        // Create and instantiate matrix
-        QMatrix4x4 view;
-        view.setToIdentity();
-
-        QVector3D center(0,0,0); //(this->Position + this->Front)
-        center = (this->Position + this->Front);
-        view.lookAt(this->Position, center , this->Up);
-        return view;
+        return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
     }
 
-
-
-
-    QVector3D getPosition() { return Position; }
+    QVector3D getPosition() { return QVector3D(Position.x, Position.y, Position.z); }
 
 
     GLfloat getPitch() { return this->Pitch; }
@@ -105,7 +91,6 @@ public:
             this->Position -= this->Right * velocity;
         if (direction == RIGHT)
             this->Position += this->Right * velocity;
-
     }
 
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -141,32 +126,21 @@ public:
             this->Zoom = 45.0f;
     }
 
-
-
 private:
     // Calculates the front vector from the Camera's (updated) Eular Angles
     void updateCameraVectors()
     {
 
-
         // Calculate the new Front vector
-        QVector3D front (cos(qDegreesToRadians(this->Yaw)) * cos(qDegreesToRadians(this->Pitch)),
-                         sin(qDegreesToRadians(this->Pitch)),
-                         sin(qDegreesToRadians(this->Yaw)) * cos(qDegreesToRadians(this->Pitch)));
-//        front.x() = cos(qDegreesToRadians(this->Yaw)) * cos(qDegreesToRadians(this->Pitch));
-//        front.y() = sin(qDegreesToRadians(this->Pitch));
-//        front.z() = sin(qDegreesToRadians(this->Yaw)) * cos(qDegreesToRadians(this->Pitch));
-        this->Front = front.normalized();
+        glm::vec3 front;
+        front.x = cos(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
+        front.y = sin(glm::radians(this->Pitch));
+        front.z = sin(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
+        this->Front = glm::normalize(front);
         // Also re-calculate the Right and Up vector
-        QVector3D right   = QVector3D::crossProduct(this->Front,this->WorldUp);
-        QVector3D up      = QVector3D::crossProduct(this->Right,this->Front);
-//        this->Right = glm::normalize(glm::cross(this->Front, this->WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-//        this->Up    = glm::normalize(glm::cross(this->Right, this->Front));
-        this->Right       = right.normalized();
-        this->Up          = up.normalized();
+        this->Right = glm::normalize(glm::cross(this->Front, this->WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        this->Up    = glm::normalize(glm::cross(this->Right, this->Front));
 
 
     }
 };
-
-#endif

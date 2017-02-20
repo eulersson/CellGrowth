@@ -22,13 +22,12 @@ const GLfloat SENSITIVITY=0.04f;//0.14f;
 Manipulator::Manipulator(QVector3D _position, QOpenGLShaderProgram *_lightProgram)
 {
 
-    position=_position;
     m_lightProgram=_lightProgram;
 
 }
 
 
-void Manipulator::setupVBO(std::vector<QVector3D> vertices, std::vector<QVector3D> normals, Arrow &arrow)
+void Manipulator::setupVBO(std::vector<QVector3D> &vertices, std::vector<QVector3D> &normals, Arrow &arrow)
 {
 
     // OpenGL wants a flat array of GLfloats
@@ -67,6 +66,8 @@ void Manipulator::setupVBO(std::vector<QVector3D> vertices, std::vector<QVector3
 
     arrow.vbo=vbo;
 
+    //arrows.push_back(arrow);
+
 
 
 }
@@ -74,6 +75,8 @@ void Manipulator::setupVBO(std::vector<QVector3D> vertices, std::vector<QVector3
 void Manipulator::setupVAO(Arrow &arrow,QOpenGLVertexArrayObject *vao)
 {
 
+//    QOpenGLVertexArrayObject *vao;
+//    vao = new QOpenGLVertexArrayObject(this);
 
     // Vertex Array Object
     vao->create();
@@ -83,6 +86,7 @@ void Manipulator::setupVAO(Arrow &arrow,QOpenGLVertexArrayObject *vao)
     // First number states where to start (offset)
     // Second number states the size of the data to get (position = x,y,z = 3 values)
     // Third number is stride. Must be multiplied with sizeof float for some reason
+
     m_lightProgram->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3, 6*sizeof(GL_FLOAT));
     m_lightProgram->enableAttributeArray("posAttr");
 
@@ -113,20 +117,20 @@ void Manipulator::createGeometry(QOpenGLContext *context, std::vector<QVector3D>
 {
     // X ARROW
     QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject(context);
-    createArrow(vao_x, QVector3D(1.2,0,0), uColourVec[0], 0);
+    createArrow(vao_x, QVector3D(.4,0,0), uColourVec[0], 0);
 
     // Y ARROW
     QOpenGLVertexArrayObject *vao_y = new QOpenGLVertexArrayObject(context);
-    createArrow(vao_y, QVector3D(0,1.2,0), uColourVec[1], 1);
+    createArrow(vao_y, QVector3D(0,.4,0), uColourVec[1], 1);
 
     // Z ARROW
     QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject(context);
-    createArrow(vao_z, QVector3D(0,0,1.2), uColourVec[2], 2);
+    createArrow(vao_z, QVector3D(0,0,.4), uColourVec[2], 2);
 
 
 }
 
-void Manipulator::createArrow(QOpenGLVertexArrayObject *vao, QVector3D offsetPos, QVector3D uniqueColour, int axis)
+void Manipulator::createArrow(QOpenGLVertexArrayObject *vao, QVector3D _position, QVector3D uniqueColour, int axis)
 {
 
 
@@ -134,15 +138,25 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *vao, QVector3D offsetPos
     std::vector<QVector3D> normals;
     std::vector<QVector3D> vertices;
 
-    unsigned int sectors = 20;
-    float radius = 0.2f;
-    float height = 0.8f;
+//    unsigned int rings = 5;
+    unsigned int sectors = 80;
 
-    offsetPos+=position;
+    float radius = 0.2f;
+
+    float height = 1.0f;
+
+//    float const R = 1./(float)(rings-1);
+//    float const S = 1./(float)(sectors-1);
+
 
 
 
     QVector3D topPoint;
+
+
+    //QVector3D topPoint (_position.x(),_position.y()+height,_position.z());
+
+
     for(unsigned int i = 0; i < sectors; i++) {
 
         float angle = (2*M_PI) * ((float)i / (float)sectors);
@@ -165,36 +179,36 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *vao, QVector3D offsetPos
 
         switch(axis){
         case DIRECTION_X:
-            topPoint = QVector3D(offsetPos.x()+height,offsetPos.y(),offsetPos.z());
-            x = 0+offsetPos.x();
-            y = s+offsetPos.y();
-            z = c+offsetPos.z();
+            topPoint = QVector3D(_position.x()+height,_position.y(),_position.z());
+            x = 0+_position.x();
+            y = s+_position.y();
+            z = c+_position.z();
 
-            x2 = 0+offsetPos.x();
-            y2 = s2+offsetPos.y();
-            z2 = c2+offsetPos.z();
+            x2 = 0+_position.x();
+            y2 = s2+_position.y();
+            z2 = c2+_position.z();
             break;
 
         case DIRECTION_Y:
-            topPoint = QVector3D(offsetPos.x(),offsetPos.y()+height,offsetPos.z());
-            x = c+offsetPos.x();
-            y = 0+offsetPos.y();
-            z = s+offsetPos.z();
+            topPoint = QVector3D(_position.x(),_position.y()+height,_position.z());
+            x = c+_position.x();
+            y = 0+_position.y();
+            z = s+_position.z();
 
-            x2 = c2+offsetPos.x();
-            y2 = 0+offsetPos.y();
-            z2 = s2+offsetPos.z();
+            x2 = c2+_position.x();
+            y2 = 0+_position.y();
+            z2 = s2+_position.z();
             break;
 
         case DIRECTION_Z:
-            topPoint = QVector3D(offsetPos.x(),offsetPos.y(),offsetPos.z()+height);
-            x = s+offsetPos.x();
-            y = c+offsetPos.y();
-            z = 0+offsetPos.z();
+            topPoint = QVector3D(_position.x(),_position.y(),_position.z()+height);
+            x = s+_position.x();
+            y = c+_position.y();
+            z = 0+_position.z();
 
-            x2 = s2+offsetPos.x();
-            y2 = c2+offsetPos.y();
-            z2 = 0+offsetPos.z();
+            x2 = s2+_position.x();
+            y2 = c2+_position.y();
+            z2 = 0+_position.z();
             break;
 
 
@@ -240,6 +254,7 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *vao, QVector3D offsetPos
     arrow.axis=axis;
     arrow.numberOfPoints=vertices.size()+normals.size();
     arrow.uniqueColour=uniqueColour;
+    arrow.renderColour=QVector3D(0.4,0.4,0.4);
 
     setupVBO(vertices, normals, arrow);
     setupVAO(arrow, vao);
@@ -275,6 +290,16 @@ void Manipulator::setClicked(QVector3D uColourIdentity, bool state)
 }
 
 
+/* @brief Check which axis is being manipulated, and then take
+ * mouse movement to offset manipulator
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 QVector3D Manipulator::processMouseMovement(float offsetx, float offsety, float offsetz, QVector3D currentPos)
 {
     for(int i=0;i<arrows.size();i++)
@@ -282,6 +307,8 @@ QVector3D Manipulator::processMouseMovement(float offsetx, float offsety, float 
 
         if(arrows[i].clicked)
         {
+
+            //clicked=true;
             switch(arrows[i].axis)
             {
 
@@ -319,9 +346,7 @@ void Manipulator::draw()
 {
     m_lightProgram->bind();
     QVector3D baseColour(0.0f, 0.0f, 1.0f);
-
-
-
+    m_lightProgram->setUniformValue("baseColour", baseColour);
     for(int i=0;i<arrows.size();i++)
     {
 
@@ -329,24 +354,6 @@ void Manipulator::draw()
         arrow.vao->bind();
         m_lightProgram->setUniformValue("backRender", false);
         m_lightProgram->setUniformValue("renderColour", {arrow.renderColour.x(),arrow.renderColour.y(),arrow.renderColour.z()});
-
-        switch(arrow.axis)
-        {
-        case DIRECTION_X:
-            baseColour= QVector3D(0.2f, 0.0f, 0.0f);
-            m_lightProgram->setUniformValue("baseColour", baseColour);
-            break;
-
-        case DIRECTION_Y:
-            baseColour= QVector3D(0.0f, 0.2f, 0.0f);
-            m_lightProgram->setUniformValue("baseColour", baseColour);
-            break;
-
-        case DIRECTION_Z:
-            baseColour= QVector3D(0.0f, 0.0f, 0.2f);
-            m_lightProgram->setUniformValue("baseColour", baseColour);
-            break;
-        }
 
 
         glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints); // Previously GL_POINTS
@@ -360,11 +367,7 @@ void Manipulator::draw()
 
 void Manipulator::drawBackBuffer()
 {
-    m_lightProgram->bind();
     m_lightProgram->setUniformValue("backRender", true);
-
-
-
     for(int i=0;i<arrows.size();i++)
     {
 
@@ -397,11 +400,11 @@ void Manipulator::setHover(int axis)
     {
         if(axis==arrows[i].axis)
         {
-            arrows[i].renderColour=QVector3D(.6,.6,.6);
+            arrows[i].renderColour=QVector3D(.8,.4,.4);
         }
         else
         {
-            arrows[i].renderColour=QVector3D(.2,.2,.2);
+            arrows[i].renderColour=QVector3D(.4,.4,.4);
         }
 
     }
@@ -413,10 +416,13 @@ void Manipulator::setHover(int axis)
 int Manipulator::compareUniqueColour(QVector3D _colour)
 {
 
+    //if(pixel[0]==(int)c.x()*255 && pixel[1]==(int)c.y()*255 && pixel[2]==(int)c.z()*255)
+
     for(int i=0;i<arrows.size();i++)
     {
         if(_colour == arrows[i].uniqueColour)
         {
+            //qDebug() << QString::number(pixel[0]);
             return arrows[i].axis;
 
         }
