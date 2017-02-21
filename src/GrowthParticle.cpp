@@ -24,6 +24,11 @@ GrowthParticle::GrowthParticle(
          "particles", _x, _y, _z);
 }
 
+void GrowthParticle::calculate()
+{
+
+}
+
 void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_ptr<Particle> > &_particleList)
 {
   std::random_device rd;

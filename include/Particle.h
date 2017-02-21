@@ -63,22 +63,30 @@ public:
   void advance();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Particle dependent function for splitting, needs to be overwritten
-  /// on subclasses. Each type of particle will have a different one.
+  /// @brief Calculates the new velocity of the particle based on the forces
+  /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(QVector3D, std::vector<std::unique_ptr<Particle>>&);
+  virtual void calculate() {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(std::vector<std::unique_ptr<Particle>>&);
+  virtual void split(QVector3D, std::vector<std::unique_ptr<Particle>>&) {}
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Particle dependent function for splitting, needs to be overwritten
+  /// on subclasses. Each type of particle will have a different one.
+  //////////////////////////////////////////////////////////////////////////////
+  virtual void split(std::vector<std::unique_ptr<Particle>>&) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
   /// they collide with anything.
   //////////////////////////////////////////////////////////////////////////////
-  virtual bool recursiveCollision(QVector3D,std::vector<std::unique_ptr<Particle>>&);
+  virtual bool recursiveCollision(
+      QVector3D,
+      std::vector<std::unique_ptr<Particle>>&) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief checks if the particle has reached its food treshold and therefore
