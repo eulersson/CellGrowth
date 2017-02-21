@@ -163,17 +163,17 @@ int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
 }
 
 
-void Particle::split(QVector3D,std::vector<std::unique_ptr<Particle> >&)
+void Particle::split(QVector3D,std::vector<std::unique_ptr<Particle>>&)
 {
 
 }
 
-void Particle::split(std::vector<std::unique_ptr<Particle> >&)
+void Particle::split(std::vector<std::unique_ptr<Particle>>&)
 {
 
 }
 
-bool Particle::recursiveCollision(QVector3D,std::vector<std::unique_ptr<Particle> > &)
+bool Particle::recursiveCollision(QVector3D,std::vector<std::unique_ptr<Particle>> &)
 {
 
 }

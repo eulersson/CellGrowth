@@ -90,13 +90,13 @@ void ParticleSystem::fill(unsigned int _amount)
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
 // the copy constructor triggered by the = (assignment) operator would trigger
 // a change of ownership. We do not want that. Read on unique_ptr and shared_ptr.
-Particle* ParticleSystem::get_particle(unsigned int _idx)
+Particle* ParticleSystem::getParticle(unsigned int _idx)
 {
   return m_particles[_idx].get();
 }
 
 // Gets the total number of particles
-unsigned int ParticleSystem::get_size()
+unsigned int ParticleSystem::getSize()
 {
   // Changed this to query the size
   return m_particles.size();

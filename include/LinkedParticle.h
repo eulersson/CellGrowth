@@ -38,7 +38,7 @@ public:
   /// @param[in] _x x Position of the particle.
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
-  /// @param[in] _connectedParticles List of particle IDs to be connected to
+  /// @param[in] _linkedParticles List of particle IDs to be connected to
   /// the newly generated particle.
   //////////////////////////////////////////////////////////////////////////////
   LinkedParticle(qreal _x,

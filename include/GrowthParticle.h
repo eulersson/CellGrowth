@@ -58,6 +58,7 @@ private:
   unsigned int m_childrenTreshold;
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Needs documentation.
+  /// @param[in] _levels Needs documentation.
   /// @param[in] _testPosition Needs documentation.
   /// @param[in] _particleList Needs documentation.
   /// @returns Needs documentation.

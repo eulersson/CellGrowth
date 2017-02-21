@@ -111,9 +111,7 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the Particles position
-  /// @param[in] _x New x position of the Particle
-  /// @param[in] _y New y position of the Particle
-  /// @param[in] _z New z position of the Particle
+  /// @param[in] _radius Size of the particle.
   //////////////////////////////////////////////////////////////////////////////
   void setRadius(float _radius);
 
@@ -163,10 +161,11 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns the index of the particle in the particle system.
-  /// @param[in] List from the particle system holding all existing particles.
+  /// @param[in] _particleList List from the particle system holding all
+  /// existing particles.
   /// @return Index number of the the particle in the particle system.
   //////////////////////////////////////////////////////////////////////////////
-  int getPosInPS(std::vector<std::unique_ptr<Particle> > &_particleList);
+  int getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList);
 
 protected:
   //////////////////////////////////////////////////////////////////////////////

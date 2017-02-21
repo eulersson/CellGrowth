@@ -31,7 +31,7 @@ void Scene::initialize()
   prepareParticles();
   setupFBO();
 
-  qDebug("%d", m_ps.get_size());
+  qDebug("%d", m_ps.getSize());
 }
 
 void Scene::paint()
@@ -131,7 +131,7 @@ void Scene::drawParticles()
   m_part_vao->bind();
   glEnable(GL_POINT_SPRITE);
   glEnable(GL_PROGRAM_POINT_SIZE);
-  glDrawArrays(GL_POINTS, 0, m_ps.get_size());
+  glDrawArrays(GL_POINTS, 0, m_ps.getSize());
   m_part_vao->release();
   m_part_program->release();
 }
@@ -195,7 +195,7 @@ void Scene::sendParticleDataToOpenGL()
   m_part_vao->bind();
   m_part_vbo.bind();
 
-  m_part_vbo.allocate(&m_packagedParticleData[0], m_ps.get_size() * 4 * sizeof(GLfloat));
+  m_part_vbo.allocate(&m_packagedParticleData[0], m_ps.getSize() * 4 * sizeof(GLfloat));
 
   m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 4 * sizeof(GLfloat));
   m_part_program->enableAttributeArray("position");
