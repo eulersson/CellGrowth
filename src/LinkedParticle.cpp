@@ -11,7 +11,7 @@ LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z):Particle(_x,_y,_z)
 {
-   qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
@@ -21,16 +21,35 @@ LinkedParticle::LinkedParticle(qreal _x,
                                std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
 {
 
-  qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+  //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
+    //     "particles", _x, _y, _z);
 
 }
 
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate()
+void LinkedParticle::calculate(QVector3D _newParticleCentre)
 {
+
+  //COHERE
+  unsigned int speed = 1000;
+  QVector3D cohesion = _newParticleCentre - m_pos;
+  //std::cout<<"Distance:"<<cohesion.x()<<" "<<cohesion.y()<<" "<<cohesion.z()<<std::endl;
+  //std::cout<<"Velocity: "<<m_vel.x()<<" "<<m_vel.y()<<" "<<m_vel.z()<<std::endl;
+
+  if((_newParticleCentre.x()-m_pos.x() <= 1)
+           && (_newParticleCentre.y()-m_pos.y() <= 1)
+           && (_newParticleCentre.z()-m_pos.z() <= 1))
+  {
+      m_vel/=1.05;
+  }
+
+    cohesion/=speed;
+
+    m_vel += cohesion;
+
+
 }
 
 

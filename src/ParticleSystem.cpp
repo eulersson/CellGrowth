@@ -12,6 +12,7 @@ ParticleSystem::ParticleSystem()
   qDebug("Default constructor called");
   m_particleCount=0;
   fill(3);
+  m_newParticleCentre = calculateParticleCentre();
 }
 
 // For custom number of particlesm_packagedParticleData
@@ -20,6 +21,7 @@ ParticleSystem::ParticleSystem(int _amount)
   qDebug("Custom constructor called");
   m_particleCount=0;
   fill(_amount);
+  m_newParticleCentre = calculateParticleCentre();
 
 }
 
@@ -39,7 +41,7 @@ void ParticleSystem::advance()
   // Then moving
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    //m_particles[i]->calculate();
+    m_particles[i]->calculate(m_newParticleCentre);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -156,6 +158,7 @@ void ParticleSystem::splitRandomParticle()
   m_particleCount++;
 //  QVector3D vec;
 //  m_particles[m_particles.size() - 1]->getPos(vec);
+  m_newParticleCentre = calculateParticleCentre();
 
 }
 
@@ -195,3 +198,21 @@ void ParticleSystem::packageDataForDrawing(std::vector<float> &_packagedData)
   });
 }
 
+QVector3D ParticleSystem::calculateParticleCentre()
+{
+  m_particleCentre.setX(0);
+  m_particleCentre.setY(0);
+  m_particleCentre.setZ(0);
+
+  for (auto &particle : m_particles)
+  {
+    QVector3D particlePosition = particle->getPosition();
+    std::cout<<"ParticlePosition: "<<particlePosition.x()<<" "<<particlePosition.y()<<" "<<particlePosition.z()<<std::endl;
+    m_particleCentre += particlePosition;
+
+  }
+
+  m_particleCentre = m_particleCentre/(m_particles.size());
+  std::cout<<"ParticleCentre: "<<m_particleCentre.x()<<" "<<m_particleCentre.y()<<" "<<m_particleCentre.z()<<std::endl;
+  return m_particleCentre;
+}

@@ -31,7 +31,7 @@ void Scene::initialize()
   prepareParticles();
   setupFBO();
 
-  qDebug("%d", m_ps.getSize());
+  //qDebug("%d", m_ps.getSize());
 }
 
 void Scene::paint()
@@ -49,6 +49,7 @@ void Scene::paint()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, m_FBO->takeTexture(1));
     drawQuad();
+    updateParticleSystem();
 }
 
 void Scene::prepareQuad()
@@ -162,7 +163,8 @@ void Scene::keyPressed(QKeyEvent *ev)
     m_activeRenderPassIndex = m_positionShadingIndex;
     break;
   case Qt::Key_Space:
-    updateParticleSystem();
+    m_ps.splitRandomParticle();
+    //updateParticleSystem();
   default:
     break;
   }
@@ -170,12 +172,12 @@ void Scene::keyPressed(QKeyEvent *ev)
 
 void Scene::windowResized(int _w, int _h)
 {
-  qDebug("Window rezised to %d and %d", _w, _h);
+  //qDebug("Window rezised to %d and %d", _w, _h);
 }
 
 void Scene::updateParticleSystem()
 {
-  m_ps.splitRandomParticle();
+  //m_ps.splitRandomParticle();
   m_ps.advance();
   sendParticleDataToOpenGL();
 }
@@ -189,7 +191,7 @@ void Scene::sendParticleDataToOpenGL()
   // data that gets sent to OpenGL.
   for_each(m_packagedParticleData.begin(), m_packagedParticleData.end(), [](float f)
   {
-    qDebug("%f", f);
+    //qDebug("%f", f);
   });
 
   m_part_vao->bind();

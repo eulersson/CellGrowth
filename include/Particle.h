@@ -66,7 +66,7 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate() {}
+  virtual void calculate(QVector3D _particleCentre) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
@@ -99,6 +99,7 @@ public:
   /// @param[out] _pos Will hold the particles position
   //////////////////////////////////////////////////////////////////////////////
   void getPos(QVector3D &_pos);
+  QVector3D getPosition(){return m_pos;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the Particles position

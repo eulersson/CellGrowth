@@ -10,7 +10,7 @@ GrowthParticle::GrowthParticle(qreal _x,
                                qreal _z): Particle(_x,_y,_z)
 {
   m_childrenTreshold=3;
-  qDebug("Growth Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+  //qDebug("Growth Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 GrowthParticle::GrowthParticle(
@@ -20,11 +20,11 @@ GrowthParticle::GrowthParticle(
     std::vector<unsigned int> _connectedParticles):Particle(_x,_y,_z,_connectedParticles)
 {
   m_childrenTreshold=3;
-  qDebug("Growth Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+  //qDebug("Growth Particle constructor passing in positions: %f,%f,%f and a list of"
+    //     "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate()
+void GrowthParticle::calculate(QVector3D _newParticleCentre)
 {
 
 }

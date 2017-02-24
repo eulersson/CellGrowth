@@ -86,6 +86,8 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void getLinksForDraw(std::vector<QVector3D> &_returnList);
 
+  QVector3D calculateParticleCentre();
+
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Stores the list of particles in the system.
@@ -96,6 +98,9 @@ private:
   /// @brief Keeps track of the number of particles.
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_particleCount;
+
+  QVector3D m_particleCentre;
+  QVector3D m_newParticleCentre;
 
 };
 

@@ -35,9 +35,8 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
     , m_foodLevel(0)
     , m_foodTreshold(100)
 {
-  qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+  //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
-
 
 Particle::Particle(qreal _x,
     qreal _y,
@@ -49,8 +48,8 @@ Particle::Particle(qreal _x,
     , m_foodLevel(0)
     , m_foodTreshold(100)
 {
-  qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+  //qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
+         //"particles", _x, _y, _z);
   m_connectedParticles = _connectedParticles;
 }
 
