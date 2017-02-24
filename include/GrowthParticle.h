@@ -50,7 +50,7 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _newParticleCentre) override;
+  void calculate(QVector3D _newParticleCentre, std::vector<QVector3D> m_listOfPositions) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split.

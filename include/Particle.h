@@ -66,7 +66,7 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre) {}
+  virtual void calculate(QVector3D _newParticleCentre, std::vector<QVector3D> m_listOfPositions) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten

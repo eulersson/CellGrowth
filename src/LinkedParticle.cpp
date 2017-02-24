@@ -29,7 +29,7 @@ LinkedParticle::LinkedParticle(qreal _x,
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate(QVector3D _newParticleCentre)
+void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector3D> m_listOfPositions)
 {
 
   //COHERE
@@ -42,13 +42,101 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre)
            && (_newParticleCentre.y()-m_pos.y() <= 1)
            && (_newParticleCentre.z()-m_pos.z() <= 1))
   {
-      m_vel/=1.05;
+      m_vel/=1.1;
   }
 
     cohesion/=speed;
 
     m_vel += cohesion;
 
+    //SPRING
+    QVector3D spring;
+    spring.setX(0);
+    spring.setY(0);
+    spring.setZ(0);
+
+    float distanceX = 0;
+    float distanceY = 0;
+    float distanceZ = 0;
+
+    std::cout<<"SIZE:"<<m_listOfPositions.size()<<std::endl;
+
+    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
+    {
+      std::cout<<"listOfPositions"<<i<<": "<<m_listOfPositions[i].x()<<" "<<m_listOfPositions[i].y()<<" "<<m_listOfPositions[i].z()<<std::endl;
+    }
+
+    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
+    {
+      std::cout<<"m_ID: "<<m_ID<<std::endl;
+    }
+
+    for (unsigned int i=0; i<m_listOfPositions.size(); i++)
+    {
+      for (unsigned int j=0; j<m_listOfPositions.size(); j++)
+        {
+          if (i != j)
+          {
+            distanceY = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
+            //std::cout<<"distance Y between "<<i<<" and "<<j<<" : "<<distanceY<<std::endl;
+            if (distanceY < 1 )
+            {
+              if(m_ID == i)
+              {
+                spring.setY(spring.y() - distanceY);
+                //std::cout<<"springY: "<<spring.y()<<std::endl;
+                spring/=10000;
+                m_vel += spring;
+              }
+              if(m_ID == j)
+              {
+                spring.setY(spring.y() + distanceY);
+               // std::cout<<"springY: "<<spring.y()<<std::endl;
+                spring/=10000;
+                m_vel += spring;
+              }
+            }
+//            distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
+//            //std::cout<<"distance between "<<i<<" and "<<j<<" : "<<distance<<std::endl;
+//            if (distanceX < 1 )
+//            {
+//              if(m_ID == i)
+//              {
+//                spring.setX(spring.x() - distanceX);
+//                //std::cout<<"springY: "<<spring.y()<<std::endl;
+//                spring/=10000;
+//                m_vel += spring;
+//              }
+//              if(m_ID == j)
+//              {
+//                spring.setX(spring.x() + distanceX);
+//                //std::cout<<"springY: "<<spring.y()<<std::endl;
+//                spring/=10000;
+//                m_vel += spring;
+//              }
+//            }
+//            distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
+//            //std::cout<<"distance between "<<i<<" and "<<j<<" : "<<distance<<std::endl;
+//            if (distanceZ < 1 )
+//            {
+//              if(m_ID == i)
+//              {
+//                spring.setZ(spring.z() - distanceZ);
+//                //std::cout<<"springY: "<<spring.y()<<std::endl;
+//                spring/=10000;
+//                m_vel += spring;
+//              }
+//              if(m_ID == j)
+//              {
+//                spring.setZ(spring.z() + distanceZ);
+//                //std::cout<<"springY: "<<spring.y()<<std::endl;
+//                spring/=10000;
+//                m_vel += spring;
+//              }
+//            }
+          }
+        }
+    }
 
 }
 

@@ -41,7 +41,7 @@ void ParticleSystem::advance()
   // Then moving
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_newParticleCentre);
+    m_particles[i]->calculate(m_newParticleCentre, listOfPositions());
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -215,4 +215,16 @@ QVector3D ParticleSystem::calculateParticleCentre()
   m_particleCentre = m_particleCentre/(m_particles.size());
   std::cout<<"ParticleCentre: "<<m_particleCentre.x()<<" "<<m_particleCentre.y()<<" "<<m_particleCentre.z()<<std::endl;
   return m_particleCentre;
+}
+
+std::vector<QVector3D> ParticleSystem::listOfPositions()
+{
+  std::vector<QVector3D> _listOfPositions;
+
+  for (auto &particle : m_particles)
+  {
+    _listOfPositions.push_back(particle->getPosition());
+  }
+
+  return _listOfPositions;
 }

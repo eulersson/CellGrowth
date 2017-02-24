@@ -24,7 +24,7 @@ GrowthParticle::GrowthParticle(
     //     "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate(QVector3D _newParticleCentre)
+void GrowthParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector3D> m_listOfPositions)
 {
 
 }
