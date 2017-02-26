@@ -30,6 +30,7 @@ void Scene::initialize()
   prepareQuad();
   prepareParticles();
   setupFBO();
+  setupLights();
 
   qDebug("%d", m_ps.getSize());
 }
@@ -45,7 +46,8 @@ void Scene::paint()
   inputManager.doMovement();
 
   m_FBO->bind();
-    drawParticles();
+  drawParticles();
+  for(auto &s : objectList) { s->draw(); }
 
   m_FBO->release();
     glActiveTexture(GL_TEXTURE0);
@@ -158,7 +160,32 @@ void Scene::setupFBO()
   m_FBO->release();
 }
 
+void Scene::setupLights()
+{
+  m_manipulatorProgram = new QOpenGLShaderProgram(this);
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/manipvert.vert");
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manipfrag.frag");
+  m_manipulatorProgram->link();
 
+  m_sunProgram = new QOpenGLShaderProgram(this);
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/sunvert.vert");
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sunfrag.frag");
+  m_sunProgram->link();
+
+  QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
+  for(int x=-4;x<4;x+=4) {
+      for(int y=-4;y<4;y+=4) {
+          PointLight *pointlight;
+          pointlight = new PointLight(QVector3D(x,y,0), m_manipulatorProgram, m_sunProgram);
+          pointlight->createGeometry(context(), masterUniqueColour);
+          objectList.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+      }
+  }
+  inputManager.addShaderProgram(m_manipulatorProgram);
+  inputManager.addShaderProgram(m_sunProgram);
+  inputManager.setObjectList(objectList);
+
+}
 
 void Scene::windowResized(int _w, int _h)
 {

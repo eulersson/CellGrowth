@@ -1,11 +1,8 @@
 //attribute highp vec3 posAttr;
-#version 330 core
-attribute highp vec3 posAttr;
-attribute highp vec3 normAttr;
-layout (location = 0) in vec3 position;
-layout (location = 2) in vec2 texCoord;
+#version 450 core
+in vec3 posAttr;
+in vec3 normAttr;
 
-out vec2 TexCoord;
 out vec3 vNorm;
 out vec3 vPos;
 
@@ -20,6 +17,5 @@ void main()
     vPos=posAttr;
 
     gl_Position = projection * view * model * vec4(posAttr, 1.0f);
-    TexCoord = vec2(texCoord.x, 1.0 - texCoord.y);
 
 }

@@ -19,7 +19,7 @@ Manipulator::Manipulator(QVector3D _position, QOpenGLShaderProgram *_lightProgra
 {
 
     position=_position;
-    m_lightProgram=_lightProgram;
+    manipshaderp=_lightProgram;
 
 }
 
@@ -76,11 +76,11 @@ void Manipulator::setupVAO(Arrow &arrow,QOpenGLVertexArrayObject *vao)
     // First number states where to start (offset)
     // Second number states the size of the data to get (position = x,y,z = 3 values)
     // Third number is stride. Must be multiplied with sizeof float for some reason
-    m_lightProgram->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3, 6*sizeof(GL_FLOAT));
-    m_lightProgram->enableAttributeArray("posAttr");
+    manipshaderp->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3, 6*sizeof(GL_FLOAT));
+    manipshaderp->enableAttributeArray("posAttr");
 
-    m_lightProgram->setAttributeBuffer("normAttr", GL_FLOAT, 3* sizeof(GLfloat), 3, 6*sizeof(GL_FLOAT));
-    m_lightProgram->enableAttributeArray("normAttr");
+    manipshaderp->setAttributeBuffer("normAttr", GL_FLOAT, 3* sizeof(GLfloat), 3, 6*sizeof(GL_FLOAT));
+    manipshaderp->enableAttributeArray("normAttr");
 
 
 
@@ -285,51 +285,52 @@ QVector3D Manipulator::processMouseMovement(float offsetx, float offsety, float 
 
 void Manipulator::draw()
 {
-    m_lightProgram->bind();
+
     QVector3D baseColour(0.0f, 0.0f, 1.0f);
-
-
+    manipshaderp->bind();
 
     for(GLint i=0;i<arrows.size();i++)
     {
 
         Arrow arrow= arrows[i];
-        arrow.vao->bind();
-        m_lightProgram->setUniformValue("backRender", false);
-        m_lightProgram->setUniformValue("renderColour", {arrow.renderColour.x(),arrow.renderColour.y(),arrow.renderColour.z()});
+
+
+        manipshaderp->setUniformValue("backRender", false);
+        manipshaderp->setUniformValue("renderColour", {arrow.renderColour.x(),arrow.renderColour.y(),arrow.renderColour.z()});
+
 
         switch(arrow.axis)
         {
         case DIRECTION_X:
             baseColour= QVector3D(0.2f, 0.0f, 0.0f);
-            m_lightProgram->setUniformValue("baseColour", baseColour);
+            manipshaderp->setUniformValue("baseColour", baseColour);
             break;
 
         case DIRECTION_Y:
             baseColour= QVector3D(0.0f, 0.2f, 0.0f);
-            m_lightProgram->setUniformValue("baseColour", baseColour);
+            manipshaderp->setUniformValue("baseColour", baseColour);
             break;
 
         case DIRECTION_Z:
             baseColour= QVector3D(0.0f, 0.0f, 0.2f);
-            m_lightProgram->setUniformValue("baseColour", baseColour);
+            manipshaderp->setUniformValue("baseColour", baseColour);
             break;
         }
 
 
+        arrow.vao->bind();
         glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints); // Previously GL_POINTS
-
 
         arrow.vao->release();
 
     }
-    m_lightProgram->release();
+    manipshaderp->release();
 }
 
 void Manipulator::drawBackBuffer()
 {
-    m_lightProgram->bind();
-    m_lightProgram->setUniformValue("backRender", true);
+    manipshaderp->bind();
+    manipshaderp->setUniformValue("backRender", true);
 
 
 
@@ -340,7 +341,7 @@ void Manipulator::drawBackBuffer()
         Arrow arrow= arrows[i];
         arrow.vao->bind();
 
-        m_lightProgram->setUniformValue("baseColour", arrow.uniqueColour);
+        manipshaderp->setUniformValue("baseColour", arrow.uniqueColour);
 
 
         glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints); // Previously GL_POINTS

@@ -1,6 +1,6 @@
 // Read docs on gl_PointCoord https://www.opengl.org/sdk/docs/man/html/gl_PointCoord.xhtml
 
-#version 330
+#version 450 core
 out vec4 fColour;
 
 uniform vec3 renderColour;

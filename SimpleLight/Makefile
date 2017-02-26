@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = cells1.0.0
-DISTDIR = /home/i7207211/Documents/CellGrowth/CellGrowthProjectCVA3/build/obj/cells1.0.0
+DISTDIR = /home/i7207211/Documents/CellGrowth/SimpleLight/SimpleLight/build/obj/cells1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.7.0/5.7/gcc_64/lib
 LIBS          = $(SUBLIBS) -L/opt/Qt5.7.0/5.7/gcc_64/lib -lQt5Gui -L/usr/lib64 -lQt5Core -lGL -lpthread 
@@ -68,7 +68,11 @@ OBJECTS       = build/obj/main.o \
 		build/obj/Window.o \
 		build/obj/input.o \
 		build/obj/manipulator.o
-DIST          = shaders/particles.vert \
+DIST          = shaders/manipvert.vert \
+		shaders/manipfrag.frag \
+		shaders/sunvert.vert \
+		shaders/sunfrag.frag \
+		shaders/particles.vert \
 		shaders/particles.frag \
 		shaders/quad.vert \
 		shaders/quad.frag \

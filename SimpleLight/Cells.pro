@@ -43,6 +43,10 @@ OTHER_FILES += \
     README.md
 
 DISTFILES += \
+    shaders/manipvert.vert \
+    shaders/manipfrag.frag \
+    shaders/sunvert.vert \
+    shaders/sunfrag.frag \
     shaders/particles.vert \
     shaders/particles.frag \
     shaders/quad.vert \

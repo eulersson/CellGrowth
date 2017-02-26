@@ -1,13 +1,12 @@
-// Read docs on gl_PointCoord https://www.opengl.org/sdk/docs/man/html/gl_PointCoord.xhtml
 
-#version 330
+#version 450 core
 in vec4 vColour;
 in vec3 vNorm;
 in vec3 vPos;
 out vec4 fColour;
 
-uniform vec3 baseColour;
-uniform vec3 renderColour;
+uniform vec3 baseColour; // Colour of arrow
+uniform vec3 renderColour; // Highlight
 uniform bool backRender=false;
 
 const vec3 AMBIENT_LIGHT=vec3(0.3,0.3,0.3);
@@ -25,11 +24,11 @@ void main() {
     vec3 n = vNorm;
 //    // diffuse coefficient (Kd) and color (diffuseColor)
     float Kd = max(0.0, dot(lightDir, n));
-    vec3 diffuseColor = vec3(.4);
+    vec3 diffuseColor = vec3(.2);
 
     // Currently setting fragment to plain colour
     vec3 finalColour = Kd * diffuseColor;
-    finalColour+=renderColour;
+    finalColour+=renderColour+baseColour;
 
 
     // Must be last part of shading

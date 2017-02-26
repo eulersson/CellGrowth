@@ -13,6 +13,20 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// @file selectobject.h
+/// @author Glenn Nygard
+/// @version 0.0.1
+/// @class SelectObject
+/// @brief Abstract class for scene objects.
+///
+/// This class will work as an abstract class containing all the objects of the
+/// scene that will require key/mouse inputs. It will also provide camera
+/// calculations for these objects.
+////////////////////////////////////////////////////////////////////////////////
 class SelectObject
 {
 

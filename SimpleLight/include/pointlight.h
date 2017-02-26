@@ -59,7 +59,7 @@ public:
         vao->bind();
         sunshaderp->bind();
         GLint modelLoc = sunshaderp->uniformLocation("model");
-        manipshaderp->setUniformValue(modelLoc, model);
+        sunshaderp->setUniformValue(modelLoc, model);
         // Setup/Draw
         glEnable(GL_POINT_SPRITE);
         glPointSize(22.0f);

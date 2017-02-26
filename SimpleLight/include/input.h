@@ -24,7 +24,17 @@
 
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+/// @file input.h
+/// @author Glenn Nygard
+/// @version 0.0.1
+/// @class InputManager
+/// @brief Deals with inputs, and diverts them to the appropriate classes.
+///
+/// This class will mainly be dealing with movement and updates caused by user
+/// input. It will maintain the Camera class and divert inputs to that, or to
+/// SelectObject instances in the scene.
+////////////////////////////////////////////////////////////////////////////////
 class InputManager
 {
 
@@ -112,8 +122,8 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief setObjectList
     /// \param _objectList
-    ////* Load the list of objects to the input manager. This is used to calculate camera model matrixes
-    /// and object inputs. */
+    ////* Load the list of objects to the input manager. These are the objects that will be considered for the
+    /// InputManager calculations.*/
     void setObjectList(std::vector<std::shared_ptr<SelectObject>> _objectList) { objectList=_objectList; }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,7 +147,7 @@ public:
 private:
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \brief currentUniqueColour
-    ////* Value storing the current unique colour. This is being used throughout the class
+    ////* Variable storing the current unique colour. This is being used throughout the class
     /// and is made global to not have to be recalculated.  */
     QVector3D currentUniqueColour;
 
