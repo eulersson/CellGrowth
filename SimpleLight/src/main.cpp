@@ -1,29 +1,36 @@
-#include <QtGui/QGuiApplication>
-#include "openglwindow.h"
+////////////////////////////////////////////////////////////////////////////////
+/// @file main.cpp
+/// @author Lola Gille
+/// @author Glenn Nygard
+/// @author Lydia Kenton
+/// @author Esme Prior
+/// @author Valeria Marstrom
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
 
-QTime lastUpdateTime = QTime::currentTime();
-int updateTimeStep = 5;
+#include <QGuiApplication>
 
-int main(int argc, char **argv) {
-    //QGuiApplication app(argc, argv);
-    /*QCoreApplication is the base class, QGuiApplication extends the base class
-     * with functionality related to handling windows and GUI stuff (non-widget related, e.g.
-     * OpenGL or QtQuick), QApplication extends QGuiApplication with functionality
-     * related to handling widgets.*/
+#include "Scene.h"
+#include "Window.h"
 
-    QApplication app(argc, argv);
+int main(int argc, char *argv[])
+{
+  QGuiApplication app(argc, argv);
 
+  Window window;
+  QSurfaceFormat fmt;
+  fmt.setProfile(QSurfaceFormat::CoreProfile);
+  fmt.setVersion(4,5);
+  fmt.setSamples(16);
+  fmt.setSwapInterval(1);
+  window.setFormat(fmt);
 
+  Scene scene(&window);
+  window.setScene(&scene);
 
+  window.resize(720, 720);
+  window.show();
 
-    // Create and display window
-    OpenGLWindow mainWindow;
-    mainWindow.show();
-    mainWindow.setAnimating(true); // Render function will be continously called
-    //mainWindow.setInputManager(&input);
-
-
-
-
-    return app.exec();
+  return app.exec();
 }

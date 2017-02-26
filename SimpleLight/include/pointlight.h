@@ -4,7 +4,6 @@
 // Private
 #include "selectobject.h"
 #include "manipulator.h"
-#include "camera.h"
 
 
 

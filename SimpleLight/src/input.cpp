@@ -37,6 +37,7 @@ void InputManager::mousePressEvent(QMouseEvent *event)
 
     if(alt_key==false)
     {
+
         doSelection(event->pos().x(), event->pos().y());
     }
 
@@ -68,7 +69,6 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
     // Only process movement if the mouse button and alt is pressed
     if (mousePressed && alt_key==true)
     {
-
         camera.ProcessMouseMovement(xoffset, yoffset);
 
 
@@ -85,16 +85,6 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
 
             clickZ=mp.z();
             GLfloat localXoffset=xoffset; // This variable should not be needed, but the program acts up without it
-
-
-            //clickZ = abs(camera.getPosition().z() - s->getPosition().z());
-
-//             QVector3D unProjectedLast = unProject(lastX, lastY, clickZ);
-//             QVector3D unProjected=unProject(xpos, ypos, clickZ);
-//             xoffset = -(unProjected.x() - unProjectedLast.x());
-//             yoffset = -(unProjectedLast.y() - unProjected.y());
-
-
 
             float zoffset=xoffset;
 
@@ -121,15 +111,6 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
         }
 
     }
-
-//     qDebug() << QString::number(event->pos().x());
-//     qDebug() << QString::number(lastX);
-//     qDebug() << QString::number(xoffset);
-//     qDebug() << QString::number(yoffset);
-
-//     qDebug("line break---");
-
-
     // HOVER
     for(auto &s : objectList)
     {
@@ -160,7 +141,7 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
 void InputManager::doMovement()
 {
     // DeltaTime is simply one for now
-    // Will implement later when needed
+    // Will implement when needed
     float deltaTime=1;
 
     // Camera controls
@@ -193,9 +174,6 @@ void InputManager::keyPressEvent(QKeyEvent *key)
         alt_key=true;
 
     }
-    else {
-        // Something else was pressed
-    }
 
 
 }
@@ -219,9 +197,6 @@ void InputManager::keyPressEvent(QKeyEvent *key)
      {
          alt_key=false;
 
-     }
-     else {
-         // Something else was pressed
      }
 
 

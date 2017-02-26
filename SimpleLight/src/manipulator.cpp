@@ -12,11 +12,7 @@ const int DIRECTION_Z=2;
 
 
 // Manipulator move sensitivity
-const GLfloat SENSITIVITY=0.04f;//0.14f;
-//const GLfloat SENSITIVITY=0.84f;
-
-
-
+const GLfloat SENSITIVITY=0.04f;
 
 
 Manipulator::Manipulator(QVector3D _position, QOpenGLShaderProgram *_lightProgram)
@@ -33,12 +29,9 @@ void Manipulator::setupVBO(std::vector<QVector3D> vertices, std::vector<QVector3
 
     // OpenGL wants a flat array of GLfloats
     std::vector<GLfloat> m_pointPosArray;
-    int m_numberOfPoints = vertices.size();
-    for (unsigned int i = 0; i < m_numberOfPoints; i++)
+    GLint m_numberOfPoints = vertices.size();
+    for (GLint i = 0; i < m_numberOfPoints; i++)
     {
-
-
-
 
         m_pointPosArray.push_back(vertices[i].x());
         m_pointPosArray.push_back(vertices[i].y());
@@ -153,8 +146,6 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *vao, QVector3D offsetPos
         float s2 = radius*sin(angleNext);
         float c2 = radius*cos(angleNext);
 
-        //verts[index++].set(c, s, 0.f);
-
         float x;
         float y;
         float z;
@@ -202,37 +193,14 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *vao, QVector3D offsetPos
 
         QVector3D normal = calculateNormal( QVector3D(x,y,z),topPoint, QVector3D(x2,y2,z2));
 
-//        float const x = s+_position.x();
-//        float const y = 0+_position.y();
-//        float const z = c+_position.z();
-
         vertices.push_back(QVector3D(x,y,z));
         normals.push_back(normal);
-
-
-
-
-
-
-
-//        float const x2 = s2+_position.x();
-//        float const y2 = 0+_position.y();
-//        float const z2 = c2+_position.z();
 
         vertices.push_back(QVector3D(x2,y2,z2));
         normals.push_back(normal);
 
         vertices.push_back(topPoint);
         normals.push_back(normal);
-
-
-
-
-//        float const y = sin(  M_PI * r * R );
-//        float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-//        float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-
-        //vertices.push_back(QVector3D(x,y,z) * radius);
     }
 
 
@@ -322,7 +290,7 @@ void Manipulator::draw()
 
 
 
-    for(int i=0;i<arrows.size();i++)
+    for(GLint i=0;i<arrows.size();i++)
     {
 
         Arrow arrow= arrows[i];

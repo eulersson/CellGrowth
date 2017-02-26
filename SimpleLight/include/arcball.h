@@ -70,7 +70,7 @@ public:
         QMatrix4x4 view;
         view.setToIdentity();
 
-        QVector3D center(0,0,0); //(this->Position + this->Front)
+        QVector3D center(0,0,2); //(this->Position + this->Front)
 
 
 
@@ -81,8 +81,6 @@ public:
                          );
 
         Position*=this->Dist;
-
-
 
         //this->Front = front.normalized();
         // Also re-calculate the Right and Up vector
