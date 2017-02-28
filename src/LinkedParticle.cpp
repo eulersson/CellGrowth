@@ -37,7 +37,6 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
   QVector3D cohesion = _newParticleCentre - m_pos;
   //std::cout<<"Distance:"<<cohesion.x()<<" "<<cohesion.y()<<" "<<cohesion.z()<<std::endl;
   //std::cout<<"Velocity: "<<m_vel.x()<<" "<<m_vel.y()<<" "<<m_vel.z()<<std::endl;
-
   if((_newParticleCentre.x()-m_pos.x() <= 1)
            && (_newParticleCentre.y()-m_pos.y() <= 1)
            && (_newParticleCentre.z()-m_pos.z() <= 1))
@@ -59,18 +58,19 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
     float distanceY = 0;
     float distanceZ = 0;
 
-    std::cout<<"SIZE:"<<m_listOfPositions.size()<<std::endl;
+    //std::cout<<"SIZE:"<<m_listOfPositions.size()<<std::endl;
 
     for(unsigned int i=0; i<m_listOfPositions.size(); i++)
     {
       std::cout<<"listOfPositions"<<i<<": "<<m_listOfPositions[i].x()<<" "<<m_listOfPositions[i].y()<<" "<<m_listOfPositions[i].z()<<std::endl;
     }
 
-    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
-    {
-      std::cout<<"m_ID: "<<m_ID<<std::endl;
-    }
+//    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
+//    {
+//      std::cout<<"m_ID: "<<m_ID<<std::endl;
+//    }
 
+    //Using i and j to compare particle distances in space. Eg, i=particleA and j=particleB
     for (unsigned int i=0; i<m_listOfPositions.size(); i++)
     {
       for (unsigned int j=0; j<m_listOfPositions.size(); j++)
@@ -78,62 +78,55 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
           if (i != j)
           {
             distanceY = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-            //std::cout<<"distance Y between "<<i<<" and "<<j<<" : "<<distanceY<<std::endl;
-            if (distanceY < 1 )
+            if (distanceY < 0.3 && distanceY >(-0.3) )
             {
               if(m_ID == i)
               {
                 spring.setY(spring.y() - distanceY);
-                //std::cout<<"springY: "<<spring.y()<<std::endl;
-                spring/=10000;
+                spring/=50;
                 m_vel += spring;
               }
-              if(m_ID == j)
-              {
-                spring.setY(spring.y() + distanceY);
-               // std::cout<<"springY: "<<spring.y()<<std::endl;
-                spring/=10000;
-                m_vel += spring;
-              }
-            }
-//            distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
-//            //std::cout<<"distance between "<<i<<" and "<<j<<" : "<<distance<<std::endl;
-//            if (distanceX < 1 )
-//            {
-//              if(m_ID == i)
+//              if(m_ID == j)
 //              {
-//                spring.setX(spring.x() - distanceX);
-//                //std::cout<<"springY: "<<spring.y()<<std::endl;
-//                spring/=10000;
+//                spring.setY(spring.y() - distanceY);
+//                //spring/=10;
 //                m_vel += spring;
 //              }
+            }
+
+            distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
+            if (distanceX < 0.3 && distanceX >(-0.3) )
+            {
+              if(m_ID == i)
+              {
+                spring.setX(spring.x() - distanceX);
+                spring/=50;
+                m_vel += spring;
+              }
 //              if(m_ID == j)
 //              {
 //                spring.setX(spring.x() + distanceX);
-//                //std::cout<<"springY: "<<spring.y()<<std::endl;
-//                spring/=10000;
+//                spring/=100;
 //                m_vel += spring;
 //              }
-//            }
-//            distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-//            //std::cout<<"distance between "<<i<<" and "<<j<<" : "<<distance<<std::endl;
-//            if (distanceZ < 1 )
-//            {
-//              if(m_ID == i)
-//              {
-//                spring.setZ(spring.z() - distanceZ);
-//                //std::cout<<"springY: "<<spring.y()<<std::endl;
-//                spring/=10000;
-//                m_vel += spring;
-//              }
+            }
+
+            distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
+            if (distanceZ < 0.3 && distanceZ >(-0.3) )
+            {
+              if(m_ID == i)
+              {
+                spring.setZ(spring.z() - distanceZ);
+                spring/=50;
+                m_vel += spring;
+              }
 //              if(m_ID == j)
 //              {
 //                spring.setZ(spring.z() + distanceZ);
-//                //std::cout<<"springY: "<<spring.y()<<std::endl;
-//                spring/=10000;
+//                spring/=1000;
 //                m_vel += spring;
 //              }
-//            }
+            }
           }
         }
     }
