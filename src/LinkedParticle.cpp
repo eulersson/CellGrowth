@@ -29,17 +29,18 @@ LinkedParticle::LinkedParticle(qreal _x,
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector3D> m_listOfPositions)
+void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D> m_listOfPositions)
 {
 
   //COHERE
   unsigned int speed = 1000;
-  QVector3D cohesion = _newParticleCentre - m_pos;
-  //std::cout<<"Distance:"<<cohesion.x()<<" "<<cohesion.y()<<" "<<cohesion.z()<<std::endl;
-  //std::cout<<"Velocity: "<<m_vel.x()<<" "<<m_vel.y()<<" "<<m_vel.z()<<std::endl;
-  if((_newParticleCentre.x()-m_pos.x() <= 1)
-           && (_newParticleCentre.y()-m_pos.y() <= 1)
-           && (_newParticleCentre.z()-m_pos.z() <= 1))
+  QVector3D distance = _particleCentre - m_pos;
+
+  QVector3D cohesion = distance;
+
+  if((distance.x() <= 1)
+           && (distance.y() <= 1)
+           && (distance.z() <= 1))
   {
       m_vel/=1.1;
   }
@@ -47,6 +48,9 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
     cohesion/=speed;
 
     m_vel += cohesion;
+    //end of cohere
+
+
 
     //SPRING
     QVector3D spring;
@@ -57,18 +61,6 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
     float distanceX = 0;
     float distanceY = 0;
     float distanceZ = 0;
-
-    //std::cout<<"SIZE:"<<m_listOfPositions.size()<<std::endl;
-
-    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
-    {
-      std::cout<<"listOfPositions"<<i<<": "<<m_listOfPositions[i].x()<<" "<<m_listOfPositions[i].y()<<" "<<m_listOfPositions[i].z()<<std::endl;
-    }
-
-//    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
-//    {
-//      std::cout<<"m_ID: "<<m_ID<<std::endl;
-//    }
 
     //Using i and j to compare particle distances in space. Eg, i=particleA and j=particleB
     for (unsigned int i=0; i<m_listOfPositions.size(); i++)
@@ -86,12 +78,6 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
                 spring/=50;
                 m_vel += spring;
               }
-//              if(m_ID == j)
-//              {
-//                spring.setY(spring.y() - distanceY);
-//                //spring/=10;
-//                m_vel += spring;
-//              }
             }
 
             distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
@@ -103,12 +89,6 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
                 spring/=50;
                 m_vel += spring;
               }
-//              if(m_ID == j)
-//              {
-//                spring.setX(spring.x() + distanceX);
-//                spring/=100;
-//                m_vel += spring;
-//              }
             }
 
             distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
@@ -120,16 +100,28 @@ void LinkedParticle::calculate(QVector3D _newParticleCentre, std::vector<QVector
                 spring/=50;
                 m_vel += spring;
               }
-//              if(m_ID == j)
-//              {
-//                spring.setZ(spring.z() + distanceZ);
-//                spring/=1000;
-//                m_vel += spring;
-//              }
+
             }
           }
         }
     }
+    //end of spring
+
+      //SEPARATE
+
+      QVector3D separate = m_pos - _particleCentre;
+
+      for (unsigned int factor = 0; factor<20; factor++)
+      {
+
+        if((distance.x() < (factor/20) && distance.x() > (-(factor/20)))
+                 && (distance.y() < (factor/20) && distance.y() > (-(factor/20)))
+                 && (distance.z() < (factor/20) && distance.z() > (-(factor/20))))
+        {
+            separate/=factor;
+            m_vel+=separate;
+        }
+      }
 
 }
 

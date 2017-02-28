@@ -102,7 +102,6 @@ private:
   unsigned int m_particleCount;
 
   QVector3D m_particleCentre;
-  QVector3D m_newParticleCentre;
 
 };
 
