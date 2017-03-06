@@ -33,10 +33,14 @@ void Scene::initialize()
   setupLights();
 
   qDebug("%d", m_ps.getSize());
+
+  timer.start();
 }
 
 void Scene::paint()
 {
+  deltaTime=timer.elapsed()*0.001;
+  timer.restart();
 
   glClearColor(0.0f, 0.2f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);

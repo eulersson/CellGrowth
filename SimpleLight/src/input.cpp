@@ -37,7 +37,6 @@ void InputManager::mousePressEvent(QMouseEvent *event)
 
     if(alt_key==false)
     {
-
         doSelection(event->pos().x(), event->pos().y());
     }
 
@@ -70,8 +69,8 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
     if (mousePressed && alt_key==true)
     {
         camera.ProcessMouseMovement(xoffset, yoffset);
-
-
+        view.setToIdentity();
+        view = camera.GetViewMatrix();
 
     }
     else if(mousePressed)
@@ -89,12 +88,12 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
             float zoffset=xoffset;
 
             // Reverse x and z offset if the camera is on the other side of the corresponding axis'
-            if(cp.x()<mp.x())
+            if(cp.x()>mp.x())
             {
                 zoffset=-zoffset;
             }
 
-            if(cp.z()<mp.z())
+            if(cp.z()>mp.z())
             {
                 localXoffset=-localXoffset;
 
@@ -127,7 +126,6 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
 
 
 
-
     lastX = xpos;
     lastY = ypos;
 
@@ -150,9 +148,16 @@ void InputManager::doMovement()
     if(keys[Qt::Key_S])
         camera.ProcessKeyboard(ARCBACKWARD, deltaTime);
     if(keys[Qt::Key_A])
+      {
         camera.ProcessKeyboard(ARCLEFT, deltaTime);
+      }
     if(keys[Qt::Key_D])
+      {
         camera.ProcessKeyboard(ARCRIGHT, deltaTime);
+      }
+
+    view.setToIdentity();
+    view = camera.GetViewMatrix();
 }
 
 void InputManager::keyPressEvent(QKeyEvent *key)
@@ -163,7 +168,6 @@ void InputManager::keyPressEvent(QKeyEvent *key)
          (key->key() ==Qt::Key_S) ||
          (key->key() ==Qt::Key_D) ||
          (key->key()==Qt::Key_Return) ) {
-        //Enter or return was pressed
         keys[key->key()]=true;
 
 
@@ -173,6 +177,11 @@ void InputManager::keyPressEvent(QKeyEvent *key)
     {
         alt_key=true;
 
+    }
+
+    else if(key->key() ==Qt::Key_F)
+    {
+      camera.Refocus();
     }
 
 
@@ -205,6 +214,8 @@ void InputManager::keyPressEvent(QKeyEvent *key)
  void InputManager::wheelEvent(QWheelEvent *event)
  {
      camera.ProcessMouseScroll(event->delta());
+     view.setToIdentity();
+     view = camera.GetViewMatrix();
 
  }
 
@@ -264,11 +275,8 @@ void InputManager::setupCamera()
     int screenWidth=720;
     int screenHeight=480;
 
-    // Create camera transformation
-    view.setToIdentity();
-    view = camera.GetViewMatrix();
     projection.setToIdentity();
-    projection.perspective(90, (float)screenWidth/(float)screenHeight, 0.1f, 1000.0f);
+    projection.perspective(45, (float)screenWidth/(float)screenHeight, 0.1f, 1000.0f);
 
     for(int i=0;i<programs.size();i++)
     {

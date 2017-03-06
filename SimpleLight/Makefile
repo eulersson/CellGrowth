@@ -238,6 +238,7 @@ DIST          = shaders/manipvert.vert \
 		include/arcball.h \
 		include/input.h \
 		include/pointlight.h \
+		include/spotlight.h \
 		include/selectobject.h \
 		include/manipulator.h src/main.cpp \
 		src/AbstractScene.cpp \
@@ -585,7 +586,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents include/AbstractScene.h include/GrowthParticle.h include/LinkedParticle.h include/Particle.h include/ParticleSystem.h include/Scene.h include/Window.h include/arcball.h include/input.h include/pointlight.h include/selectobject.h include/manipulator.h $(DISTDIR)/
+	$(COPY_FILE) --parents include/AbstractScene.h include/GrowthParticle.h include/LinkedParticle.h include/Particle.h include/ParticleSystem.h include/Scene.h include/Window.h include/arcball.h include/input.h include/pointlight.h include/spotlight.h include/selectobject.h include/manipulator.h $(DISTDIR)/
 	$(COPY_FILE) --parents src/main.cpp src/AbstractScene.cpp src/GrowthParticle.cpp src/LinkedParticle.cpp src/Particle.cpp src/ParticleSystem.cpp src/Scene.cpp src/Window.cpp src/input.cpp src/manipulator.cpp $(DISTDIR)/
 
 
@@ -720,6 +721,8 @@ build/obj/main.o: src/main.cpp /opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QGuiApplica
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QOpenGLVertexArrayObject \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qopenglvertexarrayobject.h \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QMatrix4x4 \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/QTime \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qdatetime.h \
 		include/AbstractScene.h \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QOpenGLFunctions_4_5_Core \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qopenglfunctions_4_5_core.h \
@@ -1155,6 +1158,8 @@ build/obj/Scene.o: src/Scene.cpp include/Scene.h \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QOpenGLVertexArrayObject \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qopenglvertexarrayobject.h \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QMatrix4x4 \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/QTime \
+		/opt/Qt5.7.0/5.7/gcc_64/include/QtCore/qdatetime.h \
 		include/AbstractScene.h \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/QOpenGLFunctions_4_5_Core \
 		/opt/Qt5.7.0/5.7/gcc_64/include/QtGui/qopenglfunctions_4_5_core.h \

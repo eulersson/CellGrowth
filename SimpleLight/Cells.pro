@@ -34,6 +34,7 @@ HEADERS += \
     include/arcball.h \
     include/input.h \
     include/pointlight.h \
+    include/spotlight.h \
     include/selectobject.h \
     include/manipulator.h
 
