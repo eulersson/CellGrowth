@@ -8,7 +8,7 @@
 #include "Scene.h"
 #include <QKeyEvent>
 
-Scene::Scene(Window *_window) : AbstractScene(_window)
+Scene::Scene(GLWindow *_window) : AbstractScene(_window)
 {
 }
 

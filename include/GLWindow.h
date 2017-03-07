@@ -1,32 +1,34 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef GLWINDOW_H
+#define GLWINDOW_H
 
-// Qt
-#include <QOpenGLWindow>
+//Qt
+#include <QOpenGLWidget>
 #include <QTimer>
 
 // Project
 #include "AbstractScene.h"
 
+
 ////////////////////////////////////////////////////////////////////////////////
-/// @file Window.h
-/// @author Ramon Blanquer
-/// @version 0.0.1
-/// @class Window
-/// @brief Handles all the windowing related functionality.
+/// @file GLWindow.h
+/// @author Ramon Blanquer/ Carola Gille
+/// @version 0.0.2
+/// @class GLWindow
+/// @brief Handles all the windowing related functionality and connects to the UI
 ///
 /// Subclasses QOpenGLWindow which wraps all the functionality that allows
 /// QWindow to render OpenGL graphics.
 ////////////////////////////////////////////////////////////////////////////////
-class Window : public QOpenGLWindow
-{
 
+
+// Note: I just left all your stuff and just added some things :)
+
+class GLWindow : public QOpenGLWidget
+{
+  Q_OBJECT
 public:
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Constructor
-  /// @param[in] parent Sets the upper class parent
-  //////////////////////////////////////////////////////////////////////////////
-  Window(QWindow *parent = 0);
+  GLWindow(QWidget *_parent);
+  ~GLWindow();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Scene getter.
@@ -38,7 +40,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void setScene(AbstractScene *_scene);
 
-protected:
+protected :
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Internally calls the Scene::initialize() of the bound Scene
   //////////////////////////////////////////////////////////////////////////////
@@ -58,8 +60,7 @@ protected:
   /// @brief Handle the key pressing events
   //////////////////////////////////////////////////////////////////////////////
   void keyPressEvent(QKeyEvent * ev);
-
-private:
+private :
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Scene associated with the Window
   //////////////////////////////////////////////////////////////////////////////
@@ -70,6 +71,7 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   QTimer m_timer;
 
+
 };
 
-#endif // WINDOW_H
+#endif // GLWINDOW_H

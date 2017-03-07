@@ -12,8 +12,7 @@
 // Project
 #include "AbstractScene.h"
 #include "ParticleSystem.h"
-#include "Window.h"
-
+#include "GLWindow.h"
 ////////////////////////////////////////////////////////////////////////////////
 /// @file Scene.h
 /// @author Ramon Blanquer
@@ -39,7 +38,7 @@ public:
   /// @brief Constructor
   /// @param[in] _window The OpenGL window to associate the scene with
   //////////////////////////////////////////////////////////////////////////////
-  Scene(Window *_window);
+  Scene(GLWindow *_window);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Destructor, do all the OpenGL cleanup here

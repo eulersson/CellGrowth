@@ -1,8 +1,8 @@
 TARGET = cells
 TEMPLATE = app
 
-QT += core gui
-
+QT += core gui\
+        opengl
 CONFIG += c++11
 CONFIG -= app_bundle
 
@@ -14,7 +14,8 @@ SOURCES += \
     src/Particle.cpp \
     src/ParticleSystem.cpp \
     src/Scene.cpp \
-    src/Window.cpp
+    src/GUI.cpp \
+    src/GLWindow.cpp
 
 OBJECTS_DIR = build/obj
 MOC_DIR = build/moc
@@ -28,7 +29,8 @@ HEADERS += \
     include/Particle.h \
     include/ParticleSystem.h \
     include/Scene.h \
-    include/Window.h
+    include/GUI.h \
+    include/GLWindow.h
 
 OTHER_FILES += \
     .gitignore \
@@ -40,3 +42,6 @@ DISTFILES += \
     shaders/particles.frag \
     shaders/quad.vert \
     shaders/quad.frag
+
+FORMS += \
+    ui/GUI.ui

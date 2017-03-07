@@ -1,17 +1,14 @@
-////////////////////////////////////////////////////////////////////////////////
-/// @file Window.cpp
-/// @author Ramon Blanquer
-/// @version 0.0.1
-////////////////////////////////////////////////////////////////////////////////
+#include "include/GLWindow.h"
 
-// Qt
-#include <QKeyEvent>
-
-// Project
-#include "Window.h"
-
-Window::Window(QWindow *parent) : QOpenGLWindow(NoPartialUpdate, parent)
+GLWindow::GLWindow(QWidget *_parent):QOpenGLWidget(_parent)
 {
+  setFocus();
+
+  // we might not need this
+  this->resize(_parent->size());
+
+
+  //original code
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
   if(format().swapInterval() == -1)
   {
@@ -27,35 +24,36 @@ Window::Window(QWindow *parent) : QOpenGLWindow(NoPartialUpdate, parent)
   m_timer.start();
 }
 
-AbstractScene *Window::scene() const
+
+AbstractScene *GLWindow::scene() const
 {
   return m_scene;
 }
 
-void Window::setScene(AbstractScene *_scene)
+void GLWindow::setScene(AbstractScene *_scene)
 {
   m_scene = _scene;
 }
 
-void Window::initializeGL()
+void GLWindow::initializeGL()
 {
   if (scene())
     scene()->initialize();
 }
 
-void Window::paintGL()
+void GLWindow::paintGL()
 {
   if (scene())
     scene()->paint();
 }
 
-void Window::resizeGL(int _w, int _h)
+void GLWindow::resizeGL(int _w, int _h)
 {
   scene()->windowResized(_w, _h);
 
 }
 
-void Window::keyPressEvent(QKeyEvent* ev)
+void GLWindow::keyPressEvent(QKeyEvent* ev)
 {
   scene()->keyPressed(ev);
 }
