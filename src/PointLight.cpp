@@ -88,10 +88,10 @@ void PointLight::getMainProgram(QOpenGLShaderProgram **retshader)
   *retshader=m_manipshaderp;
 }
 
-void PointLight::setupObject(QOpenGLContext *_context_)
+void PointLight::setupObject(QOpenGLContext *_context)
 {
   // VAO / VBO
-  m_vao = new QOpenGLVertexArrayObject(_context_);
+  m_vao = new QOpenGLVertexArrayObject();
   m_vao->create();
   m_vao->bind();
   m_vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);

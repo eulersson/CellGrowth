@@ -30,6 +30,7 @@ void Scene::initialize()
   prepareQuad();
   prepareParticles();
   setupFBO();
+
   setupLights();
 
   qDebug("%d", m_ps.getSize());
@@ -39,6 +40,7 @@ void Scene::initialize()
 
 void Scene::paint()
 {
+
   deltaTime=timer.elapsed()*0.001;
   timer.restart();
 
@@ -52,6 +54,7 @@ void Scene::paint()
   m_FBO->bind();
   drawParticles();
   for(auto &s : objectList) { s->draw(); }
+
 
   m_FBO->release();
     glActiveTexture(GL_TEXTURE0);
@@ -188,7 +191,6 @@ void Scene::setupLights()
   inputManager.addShaderProgram(m_manipulatorProgram);
   inputManager.addShaderProgram(m_sunProgram);
   inputManager.setObjectList(objectList);
-
 }
 
 void Scene::windowResized(int _w, int _h)

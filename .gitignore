@@ -24,14 +24,18 @@
 *.lib
 
 # Executables
+cells
 *.exe
 *.out
 *.app
 
 # Custom
+build/*
 *.debug
 *.pro.autosave
 *.pro.user
+.DS_Store
 .qmake.stash
 Makefile
 cells
+

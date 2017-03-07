@@ -16,6 +16,11 @@ Manipulator::Manipulator(
 {
 }
 
+Manipulator::~Manipulator()
+{
+
+}
+
 int Manipulator::compareUniqueColour(QVector3D _colour)
 {
   for(size_t i = 0; i < m_arrows.size(); i++)
@@ -31,15 +36,15 @@ int Manipulator::compareUniqueColour(QVector3D _colour)
 void Manipulator::createGeometry(QOpenGLContext *context, std::vector<QVector3D> uColourVec)
 {
   // X ARROW
-  QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject(context);
+  QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject();
   createArrow(vao_x, QVector3D(1.2, 0, 0), uColourVec[0], 0);
 
   // Y ARROW
-  QOpenGLVertexArrayObject *vao_y = new QOpenGLVertexArrayObject(context);
+  QOpenGLVertexArrayObject *vao_y = new QOpenGLVertexArrayObject();
   createArrow(vao_y, QVector3D(0, 1.2, 0), uColourVec[1], 1);
 
   // Z ARROW
-  QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject(context);
+  QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject();
   createArrow(vao_z, QVector3D(0, 0, 1.2), uColourVec[2], 2);
 }
 

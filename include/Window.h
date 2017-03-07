@@ -9,9 +9,10 @@
 
 // Qt
 #include <QOpenGLWindow>
-#include <QTimer>
 #include <QKeyEvent>
+#include <QTimer>
 #include <QWheelEvent>
+
 
 // Project
 #include "AbstractScene.h"

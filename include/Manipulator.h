@@ -8,7 +8,6 @@
 #define MANIPULATOR_H
 
 // Qt
-#include <QOpenGLFunctions_4_5_Core>
 #include <QVector3D>
 
 // OpenGL
@@ -71,6 +70,8 @@ public:
   /// @param[in] _lightProgram !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
   explicit Manipulator (QVector3D _position, QOpenGLShaderProgram *_lightProgram);
+
+  ~Manipulator();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Compares the given colour with the unique colour of each arrow in
