@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="MainWindow_gridLayout">
     <item row="5" column="1">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="m_restart">
       <property name="text">
        <string>Restart</string>
       </property>
@@ -41,7 +41,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="1">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox">
+        <widget class="QDoubleSpinBox" name="m_particleSize">
          <property name="minimum">
           <double>0.010000000000000</double>
          </property>
@@ -65,7 +65,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="m_particleType">
          <item>
           <property name="text">
            <string>Linked Particles</string>
@@ -82,7 +82,7 @@
      </widget>
     </item>
     <item row="5" column="2">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="m_cancle">
       <property name="text">
        <string>Cancle</string>
       </property>
@@ -113,7 +113,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="1">
-        <widget class="QComboBox" name="comboBox_2">
+        <widget class="QComboBox" name="m_splitType">
          <item>
           <property name="text">
            <string>Controlled by Light</string>
@@ -160,9 +160,9 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
-        <widget class="QCheckBox" name="checkBox">
+        <widget class="QCheckBox" name="m_showConnections">
          <property name="text">
-          <string>Show connecions</string>
+          <string>Show connections</string>
          </property>
         </widget>
        </item>
@@ -174,7 +174,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QComboBox" name="comboBox_3">
+        <widget class="QComboBox" name="m_shadineType">
          <item>
           <property name="text">
            <string>Ambient Occlusion</string>
@@ -196,7 +196,7 @@
      </widget>
     </item>
     <item row="1" column="1" colspan="2">
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="m_particleTab">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -221,13 +221,13 @@
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="m_linkedParticleTab">
        <attribute name="title">
         <string>Linked Particles</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox_3">
+         <widget class="QGroupBox" name="m_LP_forces">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -259,21 +259,21 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QSlider" name="horizontalSlider">
+            <widget class="QSlider" name="m_LP_cohesion">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QSlider" name="horizontalSlider_2">
+            <widget class="QSlider" name="m_LP_spring">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSlider" name="horizontalSlider_3">
+            <widget class="QSlider" name="m_LP_bulge">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -291,7 +291,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="m_growthParticleTab">
        <attribute name="title">
         <string>Growth Particles</string>
        </attribute>
@@ -304,10 +304,10 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QSpinBox" name="spinBox_2"/>
+         <widget class="QSpinBox" name="m_GP_growRadius"/>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="spinBox"/>
+         <widget class="QSpinBox" name="m_GP_branches"/>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_6">
