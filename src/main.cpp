@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// @file main.cpp
-/// @author Lola Gille
+/// @author Carola Gille
 /// @author Glenn Nygard
 /// @author Lydia Kenton
 /// @author Esme Prior
