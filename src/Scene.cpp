@@ -167,13 +167,13 @@ void Scene::setupFBO()
 void Scene::setupLights()
 {
   m_manipulatorProgram = new QOpenGLShaderProgram(this);
-  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/manipvert.vert");
-  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manipfrag.frag");
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/manip.vert");
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manip.frag");
   m_manipulatorProgram->link();
 
   m_sunProgram = new QOpenGLShaderProgram(this);
-  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/sunvert.vert");
-  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sunfrag.frag");
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/sun.vert");
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sun.frag");
   m_sunProgram->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);

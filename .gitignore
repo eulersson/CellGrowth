@@ -29,6 +29,9 @@
 *.app
 
 # Custom
-cells
+*.debug
+*.pro.autosave
 *.pro.user
+.qmake.stash
 Makefile
+cells
