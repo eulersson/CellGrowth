@@ -27,3 +27,8 @@
 *.exe
 *.out
 *.app
+
+# Custom
+cells
+*.pro.user
+Makefile

@@ -1,14 +1,36 @@
 # CellGrowthProjectCVA3
-CVA 3 Group project
 
-* Lola Gille
-* Ramon Blanquer
-* Lydia Kenton
-* Fanny V. Marstrom
-* Esme Prior
-* Glenn Nygard
+Programming project that explores visualization of different growth-like
+particle system based algorithms.
 
-Put all you work in this repository, you should use the wiki for all of the work and to help tracking jobs for the team members.
+The components of our group and brief description of their area of work:
 
+Member           | Task
+---------------- | -------------------------------------
+Lola Gille       | Particle links and splitting design.
+Glenn Nygard     | Light and interactive manipulators.
+Lydia Kenton     | Cell dynamics and force calculations.
+Esme Prior       | Cell dynamics and force calculations.
+Valeria Marstorm | Visualization, rendering and shading.
+Ramon Blanquer   | Director
 
-You must also figure out a workflow for how the team will use GitHub and submit work. Read here for more details on approaches https://guides.github.com/
+Check the wiki for a more detailed description of each task.
+
+## Instructions
+
+```
+$ cd CellGrowthProjectCVA3
+$ qmake Cells.pro
+$ make
+$ ./cells
+```
+
+## Documentation
+
+Find the online pages at https://docwhite.github.com/CellGrowthProjectCVA3 or
+build them with Doxygen as follows:
+
+```
+$ doxygen Doxyfile
+$ google-chrome docs/html/index.html
+```
