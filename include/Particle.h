@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file Particle.h
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
@@ -8,10 +15,6 @@
 #include<QVector3D>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @file Particle.h
-/// @author Carola Gille
-/// @author Ramon Blanquer
-/// @version 0.0.1
 /// @class Particle
 /// @brief Base particle class providing common methods and attributes that will
 /// be common to subclasses. The advance() method will need to be reimplemented.
