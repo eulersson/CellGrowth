@@ -18,7 +18,9 @@ Manipulator::Manipulator(
 
 Manipulator::~Manipulator()
 {
-
+  for (auto& arrow: m_arrows) {
+    delete arrow.vao;  // Free memory for VAO, we could be using smart pointers!
+  }
 }
 
 int Manipulator::compareUniqueColour(QVector3D _colour)
