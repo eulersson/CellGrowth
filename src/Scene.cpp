@@ -30,6 +30,7 @@ void Scene::initialize()
   prepareQuad();
   prepareParticles();
   setupFBO();
+
   setupLights();
 
   qDebug("%d", m_ps.getSize());
@@ -39,6 +40,7 @@ void Scene::initialize()
 
 void Scene::paint()
 {
+
   deltaTime=timer.elapsed()*0.001;
   timer.restart();
 
@@ -52,6 +54,7 @@ void Scene::paint()
   m_FBO->bind();
   drawParticles();
   for(auto &s : objectList) { s->draw(); }
+
 
   m_FBO->release();
     glActiveTexture(GL_TEXTURE0);
@@ -167,13 +170,13 @@ void Scene::setupFBO()
 void Scene::setupLights()
 {
   m_manipulatorProgram = new QOpenGLShaderProgram(this);
-  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/manipvert.vert");
-  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manipfrag.frag");
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/manip.vert");
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manip.frag");
   m_manipulatorProgram->link();
 
   m_sunProgram = new QOpenGLShaderProgram(this);
-  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/sunvert.vert");
-  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sunfrag.frag");
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/sun.vert");
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sun.frag");
   m_sunProgram->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
@@ -188,7 +191,6 @@ void Scene::setupLights()
   inputManager.addShaderProgram(m_manipulatorProgram);
   inputManager.addShaderProgram(m_sunProgram);
   inputManager.setObjectList(objectList);
-
 }
 
 void Scene::windowResized(int _w, int _h)

@@ -40,9 +40,9 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
 
 
 Particle::Particle(qreal _x,
-    qreal _y,
-    qreal _z,
-    std::vector<unsigned int> _connectedParticles)
+      qreal _y,
+      qreal _z,
+      std::vector<unsigned int> _connectedParticles)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
     , m_size(2.0)
