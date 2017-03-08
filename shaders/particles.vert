@@ -24,7 +24,13 @@ void main(void)
     worldPosition = position;
     partRadius = radius;
 
+    vec3 newpos = position;
+    newpos.x / 200;
+    newpos.y / 200;
+
+
 
     gl_Position = ProjectionMatrix * vec4(position, 1.0);
-    gl_PointSize = radius_multiplier * radius / (radius_distance_decay * abs(position.z));
+    //gl_PointSize = radius_multiplier * radius / (radius_distance_decay * abs(position.z));
+    gl_PointSize = 29.3 *radius;
 }

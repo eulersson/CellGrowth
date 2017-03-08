@@ -20,8 +20,8 @@ unsigned int Particle::m_ID_counter(0);
 Particle::Particle()
     : m_pos(QVector3D(0,0,0))
     , m_ID(m_ID_counter++)
-    , m_size(2.0)
-    , m_foodLevel(0)
+    , m_size(1.0)
+    , m_foodLevel(1)
     , m_foodTreshold(0)
 {
   qDebug("Particle default constructor.");
@@ -31,7 +31,7 @@ Particle::Particle()
 Particle::Particle(qreal _x, qreal _y, qreal _z)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_size(2.0)
+    , m_size(1.0)
     , m_foodLevel(0)
     , m_foodTreshold(100)
 {
@@ -44,7 +44,7 @@ Particle::Particle(qreal _x,
     std::vector<unsigned int> _connectedParticles)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_size(2.0)
+    , m_size(1.0)
     , m_foodLevel(0)
     , m_foodTreshold(100)
 {
@@ -55,6 +55,7 @@ Particle::Particle(qreal _x,
 
 void Particle::advance()
 {
+
   m_pos += m_vel;
 }
 

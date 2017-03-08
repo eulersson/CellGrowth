@@ -56,15 +56,18 @@ void ParticleSystem::fill(unsigned int _amount)
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
-
+  std::vector<QVector3D> pos;
+  pos.push_back(QVector3D(10,10,-25));
+  pos.push_back(QVector3D(10,-10,-25));
+  pos.push_back(QVector3D(-10,-10,-25));
   for (unsigned int i = 0; i < _amount; i++)
   {
-    qreal x=distribution(gen);
-    qreal y=distribution(gen);
+    //qreal x=distribution(gen);
+    //qreal y=distribution(gen);
     //qreal z=distribution(gen);
-    qreal z = -25.0f;
+   // qreal z = -25.0f;
 
-    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(),pos[i].y(),pos[i].z())));
     m_particleCount++;
   }
 
@@ -207,7 +210,7 @@ QVector3D ParticleSystem::calculateParticleCentre()
   for (auto &particle : m_particles)
   {
     QVector3D particlePosition = particle->getPosition();
-    std::cout<<"ParticlePosition: "<<particlePosition.x()<<" "<<particlePosition.y()<<" "<<particlePosition.z()<<std::endl;
+    //std::cout<<"ParticlePosition: "<<particlePosition.x()<<" "<<particlePosition.y()<<" "<<particlePosition.z()<<std::endl;
     m_particleCentre += particlePosition;
 
   }

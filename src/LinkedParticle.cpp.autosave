@@ -219,7 +219,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
         iterate through cells once (checking positions)
         place cells into arrays (A1 etc) dependant on position
 
-        result: arrays of positions of cells
+        result: arrays of positions of cells that are close by 
 
         problem: working out how to move cells using m_ID*/
 
