@@ -8,7 +8,7 @@
 #include "Scene.h"
 #include <QKeyEvent>
 
-Scene::Scene(Window *_window) : AbstractScene(_window)
+Scene::Scene(Window *_window) : AbstractScene(_window), inputManager(_window)
 {
 }
 
@@ -31,17 +31,30 @@ void Scene::initialize()
   prepareParticles();
   setupFBO();
 
-  //qDebug("%d", m_ps.getSize());
+  setupLights();
+
+  qDebug("%d", m_ps.getSize());
+
+  timer.start();
 }
 
 void Scene::paint()
 {
 
+  deltaTime=timer.elapsed()*0.001;
+  timer.restart();
+
   glClearColor(0.0f, 0.2f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
+  updateModelMatrix();
+  inputManager.setupCamera();
+  inputManager.doMovement();
+
   m_FBO->bind();
-    drawParticles();
+  drawParticles();
+  for(auto &s : objectList) { s->draw(); }
+
 
   m_FBO->release();
     glActiveTexture(GL_TEXTURE0);
@@ -49,6 +62,7 @@ void Scene::paint()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, m_FBO->takeTexture(1));
     drawQuad();
+
     updateParticleSystem();
 }
 
@@ -128,7 +142,9 @@ void Scene::drawQuad()
 void Scene::drawParticles()
 {
   m_part_program->bind();
-  m_part_program->setUniformValue("ProjectionMatrix", m_projectionMatrix);
+  m_part_program->setUniformValue("ProjectionMatrix", inputManager.getProjectionMatrix());
+  m_part_program->setUniformValue("ModelMatrix", m_modelMatrix);
+  m_part_program->setUniformValue("ViewMatrix", inputManager.getViewMatrix());
   m_part_vao->bind();
   glEnable(GL_POINT_SPRITE);
   glEnable(GL_PROGRAM_POINT_SIZE);
@@ -153,26 +169,43 @@ void Scene::setupFBO()
   m_FBO->release();
 }
 
-void Scene::keyPressed(QKeyEvent *ev)
+void Scene::setupLights()
 {
-  switch(ev->key()) {
-  case Qt::Key_N:
-    m_activeRenderPassIndex = m_normalShadingIndex;
-    break;
-  case Qt::Key_P:
-    m_activeRenderPassIndex = m_positionShadingIndex;
-    break;
-  case Qt::Key_Space:
-    m_ps.splitRandomParticle();
-    //updateParticleSystem();
-  default:
-    break;
+  m_manipulatorProgram = new QOpenGLShaderProgram(this);
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/manip.vert");
+  m_manipulatorProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manip.frag");
+  m_manipulatorProgram->link();
+
+  m_sunProgram = new QOpenGLShaderProgram(this);
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/sun.vert");
+  m_sunProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sun.frag");
+  m_sunProgram->link();
+
+  QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
+  for(int x=-4;x<4;x+=4) {
+      for(int y=-4;y<4;y+=4) {
+          PointLight *pointlight;
+          pointlight = new PointLight(QVector3D(x,y,0), m_manipulatorProgram, m_sunProgram);
+          pointlight->createGeometry(context(), masterUniqueColour);
+          objectList.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+      }
   }
+  inputManager.addShaderProgram(m_manipulatorProgram);
+  inputManager.addShaderProgram(m_sunProgram);
+  inputManager.setObjectList(objectList);
 }
 
 void Scene::windowResized(int _w, int _h)
 {
-  //qDebug("Window rezised to %d and %d", _w, _h);
+  qDebug("Window rezised to %d and %d", _w, _h);
+}
+
+QMatrix4x4 Scene::updateModelMatrix()
+{
+  // Insert particle system position here
+  QVector3D pointPos=QVector3D(0,0,0);
+  m_modelMatrix.setToIdentity();
+  m_modelMatrix.translate(pointPos);
 }
 
 void Scene::updateParticleSystem()
@@ -191,7 +224,7 @@ void Scene::sendParticleDataToOpenGL()
   // data that gets sent to OpenGL.
   for_each(m_packagedParticleData.begin(), m_packagedParticleData.end(), [](float f)
   {
-    //qDebug("%f", f);
+    qDebug("%f", f);
   });
 
   m_part_vao->bind();
@@ -207,4 +240,48 @@ void Scene::sendParticleDataToOpenGL()
 
   m_part_vbo.release();
   m_part_vao->release();
+}
+
+void Scene::keyPressed(QKeyEvent *ev)
+{
+  switch(ev->key()) {
+  case Qt::Key_N:
+    m_activeRenderPassIndex = m_normalShadingIndex;
+    break;
+  case Qt::Key_P:
+    m_activeRenderPassIndex = m_positionShadingIndex;
+    break;
+  case Qt::Key_Space:
+    //updateParticleSystem();
+    m_ps.splitRandomParticle();
+  default:
+    break;
+  }
+
+  inputManager.keyPressEvent(ev);
+}
+
+void Scene::keyReleaseEvent(QKeyEvent *key)
+{
+    inputManager.keyReleaseEvent(key);
+}
+
+void Scene::mouseMoveEvent(QMouseEvent* event)
+{
+    inputManager.mouseMoveEvent(event);
+}
+
+void Scene::mousePressEvent(QMouseEvent *event)
+{
+    inputManager.mousePressEvent(event);
+}
+
+void Scene::mouseReleaseEvent(QMouseEvent *event)
+{
+    inputManager.mouseReleaseEvent(event);
+}
+
+void Scene::wheelEvent(QWheelEvent *event)
+{
+    inputManager.wheelEvent(event);
 }

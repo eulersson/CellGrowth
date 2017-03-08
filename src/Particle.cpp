@@ -21,7 +21,7 @@ Particle::Particle()
     : m_pos(QVector3D(0,0,0))
     , m_ID(m_ID_counter++)
     , m_size(1.0)
-    , m_foodLevel(1)
+    , m_foodLevel(0)
     , m_foodTreshold(0)
 {
   qDebug("Particle default constructor.");
@@ -35,27 +35,26 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
     , m_foodLevel(0)
     , m_foodTreshold(100)
 {
-  //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+  qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 Particle::Particle(qreal _x,
-    qreal _y,
-    qreal _z,
-    std::vector<unsigned int> _connectedParticles)
+      qreal _y,
+      qreal _z,
+      std::vector<unsigned int> _connectedParticles)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
     , m_size(1.0)
     , m_foodLevel(0)
     , m_foodTreshold(100)
 {
-  //qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
-         //"particles", _x, _y, _z);
+  qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
+         "particles", _x, _y, _z);
   m_connectedParticles = _connectedParticles;
 }
 
 void Particle::advance()
 {
-
   m_pos += m_vel;
 }
 

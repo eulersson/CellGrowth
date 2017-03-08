@@ -59,3 +59,28 @@ void Window::keyPressEvent(QKeyEvent* ev)
 {
   scene()->keyPressed(ev);
 }
+
+void Window::keyReleaseEvent(QKeyEvent *key)
+{
+  scene()->keyReleaseEvent(key);
+}
+
+void Window::mouseMoveEvent(QMouseEvent* event)
+{
+  scene()->mouseMoveEvent(event);
+}
+
+void Window::mousePressEvent(QMouseEvent *event)
+{
+  scene()->mousePressEvent(event);
+}
+
+void Window::mouseReleaseEvent(QMouseEvent *event)
+{
+  scene()->mouseReleaseEvent(event);
+}
+
+void Window::wheelEvent(QWheelEvent *event)
+{
+  scene()->wheelEvent(event);
+}

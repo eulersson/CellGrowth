@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file LinkedParticle.h
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef LINKEDPARTICLE_H
 #define LINKEDPARTICLE_H
 
@@ -5,10 +12,6 @@
 #include "Particle.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @file LinkedParticle.h
-/// @author Carola Gille
-/// @author Ramon Blanquer
-/// @version 0.0.1
 /// @class LinkedParticle
 /// @brief Inherits from Particle class, Linked particles Cell growth based on
 /// surfaces.

@@ -11,7 +11,7 @@ LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z):Particle(_x,_y,_z)
 {
-   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+   qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
@@ -21,8 +21,8 @@ LinkedParticle::LinkedParticle(qreal _x,
                                std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
 {
 
-  //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
-    //     "particles", _x, _y, _z);
+  qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
+         "particles", _x, _y, _z);
 
 }
 
@@ -31,16 +31,15 @@ LinkedParticle::LinkedParticle(qreal _x,
 // All the force calculation should happen in here
 void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D> m_listOfPositions)
 {
-
   //COHERE
   unsigned int speed = 1000;
   QVector3D distance = _particleCentre - m_pos;
 
   QVector3D cohesion = distance;
 
-  if((distance.x() <= 1)
-         && (distance.y() <= 1)
-         && (distance.z() <= 1))
+  if((distance.x() <= m_size)
+         && (distance.y() <= m_size)
+         && (distance.z() <= m_size))
   {
       m_vel/=1.1;
   }
@@ -67,7 +66,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
           if(i != j)
           {
             distanceY = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-            if(distanceY < 1 && distanceY >(-1) )
+            if(distanceY < m_size && distanceY >(-(m_size)) )
             {
               if(m_ID == i)
               {
@@ -88,7 +87,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
 //            }
 
             distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
-            if(distanceX < 1 && distanceX >(-1) )
+            if(distanceX < m_size && distanceX >(-(m_size)) )
             {
               if(m_ID == i)
               {
@@ -109,7 +108,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
 //            }
 
             distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-            if(distanceZ < 1 && distanceZ >(-1) )
+            if(distanceZ < m_size && distanceZ >(-(m_size)) )
             {
               if(m_ID == i)
               {
@@ -222,7 +221,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
         result: arrays of positions of cells
 
         problem: working out how to move cells using m_ID*/
-
 }
 
 

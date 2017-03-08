@@ -2,6 +2,8 @@
 
 // Uniforms
 uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ModelMatrix;
 
 // Ins
 in vec3 position;
@@ -17,20 +19,12 @@ const float radius_multiplier = 40.0;
 // The further the particle is the smaller the bitmap is drawn
 const float radius_distance_decay = 0.2;
 
-
-
 void main(void)
 {    
     worldPosition = position;
     partRadius = radius;
 
-    vec3 newpos = position;
-    newpos.x / 200;
-    newpos.y / 200;
-
-
-
-    gl_Position = ProjectionMatrix * vec4(position, 1.0);
+    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(position, 1.0);
     //gl_PointSize = radius_multiplier * radius / (radius_distance_decay * abs(position.z));
     gl_PointSize = 29.3 *radius;
 }
