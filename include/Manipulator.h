@@ -86,7 +86,7 @@ public:
   /// @param[in] uColourVec Vector of unique colours to be assigned to the
   /// manipulator arrows.
   //////////////////////////////////////////////////////////////////////////////
-  void createGeometry(QOpenGLContext *context, std::vector<QVector3D> uColourVec);
+  void createGeometry(QOpenGLContext *_context, std::vector<QVector3D> _uColourVec);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draws the manipulator to the main buffer.
@@ -108,10 +108,10 @@ public:
   /// \return QVector3D New position of light.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D processMouseMovement(
-      float offsetx,
-      float offsety,
-      float offsetz,
-      QVector3D currentPos);
+      float _offsetx,
+      float _offsety,
+      float _offsetz,
+      QVector3D _currentPos);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets the manipulator arrows to clicked/not clicked.
@@ -119,14 +119,14 @@ public:
   /// @param[in] state Boolean stating wether it is being run from mouse click
   /// or release. If the latter clicked should always be set to false.
   //////////////////////////////////////////////////////////////////////////////
-  void setClicked(QVector3D uColourIdentity, bool state);
+  void setClicked(QVector3D _uColourIdentity, bool _state);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Changes the colour of the manipulator arrows if the mouse is
   /// hovering over them.
   /// @param[in] axis Specifies which axis is being affected.
   //////////////////////////////////////////////////////////////////////////////
-  void setHover(int axis);
+  void setHover(int _axis);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns all arrows in the arrow vector.
@@ -142,16 +142,16 @@ private:
   /// @param[out] arrow The arrow struct after the vbo has been added to it.
   //////////////////////////////////////////////////////////////////////////////
   void setupVBO(
-      std::vector<QVector3D> vertices,
-      std::vector<QVector3D> normals,
-      Arrow &arrow);
+      std::vector<QVector3D> _vertices,
+      std::vector<QVector3D> _normals,
+      Arrow &_arrow);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates and sets up the vao for the provided arrow object
   /// @param[out] arrow The arrow struct after the vbo has been added to it.
   /// @param[in] vao The initialised vao to be set up.
   //////////////////////////////////////////////////////////////////////////////
-  void setupVAO(Arrow &arrow, QOpenGLVertexArrayObject *vao);
+  void setupVAO(Arrow &_arrow, QOpenGLVertexArrayObject *_vao);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates an arrow. Changes the colour of the manipulator arrows if
@@ -162,10 +162,10 @@ private:
   /// @param[in] axis Axis assigned to the arrow.
   //////////////////////////////////////////////////////////////////////////////
   void createArrow(
-      QOpenGLVertexArrayObject *vao,
-      QVector3D offsetPos,
-      QVector3D uniqueColour,
-      int axis);
+      QOpenGLVertexArrayObject *_vao,
+      QVector3D _offsetPos,
+      QVector3D _uniqueColour,
+      int _axis);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Manipulator shader program

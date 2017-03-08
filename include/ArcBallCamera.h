@@ -56,10 +56,7 @@ const GLfloat ARCSENSITIVTY = 0.25f;
 /// @class ArcBallCamera
 /// @brief Camera rotating around a given point.
 ///
-/// Camera class based on the LearnOpenGL camera class, found here:
-/// https://learnopengl.com/#!Getting-started/Camera. Modified to use Qt
-/// functions instead og GLM and to rotate around a central point (ArcBall)
-/// instead of a 'flying man' approach.
+/// ArcBall camera. Rotates around a central point.
 ///
 /// Movement:
 /// - alt + left mouse button to rotate around the rotation point
@@ -105,19 +102,19 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets the point the camera rotates around.
   //////////////////////////////////////////////////////////////////////////////
-  void setRotationPoint(QVector3D rp);
+  void setRotationPoint(QVector3D _rp);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Processes keyboard inputs. Moves camera in a given direction.
   //////////////////////////////////////////////////////////////////////////////
-  void processKeyboard(ARCCamera_Movement direction, GLfloat deltaTime);
+  void processKeyboard(ARCCamera_Movement _direction, GLfloat _deltaTime);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Processes input received from a mouse input system.
   /// Expects the offset value in both the x and y direction.
   //////////////////////////////////////////////////////////////////////////////
-  void processMouseMovement(GLfloat xoffset, GLfloat yoffset,
-                            GLboolean constrainPitch = true);
+  void processMouseMovement(GLfloat _xoffset, GLfloat _yoffset,
+                            GLboolean _constrainPitch = true);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief !!!MISSING
@@ -129,14 +126,14 @@ public:
   /// Only requires input on the vertical wheel-axis.
   /// @param[in] steps !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void processMouseScroll(int steps);
+  void processMouseScroll(int _steps);
 
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates a new distance to the rotation point based on a velocity
   /// input.
   //////////////////////////////////////////////////////////////////////////////
-  void move(QVector3D velocity);
+  void move(QVector3D _velocity);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Camera position.

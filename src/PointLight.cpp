@@ -16,13 +16,13 @@ int PointLight::compareUniqueColour(QVector3D _colour)
   return m_manip.compareUniqueColour(_colour);
 }
 
-void PointLight::createGeometry(QOpenGLContext *context, QVector3D &masterUniqueColour)
+void PointLight::createGeometry(QOpenGLContext *_context, QVector3D &_masterUniqueColour)
 {
   // Setup light representation VBO VAO
-  setupObject(context);
+  setupObject(_context);
   // Setup manipulator geometry
   int amountOfColours=3;
-  m_manip.createGeometry(context, getMultipleNewUniqueColour(amountOfColours, masterUniqueColour));
+  m_manip.createGeometry(_context, getMultipleNewUniqueColour(amountOfColours, _masterUniqueColour));
 }
 
 void PointLight::draw()
@@ -58,14 +58,14 @@ void PointLight::drawBackBuffer()
   m_manip.drawBackBuffer();
 }
 
-void PointLight::processMouseMovement(float offsetx, float offsety, float offsetz)
+void PointLight::processMouseMovement(float offsetx, float _offsety, float _offsetz)
 {
-  updateModelMatrix(offsetx, offsety, offsetz);
+  updateModelMatrix(offsetx, _offsety, _offsetz);
 }
 
-void PointLight::setClicked(QVector3D uColour, bool state)
+void PointLight::setClicked(QVector3D uColour, bool _state)
 {
-  m_manip.setClicked(uColour, state);
+  m_manip.setClicked(uColour, _state);
 }
 
 void PointLight::setHover(int id)
@@ -106,12 +106,12 @@ void PointLight::setupObject(QOpenGLContext *_context)
   m_vao->release();
 }
 
-void PointLight::updateModelMatrix(float offsetx, float offsety, float offsetz)
+void PointLight::updateModelMatrix(float offsetx, float _offsety, float _offsetz)
 {
   QVector3D pointPos=m_position;
   m_model.setToIdentity();
   m_model.translate(pointPos);
   GLfloat angle = 0.0f;
   m_model.rotate(angle, QVector3D(1,0.3,0.5));
-  m_position=m_manip.processMouseMovement(offsetx, offsety, offsetz, m_position);
+  m_position=m_manip.processMouseMovement(offsetx, _offsety, _offsetz, m_position);
 }

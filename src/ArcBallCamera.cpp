@@ -41,21 +41,21 @@ void ArcBallCamera::setRotationPoint(QVector3D rp)
   m_rotationPoint=rp;
 }
 
-void ArcBallCamera::processKeyboard(ARCCamera_Movement direction, GLfloat deltaTime)
+void ArcBallCamera::processKeyboard(ARCCamera_Movement _direction, GLfloat _deltaTime)
 {
-  GLfloat velocity = this->m_movementSpeed * deltaTime;
-  if (direction == ARCFORWARD) {
+  GLfloat velocity = this->m_movementSpeed * _deltaTime;
+  if (_direction == ARCFORWARD) {
       this->m_dir=this->m_up;
   }
-  if (direction == ARCBACKWARD) {
+  if (_direction == ARCBACKWARD) {
       //SetDistance(velocity);
       this->m_dir=-this->m_up;
 
   }
-  if (direction == ARCLEFT) {
+  if (_direction == ARCLEFT) {
       this->m_dir=-this->m_right;
   }
-  if (direction == ARCRIGHT) {
+  if (_direction == ARCRIGHT) {
       this->m_dir=this->m_right;
   }
 
@@ -66,10 +66,10 @@ void ArcBallCamera::processKeyboard(ARCCamera_Movement direction, GLfloat deltaT
   this->m_position=QVector3D(m_view(0,3), m_view(1,3), m_view(2,3));
 }
 
-void ArcBallCamera::processMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboolean constrainPitch)
+void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset, GLboolean _constrainPitch)
 {
-  xoffset *= this->m_mouseSensitivity;
-  yoffset *= this->m_mouseSensitivity;
+  _xoffset *= this->m_mouseSensitivity;
+  _yoffset *= this->m_mouseSensitivity;
 
   // Make sure that when pitch is out of bounds, screen doesn't get flipped
   //    if (constrainPitch)
@@ -80,8 +80,8 @@ void ArcBallCamera::processMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboo
   //            yoffset=0;//this->Pitch = -89.0f;
   //    }
 
-  this->m_yaw   += xoffset;
-  this->m_pitch += yoffset;
+  this->m_yaw   += _xoffset;
+  this->m_pitch += _yoffset;
 
   //    QVector3D tmppos=Position;
   //    Position = QVector3D (
@@ -124,7 +124,7 @@ void ArcBallCamera::processMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboo
   //Position=QVector3D(1,1,1);
 
   // Do x rotation.
-  m_view.rotate(xoffset, 0,1,0);
+  m_view.rotate(_xoffset, 0,1,0);
   // Get updated position by multiplying with the view matrix.
   m_position=m_position*m_view;
   QVector3D dir=(QVector3D(m_position.x(), m_position.y(), m_position.z())-m_rotationPoint);
@@ -132,7 +132,7 @@ void ArcBallCamera::processMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboo
   this->m_right=-QVector3D::crossProduct(dir,this->m_worldUp);
   this->m_right.normalize();
   // Do y rotation.
-  m_view.rotate(yoffset, this->m_right);
+  m_view.rotate(_yoffset, this->m_right);
   //Position=Position*view;
   dir=(QVector3D(m_position.x(), m_position.y(), m_position.z())-m_rotationPoint);
   // Calculate camera up.

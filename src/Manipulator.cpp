@@ -35,19 +35,19 @@ int Manipulator::compareUniqueColour(QVector3D _colour)
   return -1;
 }
 
-void Manipulator::createGeometry(QOpenGLContext *context, std::vector<QVector3D> uColourVec)
+void Manipulator::createGeometry(QOpenGLContext *_context, std::vector<QVector3D> _uColourVec)
 {
   // X ARROW
   QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject();
-  createArrow(vao_x, QVector3D(1.2, 0, 0), uColourVec[0], 0);
+  createArrow(vao_x, QVector3D(1.2, 0, 0), _uColourVec[0], 0);
 
   // Y ARROW
   QOpenGLVertexArrayObject *vao_y = new QOpenGLVertexArrayObject();
-  createArrow(vao_y, QVector3D(0, 1.2, 0), uColourVec[1], 1);
+  createArrow(vao_y, QVector3D(0, 1.2, 0), _uColourVec[1], 1);
 
   // Z ARROW
   QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject();
-  createArrow(vao_z, QVector3D(0, 0, 1.2), uColourVec[2], 2);
+  createArrow(vao_z, QVector3D(0, 0, 1.2), _uColourVec[2], 2);
 }
 
 void Manipulator::draw()
@@ -105,11 +105,10 @@ void Manipulator::drawBackBuffer()
   }
 }
 
-QVector3D Manipulator::processMouseMovement(
-    float offsetx,
-    float offsety,
-    float offsetz,
-    QVector3D currentPos)
+QVector3D Manipulator::processMouseMovement(float _offsetx,
+    float _offsety,
+    float _offsetz,
+    QVector3D _currentPos)
 {
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
@@ -118,34 +117,34 @@ QVector3D Manipulator::processMouseMovement(
       switch(m_arrows[i].axis)
       {
         case DIRECTION_X:
-          currentPos = QVector3D(currentPos.x() + offsetx * SENSITIVITY,
-                                 currentPos.y(),
-                                 currentPos.z());
+          _currentPos = QVector3D(_currentPos.x() + _offsetx * SENSITIVITY,
+                                 _currentPos.y(),
+                                 _currentPos.z());
           break;
 
         case DIRECTION_Y:
-          currentPos = QVector3D(currentPos.x(),
-                                 currentPos.y() + offsety * SENSITIVITY,
-                                 currentPos.z());
+          _currentPos = QVector3D(_currentPos.x(),
+                                 _currentPos.y() + _offsety * SENSITIVITY,
+                                 _currentPos.z());
           break;
 
         case DIRECTION_Z:
-          currentPos = QVector3D(currentPos.x(),
-                                 currentPos.y(),
-                                 currentPos.z() - offsetz * SENSITIVITY);
+          _currentPos = QVector3D(_currentPos.x(),
+                                 _currentPos.y(),
+                                 _currentPos.z() - _offsetz * SENSITIVITY);
           break;
       }
     }
   }
 
-  return currentPos;
+  return _currentPos;
 }
 
-void Manipulator::setClicked(QVector3D uColourIdentity, bool state)
+void Manipulator::setClicked(QVector3D uColourIdentity, bool _state)
 {
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
-    if(state == false)
+    if(_state == false)
     {
       m_arrows[i].clicked = false;
     }
@@ -177,22 +176,22 @@ void Manipulator::getArrows(std::vector<Arrow> &_arrows)
 }
 
 void Manipulator::setupVBO(
-    std::vector<QVector3D> vertices,
-    std::vector<QVector3D> normals,
-    Arrow &arrow)
+    std::vector<QVector3D> _vertices,
+    std::vector<QVector3D> _normals,
+    Arrow &_arrow)
 {
   // OpenGL wants a flat array of GLfloats
   std::vector<GLfloat> m_pointPosArray;
-  GLint m_numberOfPoints = vertices.size();
+  GLint m_numberOfPoints = _vertices.size();
   for (size_t i = 0; i < m_numberOfPoints; i++)
   {
-    m_pointPosArray.push_back(vertices[i].x());
-    m_pointPosArray.push_back(vertices[i].y());
-    m_pointPosArray.push_back(vertices[i].z());
+    m_pointPosArray.push_back(_vertices[i].x());
+    m_pointPosArray.push_back(_vertices[i].y());
+    m_pointPosArray.push_back(_vertices[i].z());
 
-    m_pointPosArray.push_back(normals[i].x());
-    m_pointPosArray.push_back(normals[i].y());
-    m_pointPosArray.push_back(normals[i].z());
+    m_pointPosArray.push_back(_normals[i].x());
+    m_pointPosArray.push_back(_normals[i].y());
+    m_pointPosArray.push_back(_normals[i].z());
   }
 
   QOpenGLBuffer* vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
@@ -203,14 +202,14 @@ void Manipulator::setupVBO(
   vbo->setUsagePattern(QOpenGLBuffer::StaticDraw); //Previoulsy DynamicDraw
   // Allocate enogh place for all data
   vbo->allocate(&m_pointPosArray[0], 6 * m_numberOfPoints * sizeof(GLfloat));
-  arrow.vbo=vbo;
+  _arrow.vbo=vbo;
 }
 
-void Manipulator::setupVAO(Arrow &arrow,QOpenGLVertexArrayObject *vao)
+void Manipulator::setupVAO(Arrow &_arrow, QOpenGLVertexArrayObject *_vao)
 {
   // Vertex Array Object
-  vao->create();
-  vao->bind();
+  _vao->create();
+  _vao->bind();
 
   // Stride is 5* size of float because the vertex contains 6 values
   // First number states where to start (offset)
@@ -222,25 +221,24 @@ void Manipulator::setupVAO(Arrow &arrow,QOpenGLVertexArrayObject *vao)
   m_manipshaderp->setAttributeBuffer("normAttr", GL_FLOAT, 3 * sizeof(GLfloat), 3, 6 * sizeof(GL_FLOAT));
   m_manipshaderp->enableAttributeArray("normAttr");
 
-  vao->release();
+  _vao->release();
 
-  arrow.vao=vao;
+  _arrow.vao=_vao;
 }
 
-QVector3D calculateNormal(QVector3D v1, QVector3D v2, QVector3D v3)
+QVector3D calculateNormal(QVector3D _v1, QVector3D _v2, QVector3D _v3)
 {
-  QVector3D edge1 = v2 - v1;
-  QVector3D edge2 = v3 - v1;
+  QVector3D edge1 = _v2 - _v1;
+  QVector3D edge2 = _v3 - _v1;
   QVector3D n = QVector3D::crossProduct(edge1, edge2);
   n.normalize();
   return  n;
 }
 
-void Manipulator::createArrow(
-    QOpenGLVertexArrayObject *vao,
-    QVector3D offsetPos,
-    QVector3D uniqueColour,
-    int axis)
+void Manipulator::createArrow(QOpenGLVertexArrayObject *_vao,
+    QVector3D _offsetPos,
+    QVector3D _uniqueColour,
+    int _axis)
 {
 
   // Vector of normals. To be sent to the shader.
@@ -251,7 +249,7 @@ void Manipulator::createArrow(
   float radius = 0.2f;
   float height = 0.8f;
 
-  offsetPos+=m_position;
+  _offsetPos+=m_position;
 
   QVector3D topPoint;
   for(unsigned int i = 0; i < sectors; i++) {
@@ -272,38 +270,38 @@ void Manipulator::createArrow(
     float y2;
     float z2;
 
-    switch(axis){
+    switch(_axis){
       case DIRECTION_X:
-        topPoint = QVector3D(offsetPos.x()+height,offsetPos.y(),offsetPos.z());
-        x = 0 + offsetPos.x();
-        y = s + offsetPos.y();
-        z = c + offsetPos.z();
+        topPoint = QVector3D(_offsetPos.x()+height,_offsetPos.y(),_offsetPos.z());
+        x = 0 + _offsetPos.x();
+        y = s + _offsetPos.y();
+        z = c + _offsetPos.z();
 
-        x2 = 0 + offsetPos.x();
-        y2 = s2 + offsetPos.y();
-        z2 = c2 + offsetPos.z();
+        x2 = 0 + _offsetPos.x();
+        y2 = s2 + _offsetPos.y();
+        z2 = c2 + _offsetPos.z();
         break;
 
       case DIRECTION_Y:
-        topPoint = QVector3D(offsetPos.x(), offsetPos.y() + height, offsetPos.z());
-        x = c + offsetPos.x();
-        y = 0 + offsetPos.y();
-        z = s + offsetPos.z();
+        topPoint = QVector3D(_offsetPos.x(), _offsetPos.y() + height, _offsetPos.z());
+        x = c + _offsetPos.x();
+        y = 0 + _offsetPos.y();
+        z = s + _offsetPos.z();
 
-        x2 = c2 + offsetPos.x();
-        y2 = 0 + offsetPos.y();
-        z2 = s2 + offsetPos.z();
+        x2 = c2 + _offsetPos.x();
+        y2 = 0 + _offsetPos.y();
+        z2 = s2 + _offsetPos.z();
         break;
 
       case DIRECTION_Z:
-        topPoint = QVector3D(offsetPos.x(), offsetPos.y(), offsetPos.z() + height);
-        x = s + offsetPos.x();
-        y = c + offsetPos.y();
-        z = 0 + offsetPos.z();
+        topPoint = QVector3D(_offsetPos.x(), _offsetPos.y(), _offsetPos.z() + height);
+        x = s + _offsetPos.x();
+        y = c + _offsetPos.y();
+        z = 0 + _offsetPos.z();
 
-        x2 = s2 + offsetPos.x();
-        y2 = c2 + offsetPos.y();
-        z2 = 0 + offsetPos.z();
+        x2 = s2 + _offsetPos.x();
+        y2 = c2 + _offsetPos.y();
+        z2 = 0 + _offsetPos.z();
         break;
     }
 
@@ -321,12 +319,12 @@ void Manipulator::createArrow(
 
 
   Arrow arrow = Arrow();
-  arrow.axis = axis;
+  arrow.axis = _axis;
   arrow.numberOfPoints = vertices.size() + normals.size();
-  arrow.uniqueColour=uniqueColour;
+  arrow.uniqueColour=_uniqueColour;
 
   setupVBO(vertices, normals, arrow);
-  setupVAO(arrow, vao);
+  setupVAO(arrow, _vao);
 
   m_arrows.push_back(arrow);
 }

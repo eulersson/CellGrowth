@@ -132,9 +132,9 @@ QVector3D InputManager::getCurrentUniqueColour()
   return m_currentUniqueColour;
 }
 
-void InputManager::setCurrentUniqueColour(QVector3D uc)
+void InputManager::setCurrentUniqueColour(QVector3D _uc)
 {
-  m_currentUniqueColour=uc;
+  m_currentUniqueColour=_uc;
 }
 
 QMatrix4x4 InputManager::getProjectionMatrix()
@@ -147,7 +147,7 @@ QMatrix4x4 InputManager::getViewMatrix()
   return m_view;
 }
 
-void InputManager::mouseReleaseEvent(QMouseEvent *event)
+void InputManager::mouseReleaseEvent(QMouseEvent *_event)
 {
   m_mousePressed=false;
   for(auto &s : m_objectList)
@@ -157,20 +157,20 @@ void InputManager::mouseReleaseEvent(QMouseEvent *event)
   }
 }
 
-void InputManager::mousePressEvent(QMouseEvent *event)
+void InputManager::mousePressEvent(QMouseEvent *_event)
 {
   m_mousePressed=true;
 
   if(m_alt_key==false)
   {
-    doSelection(event->pos().x(), event->pos().y());
+    doSelection(_event->pos().x(), _event->pos().y());
   }
 }
 
-void InputManager::mouseMoveEvent(QMouseEvent* event)
+void InputManager::mouseMoveEvent(QMouseEvent *_event)
 {
-  GLfloat xpos = event->pos().x();
-  GLfloat ypos = event->pos().y();
+  GLfloat xpos = _event->pos().x();
+  GLfloat ypos = _event->pos().y();
   GLfloat xoffset = xpos - m_lastX;
   GLfloat yoffset = m_lastY - ypos;
 
@@ -226,50 +226,50 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
   m_lastY = ypos;
 }
 
-void InputManager::keyPressEvent(QKeyEvent *key)
+void InputManager::keyPressEvent(QKeyEvent *_key)
 {
-  if ( (key->key() == Qt::Key_Enter)  ||
-       (key->key() == Qt::Key_W)      ||
-       (key->key() == Qt::Key_A)      ||
-       (key->key() == Qt::Key_S)      ||
-       (key->key() == Qt::Key_D)      ||
-       (key->key() == Qt::Key_Return)   )
+  if ( (_key->key() == Qt::Key_Enter)  ||
+       (_key->key() == Qt::Key_W)      ||
+       (_key->key() == Qt::Key_A)      ||
+       (_key->key() == Qt::Key_S)      ||
+       (_key->key() == Qt::Key_D)      ||
+       (_key->key() == Qt::Key_Return)   )
   {
-    m_keys[key->key()]=true;
+    m_keys[_key->key()]=true;
   }
-  else if(key->key() == Qt::Key_Alt)
+  else if(_key->key() == Qt::Key_Alt)
   {
     m_alt_key=true;
   }
-  else if(key->key() == Qt::Key_F)
+  else if(_key->key() == Qt::Key_F)
   {
     m_camera.refocus();
   }
 }
 
-void InputManager::keyReleaseEvent(QKeyEvent *key)
+void InputManager::keyReleaseEvent(QKeyEvent *_key)
 {
 
-  if ( (key->key() == Qt::Key_Enter)  ||
-       (key->key() == Qt::Key_W)      ||
-       (key->key() == Qt::Key_A)      ||
-       (key->key() == Qt::Key_S)      ||
-       (key->key() == Qt::Key_D)      ||
-       (key->key() == Qt::Key_Return)   )
+  if ( (_key->key() == Qt::Key_Enter)  ||
+       (_key->key() == Qt::Key_W)      ||
+       (_key->key() == Qt::Key_A)      ||
+       (_key->key() == Qt::Key_S)      ||
+       (_key->key() == Qt::Key_D)      ||
+       (_key->key() == Qt::Key_Return)   )
   {
      // A mapped key was pressed
-     m_keys[key->key()]=false;
+     m_keys[_key->key()]=false;
 
   }
-  else if(key->key() == Qt::Key_Alt)
+  else if(_key->key() == Qt::Key_Alt)
   {
      m_alt_key=false;
   }
 }
 
-void InputManager::wheelEvent(QWheelEvent *event)
+void InputManager::wheelEvent(QWheelEvent *_event)
 {
-  m_camera.processMouseScroll(event->delta());
+  m_camera.processMouseScroll(_event->delta());
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
 }

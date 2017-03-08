@@ -48,7 +48,7 @@ public:
   /// @param[in] context !!!MISSING
   /// @param[out] masterUniqueColour !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void createGeometry(QOpenGLContext *context, QVector3D &masterUniqueColour) override;
+  void createGeometry(QOpenGLContext *_context, QVector3D &_masterUniqueColour) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draw light object to main buffer.
@@ -66,20 +66,20 @@ public:
   /// @param[in] offsety !!!MISSING
   /// @param[in] offsetz !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void processMouseMovement(float offsetx, float offsety, float offsetz) override;
+  void processMouseMovement(float _offsetx, float _offsety, float _offsetz) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Set object as clicked.
   /// @param[in] uColour !!!MISSING
   /// @param[in] state !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void setClicked(QVector3D uColour, bool state) override;
+  void setClicked(QVector3D _uColour, bool _state) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Mark the object as being under the mouse cursor.
   /// @param[in] id !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void setHover(int id) override;
+  void setHover(int _id) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns light position.
@@ -97,7 +97,7 @@ public:
   /// @brief Returns main light shader program.
   /// @param[in] retshader !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void getMainProgram(QOpenGLShaderProgram **retshader);
+  void getMainProgram(QOpenGLShaderProgram **_retshader);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Initialises VBO/VAO of light object.
@@ -111,7 +111,7 @@ public:
   /// @param[in] offsety !!!MISSING
   /// @param[in] offsetz !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void updateModelMatrix(float offsetx, float offsety, float offsetz);
+  void updateModelMatrix(float _offsetx, float _offsety, float _offsetz);
 
 private:
   //////////////////////////////////////////////////////////////////////////////
