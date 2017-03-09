@@ -33,7 +33,7 @@ void Scene::initialize()
 
   setupLights();
 
-  qDebug("%d", m_ps.getSize());
+  //qDebug("%d", m_ps.getSize());
 
   timer.start();
 }
@@ -147,7 +147,7 @@ void Scene::drawParticles()
   m_part_program->setUniformValue("ViewMatrix", inputManager.getViewMatrix());
   m_part_vao->bind();
   glEnable(GL_POINT_SPRITE);
-  glEnable(GL_PROGRAM_POINT_SIZE);
+  glPointSize(21.9);
   glDrawArrays(GL_POINTS, 0, m_ps.getSize());
   m_part_vao->release();
   m_part_program->release();
@@ -224,7 +224,7 @@ void Scene::sendParticleDataToOpenGL()
   // data that gets sent to OpenGL.
   for_each(m_packagedParticleData.begin(), m_packagedParticleData.end(), [](float f)
   {
-    qDebug("%f", f);
+    //qDebug("%f", f);
   });
 
   m_part_vao->bind();

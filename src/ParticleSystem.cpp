@@ -41,7 +41,7 @@ void ParticleSystem::advance()
   // Then moving
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, listOfPositions());
+    m_particles[i]->calculate(m_particleCentre, m_particles);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -57,9 +57,9 @@ void ParticleSystem::fill(unsigned int _amount)
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
   std::vector<QVector3D> pos;
-  pos.push_back(QVector3D(1,1,0));
-  pos.push_back(QVector3D(1,-1,0));
-  pos.push_back(QVector3D(-1,-1,0));
+  pos.push_back(QVector3D(0.25,0.25,0));
+  pos.push_back(QVector3D(0.25,-0.25,0));
+  pos.push_back(QVector3D(-0.25,-0.25,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {

@@ -29,10 +29,9 @@ LinkedParticle::LinkedParticle(qreal _x,
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D> m_listOfPositions)
+void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList)
 {
   //COHERE
-  unsigned int speed = 1000;
   QVector3D distance = _particleCentre - m_pos;
 
   QVector3D cohesion = distance;
@@ -44,11 +43,80 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
       m_vel/=1.1;
   }
 
-    cohesion/=speed;
+    cohesion/=3000;
     m_vel += cohesion;
     //end of cohere
 
+    //HOLD
+    //coheres linked particles together
     //SPRING
+    //pushes particles away from each other
+
+    QVector3D hold;
+    QVector3D spring;
+    float distanceY = 0;
+    float distanceX = 0;
+    float distanceZ = 0;
+
+    int connectionCount = getConnectionCount(); //gets number of connected particles)
+
+    std::vector<QVector3D> linkPosition;
+    getPosFromConnections(linkPosition, _particleList);
+
+        for(unsigned int i=0; i<connectionCount; i++)
+        {
+         //spring = linkPosition[i] - m_pos;
+
+         hold = linkPosition[i] - m_pos;
+
+         if (hold.x() <= m_size ||
+             hold.y() <= m_size ||
+             hold.z() <= m_size)
+         {
+            m_vel/=1.1;
+         }
+
+         hold/=5000;
+         m_vel+=hold;
+
+         distanceY = linkPosition[i].y() - m_pos.y();
+         if(distanceY < m_size && distanceY >(-(m_size)) )
+         {
+             spring.setY(spring.y() - distanceY);
+             spring/=30;
+             m_vel += spring;
+         }
+
+         distanceX = linkPosition[i].x() - m_pos.x();
+         if(distanceX < m_size && distanceX >(-(m_size)) )
+         {
+             spring.setX(spring.x() - distanceX);
+             spring/=30;
+             m_vel += spring;
+         }
+
+         distanceZ = linkPosition[i].z() - m_pos.z();
+         if(distanceZ < m_size && distanceZ >(-(m_size)) )
+         {
+             spring.setZ(spring.z() - distanceZ);
+             spring/=30;
+             m_vel += spring;
+         }
+
+         }
+
+
+        //BULGE
+
+
+
+
+
+
+
+
+
+ //SPRING
     /*QVector3D spring;
     spring.setX(0);
     spring.setY(0);
@@ -145,66 +213,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
       {
         separate/=factor;
         m_vel+=separate;
-      }
-    }*/
-
-    //ARRANGE
-    //make the distance between each particle equal
-
-
-    //COLLISION
-    //works by moving their position away from each other, without effecting their velocity
-    /*QVector3D move;
-
-    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
-    {
-      for(unsigned int j=0; j<m_listOfPositions.size(); j++)
-        {
-          if(i != j)
-          {
-            distanceY = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-            if(distanceY < 1 && distanceY >(-1) )
-            {
-              if(m_ID == i)
-              {
-                move.setY(move.y() - distanceY);
-                move /= 20;
-                m_pos += move;
-              }
-            }
-//            if(distanceY > 0.3 && distanceY <(-0.3) )
-//            {
-//              if(m_ID == i)
-//              {
-//                move.setY(move.y() + distanceY);
-//                move /= 20;
-//                m_pos += move;
-//              }
-//            }
-
-            distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
-            if(distanceX < 1 && distanceX >(-1) )
-            {
-              if(m_ID == i)
-              {
-                move.setX(move.x() - distanceX);
-                move /= 20;
-                m_pos += move;
-              }
-            }
-
-            distanceZ = (m_listOfPositions[j].z()) - (m_listOfPositions[i].z());
-            if(distanceZ < 1 && distanceZ >(-1) )
-            {
-              if(m_ID == i)
-              {
-                move.setZ(move.z() - distanceZ);
-                move /= 3;
-                m_pos += move;
-              }
-            }
-
-          }
       }
     }*/
 
