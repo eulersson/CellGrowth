@@ -197,7 +197,7 @@ void Scene::setupLights()
 
 void Scene::windowResized(int _w, int _h)
 {
-  qDebug("Window rezised to %d and %d", _w, _h);
+  //qDebug("Window rezised to %d and %d", _w, _h);
 }
 
 QMatrix4x4 Scene::updateModelMatrix()

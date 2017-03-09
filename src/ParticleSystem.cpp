@@ -9,7 +9,7 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-  qDebug("Default constructor called");
+  //qDebug("Default constructor called");
   m_particleCount=0;
   fill(3);
   m_particleCentre = calculateParticleCentre();
@@ -18,7 +18,7 @@ ParticleSystem::ParticleSystem()
 // For custom number of particlesm_packagedParticleData
 ParticleSystem::ParticleSystem(int _amount)
 {
-  qDebug("Custom constructor called");
+  //qDebug("Custom constructor called");
   m_particleCount=0;
   fill(_amount);
   m_particleCentre = calculateParticleCentre();
@@ -211,7 +211,6 @@ QVector3D ParticleSystem::calculateParticleCentre()
   for (auto &particle : m_particles)
   {
     QVector3D particlePosition = particle->getPosition();
-    //std::cout<<"ParticlePosition: "<<particlePosition.x()<<" "<<particlePosition.y()<<" "<<particlePosition.z()<<std::endl;
     m_particleCentre += particlePosition;
 
   }
@@ -219,17 +218,3 @@ QVector3D ParticleSystem::calculateParticleCentre()
   m_particleCentre = m_particleCentre/(m_particles.size());
   return m_particleCentre;
 }
-
-std::vector<QVector3D> ParticleSystem::listOfPositions()
-{
-  std::vector<QVector3D> _listOfPositions;
-
-  for (auto &particle : m_particles)
-  {
-    _listOfPositions.push_back(particle->getPosition());
-  }
-
-  return _listOfPositions;
-}
-
-

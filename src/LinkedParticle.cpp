@@ -2,7 +2,7 @@
 #include <iostream>
 LinkedParticle::LinkedParticle():Particle()
 {
-  qDebug("Linked Particle default constructor.");
+  //qDebug("Linked Particle default constructor.");
 }
 
 
@@ -11,7 +11,7 @@ LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z):Particle(_x,_y,_z)
 {
-   qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
@@ -21,8 +21,8 @@ LinkedParticle::LinkedParticle(qreal _x,
                                std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
 {
 
-  qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+  //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
+        // "particles", _x, _y, _z);
 
 }
 
@@ -31,17 +31,17 @@ LinkedParticle::LinkedParticle(qreal _x,
 // All the force calculation should happen in here
 void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList)
 {
-  //COHERE
-  QVector3D distance = _particleCentre - m_pos;
+    //COHERE
+    QVector3D distance = _particleCentre - m_pos;
 
-  QVector3D cohesion = distance;
+    QVector3D cohesion = distance;
 
-  if((distance.x() <= m_size)
-         && (distance.y() <= m_size)
-         && (distance.z() <= m_size))
-  {
-      m_vel/=1.1;
-  }
+    if((distance.x() <= m_size)
+           && (distance.y() <= m_size)
+           && (distance.z() <= m_size))
+    {
+        m_vel/=1.1;
+    }
 
     cohesion/=3000;
     m_vel += cohesion;
@@ -54,183 +54,72 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
     QVector3D hold;
     QVector3D spring;
+    QVector3D connectionCentre;
+    QVector3D planar;
     float distanceY = 0;
     float distanceX = 0;
     float distanceZ = 0;
 
-    int connectionCount = getConnectionCount(); //gets number of connected particles)
+    unsigned int connectionCount = getConnectionCount(); //gets number of connected particles)
 
     std::vector<QVector3D> linkPosition;
     getPosFromConnections(linkPosition, _particleList);
 
-        for(unsigned int i=0; i<connectionCount; i++)
-        {
-         //spring = linkPosition[i] - m_pos;
-
-         hold = linkPosition[i] - m_pos;
-
-         if (hold.x() <= m_size ||
-             hold.y() <= m_size ||
-             hold.z() <= m_size)
-         {
-            m_vel/=1.1;
-         }
-
-         hold/=5000;
-         m_vel+=hold;
-
-         distanceY = linkPosition[i].y() - m_pos.y();
-         if(distanceY < m_size && distanceY >(-(m_size)) )
-         {
-             spring.setY(spring.y() - distanceY);
-             spring/=30;
-             m_vel += spring;
-         }
-
-         distanceX = linkPosition[i].x() - m_pos.x();
-         if(distanceX < m_size && distanceX >(-(m_size)) )
-         {
-             spring.setX(spring.x() - distanceX);
-             spring/=30;
-             m_vel += spring;
-         }
-
-         distanceZ = linkPosition[i].z() - m_pos.z();
-         if(distanceZ < m_size && distanceZ >(-(m_size)) )
-         {
-             spring.setZ(spring.z() - distanceZ);
-             spring/=30;
-             m_vel += spring;
-         }
-
-         }
-
-
-        //BULGE
-
-
-
-
-
-
-
-
-
- //SPRING
-    /*QVector3D spring;
-    spring.setX(0);
-    spring.setY(0);
-    spring.setZ(0);
-
-    float distanceX = 0;
-    float distanceY = 0;
-    float distanceZ = 0;*/
-
-    //Using i and j to compare particle distances in space. Eg, i=particleA and j=particleB
-    /*for(unsigned int i=0; i<m_listOfPositions.size(); i++)
+    for(unsigned int i=0; i<connectionCount; i++)
     {
-      for(unsigned int j=0; j<m_listOfPositions.size(); j++)
-        {
-          if(i != j)
-          {
-            distanceY = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-            if(distanceY < m_size && distanceY >(-(m_size)) )
-            {
-              if(m_ID == i)
-              {
-                spring.setY(spring.y() - distanceY);
-                spring/=50;
-                m_vel += spring;
-              }
-            }*/
+       connectionCentre += linkPosition[i];
 
-//            if(distanceY > 0.3 && distanceY <(-0.3) )
-//            {
-//              if(m_ID == i)
-//              {
-//                spring.setY(spring.y() + distanceY);
-//                spring/=50;
-//                m_vel += spring;
-//              }
-//            }
+       hold = linkPosition[i] - m_pos;
 
-            /*distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
-            if(distanceX < m_size && distanceX >(-(m_size)) )
-            {
-              if(m_ID == i)
-              {
-                spring.setX(spring.x() - distanceX);
-                spring/=50;
-                m_vel += spring;
-              }
-            }*/
+       if (hold.x() <= m_size
+                 || hold.y() <= m_size
+                 || hold.z() <= m_size)
+       {
+          m_vel/=1.1;
+       }
 
-//            if(distanceX > 0.3 && distanceX <(-0.3) )
-//            {
-//              if(m_ID == i)
-//              {
-//                spring.setX(spring.x() + distanceX);
-//                spring/=50;
-//                m_vel += spring;
-//              }
-//            }
+       hold/=5000;
+       m_vel+=hold;
 
-            /*distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-            if(distanceZ < m_size && distanceZ >(-(m_size)) )
-            {
-              if(m_ID == i)
-              {
-                spring.setZ(spring.z() - distanceZ);
-                spring/=50;
-                m_vel += spring;
-              }
-            }*/
-//              distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
-//              if(distanceZ > 0.3 && distanceZ <(-0.3) )
-//              {
-//                if(m_ID == i)
-//                {
-//                  spring.setZ(spring.z() + distanceZ);
-//                  spring/=50;
-//                  m_vel += spring;
-//                }
-//              }
-          /*}
-        }
+       distanceY = linkPosition[i].y() - m_pos.y();
+       if(distanceY < m_size && distanceY > (-(m_size)))
+       {
+           spring.setY(spring.y() - distanceY);
+           spring/=30;
+           m_vel += spring;
+       }
 
+       distanceX = linkPosition[i].x() - m_pos.x();
+       if(distanceX < m_size && distanceX > (-(m_size)))
+       {
+           spring.setX(spring.x() - distanceX);
+           spring/=30;
+           m_vel += spring;
+       }
+
+       distanceZ = linkPosition[i].z() - m_pos.z();
+       if(distanceZ < m_size && distanceZ > (-(m_size)))
+       {
+           spring.setZ(spring.z() - distanceZ);
+           spring/=30;
+           m_vel += spring;
+       }
     }
-    //end of spring
 
-    //SEPARATE
-    QVector3D separate = m_pos - _particleCentre;
+    //PLANAR
+    //Moves a particle to the average position of it's linked neighbours
+    connectionCentre = connectionCentre/connectionCount;
+    planar = connectionCentre - m_pos;
 
-    for(unsigned int factor = 0; factor<20; factor++)
+    if((planar.x() <= m_size)
+           && (planar.y() <= m_size)
+           && (planar.z() <= m_size))
     {
+        m_vel/=1.1;
+    }
 
-      if((distance.x() < (factor/20) && distance.x() > (-(factor/20)))
-              && (distance.y() < (factor/20) && distance.y() > (-(factor/20)))
-              && (distance.z() < (factor/20) && distance.z() > (-(factor/20))))
-      {
-        separate/=factor;
-        m_vel+=separate;
-      }
-    }*/
-
-    //GRID
-
-    /*get window size
-        window size/29.3 = gives us same units as spheres
-        divide window size by 4 to work out width/height of each column/row
-        split into 16 (arbitary number) sections (4*4) (A1/A2/A3/A4.........D3/D4)
-
-        iterate through cells once (checking positions)
-        place cells into arrays (A1 etc) dependant on position
-
-        result: arrays of positions of cells
-
-        problem: working out how to move cells using m_ID*/
-
-    //std::cout<<"m_size: "<<m_size<<std::endl;
+    planar/=1000;
+    m_vel += planar;
 
 }
 

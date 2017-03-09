@@ -90,8 +90,6 @@ public:
 
   QVector3D calculateParticleCentre();
 
-  std::vector<QVector3D> listOfPositions();
-
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Stores the list of particles in the system.
