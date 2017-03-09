@@ -49,17 +49,17 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
     //end of cohere
 
     //SPRING
-    QVector3D spring;
+    /*QVector3D spring;
     spring.setX(0);
     spring.setY(0);
     spring.setZ(0);
 
     float distanceX = 0;
     float distanceY = 0;
-    float distanceZ = 0;
+    float distanceZ = 0;*/
 
     //Using i and j to compare particle distances in space. Eg, i=particleA and j=particleB
-    for(unsigned int i=0; i<m_listOfPositions.size(); i++)
+    /*for(unsigned int i=0; i<m_listOfPositions.size(); i++)
     {
       for(unsigned int j=0; j<m_listOfPositions.size(); j++)
         {
@@ -74,7 +74,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
                 spring/=50;
                 m_vel += spring;
               }
-            }
+            }*/
 
 //            if(distanceY > 0.3 && distanceY <(-0.3) )
 //            {
@@ -86,7 +86,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
 //              }
 //            }
 
-            distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
+            /*distanceX = (m_listOfPositions[j].x()) - (m_listOfPositions[i].x());
             if(distanceX < m_size && distanceX >(-(m_size)) )
             {
               if(m_ID == i)
@@ -95,7 +95,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
                 spring/=50;
                 m_vel += spring;
               }
-            }
+            }*/
 
 //            if(distanceX > 0.3 && distanceX <(-0.3) )
 //            {
@@ -107,7 +107,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
 //              }
 //            }
 
-            distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
+            /*distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
             if(distanceZ < m_size && distanceZ >(-(m_size)) )
             {
               if(m_ID == i)
@@ -116,7 +116,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
                 spring/=50;
                 m_vel += spring;
               }
-            }
+            }*/
 //              distanceZ = (m_listOfPositions[j].y()) - (m_listOfPositions[i].y());
 //              if(distanceZ > 0.3 && distanceZ <(-0.3) )
 //              {
@@ -127,7 +127,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
 //                  m_vel += spring;
 //                }
 //              }
-          }
+          /*}
         }
 
     }
@@ -146,7 +146,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
         separate/=factor;
         m_vel+=separate;
       }
-    }
+    }*/
 
     //ARRANGE
     //make the distance between each particle equal
@@ -221,6 +221,9 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<QVector3D>
         result: arrays of positions of cells
 
         problem: working out how to move cells using m_ID*/
+
+    //std::cout<<"m_size: "<<m_size<<std::endl;
+
 }
 
 

@@ -57,9 +57,9 @@ void ParticleSystem::fill(unsigned int _amount)
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
   std::vector<QVector3D> pos;
-  pos.push_back(QVector3D(10,10,0));
-  pos.push_back(QVector3D(10,-10,0));
-  pos.push_back(QVector3D(-10,-10,0));
+  pos.push_back(QVector3D(1,1,0));
+  pos.push_back(QVector3D(1,-1,0));
+  pos.push_back(QVector3D(-1,-1,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
