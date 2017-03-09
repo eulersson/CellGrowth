@@ -48,10 +48,9 @@ void InputManager::doMovement()
 }
 
 void InputManager::getUniqueColour(const int _x, const int _y,
-                                   QOpenGLShaderProgram* m_manipulatorProgram)
+                                   QOpenGLShaderProgram* _manipulatorProgram)
 {
   // Clear colour buffer for temporary drawing
-  // This must be run before actual drawing to frame buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // Draw all objects in a unique colour
@@ -195,17 +194,17 @@ void InputManager::mouseMoveEvent(QMouseEvent *_event)
       float zoffset=xoffset;
 
       // Reverse x and z offset if the camera is on the other side of the corresponding axis'
-      if(cp.x()>mp.x())
-      {
-        zoffset=-zoffset;
-      }
+//      if(cp.x()>mp.x())
+//      {
+//        zoffset=-zoffset;
+//      }
 
-      if(cp.z()>mp.z()){
-        localXoffset=-localXoffset;
-      }
+//      if(cp.z()>mp.z()){
+//        localXoffset=-localXoffset;
+//      }
 
       // Process mouse movement in light class
-      s->processMouseMovement(localXoffset, yoffset, zoffset);
+      s->processMouseMovement(localXoffset, yoffset, zoffset, cp, m_view);
     }
   }
 

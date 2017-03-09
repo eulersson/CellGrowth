@@ -53,6 +53,8 @@ void Scene::paint()
 
   m_FBO->bind();
   drawParticles();
+
+
   for(auto &s : objectList) { s->draw(); }
 
 
@@ -182,10 +184,10 @@ void Scene::setupLights()
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
   for(int x=-4;x<4;x+=4) {
       for(int y=-4;y<4;y+=4) {
-          PointLight *pointlight;
-          pointlight = new PointLight(QVector3D(x,y,0), m_manipulatorProgram, m_sunProgram);
-          pointlight->createGeometry(context(), masterUniqueColour);
-          objectList.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+          SpotLight *spotlight;
+          spotlight = new SpotLight(QVector3D(x,y,0), m_manipulatorProgram, m_sunProgram);
+          spotlight->createGeometry(context(), masterUniqueColour);
+          objectList.push_back(std::move(std::unique_ptr<SpotLight>(spotlight)));
       }
   }
   inputManager.addShaderProgram(m_manipulatorProgram);

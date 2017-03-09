@@ -4,6 +4,9 @@
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifndef POINTLIGHT_H
+#define POINTLIGHT_H
+
 // Project
 #include "Manipulator.h"
 #include "SelectObject.h"
@@ -28,9 +31,9 @@ class PointLight : public SelectObject
 public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor.
-  /// @param[in] _position !!!MISSING
-  /// @param[in] _manipshaderp !!!MISSING
-  /// @param[in] _sunshaderp !!!MISSING
+  /// @param[in] _position Light position.
+  /// @param[in] _manipshaderp Shader to be used for manipulator.
+  /// @param[in] _sunshaderp Shader to be used for light.
   //////////////////////////////////////////////////////////////////////////////
   PointLight(
       QVector3D _position,
@@ -45,10 +48,12 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Create light geometry.
-  /// @param[in] context !!!MISSING
-  /// @param[out] masterUniqueColour !!!MISSING
+  /// @param[in] _context Scene context.
+  /// @param[out] _masterUniqueColour Object unique colour. Used to draw
+  /// geometry to back buffer.
   //////////////////////////////////////////////////////////////////////////////
-  void createGeometry(QOpenGLContext *_context, QVector3D &_masterUniqueColour) override;
+  void createGeometry(QOpenGLContext *_context,
+                      QVector3D &_masterUniqueColour) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draw light object to main buffer.
@@ -62,54 +67,58 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Process mouse movements.
-  /// @param[in] offsetx !!!MISSING
-  /// @param[in] offsety !!!MISSING
-  /// @param[in] offsetz !!!MISSING
+  /// @param[in] _offsetx Movement in x direction since last update.
+  /// @param[in] _offsety Movement in y direction since last update.
+  /// @param[in] _offsetz Movement in z direction since last update.
   //////////////////////////////////////////////////////////////////////////////
-  void processMouseMovement(float _offsetx, float _offsety, float _offsetz) override;
+  void processMouseMovement(float _offsetx,
+                            float _offsety,
+                            float _offsetz,
+                            QVector3D _campos,
+                            QMatrix4x4 _view) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Set object as clicked.
-  /// @param[in] uColour !!!MISSING
-  /// @param[in] state !!!MISSING
+  /// @param[in] _uColour Unique colour.
+  /// @param[in] _state State to be set (clicked/unclicked)
   //////////////////////////////////////////////////////////////////////////////
   void setClicked(QVector3D _uColour, bool _state) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Mark the object as being under the mouse cursor.
-  /// @param[in] id !!!MISSING
+  /// @param[in] _id Axis id.
   //////////////////////////////////////////////////////////////////////////////
   void setHover(int _id) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns light position.
-  /// @returns !!!MISSING
+  /// @returns Get light position.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D getPosition() override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns light object manipulator.
-  /// @returns !!!MISSING
+  /// @returns Get light manipulator.
   //////////////////////////////////////////////////////////////////////////////
   Manipulator getManipulator();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns main light shader program.
-  /// @param[in] retshader !!!MISSING
+  /// @param[in] retshader Get light main shader program.
   //////////////////////////////////////////////////////////////////////////////
   void getMainProgram(QOpenGLShaderProgram **_retshader);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Initialises VBO/VAO of light object.
-  /// @param[in] _context !!!MISSING
+  /// @param[in] _context QOpenGL scene context.
   //////////////////////////////////////////////////////////////////////////////
   void setupObject(QOpenGLContext *_context);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Updates the light model matrix for use with the camera.
-  /// @param[in] offsetx !!!MISSING
-  /// @param[in] offsety !!!MISSING
-  /// @param[in] offsetz !!!MISSING
+  /// @param[in] _offsetx Movement in x direction since last update.
+  /// @param[in] _offsety Movement in y direction since last update.
+  /// @param[in] _offsetz Movement in z direction since last update.
   //////////////////////////////////////////////////////////////////////////////
   void updateModelMatrix(float _offsetx, float _offsety, float _offsetz);
 
@@ -156,3 +165,5 @@ private:
   QMatrix4x4 m_model;
 
 };
+
+#endif

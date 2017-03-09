@@ -108,8 +108,11 @@ void Manipulator::drawBackBuffer()
 QVector3D Manipulator::processMouseMovement(float _offsetx,
     float _offsety,
     float _offsetz,
-    QVector3D _currentPos)
+    QVector3D _x,
+    QVector3D _y,
+    QVector3D _z )
 {
+  QVector3D returnVec;
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
     if(m_arrows[i].clicked)
@@ -117,27 +120,36 @@ QVector3D Manipulator::processMouseMovement(float _offsetx,
       switch(m_arrows[i].axis)
       {
         case DIRECTION_X:
-          _currentPos = QVector3D(_currentPos.x() + _offsetx * SENSITIVITY,
-                                 _currentPos.y(),
-                                 _currentPos.z());
+
+          returnVec = _offsetx*SENSITIVITY*_x;
+
           break;
 
         case DIRECTION_Y:
-          _currentPos = QVector3D(_currentPos.x(),
-                                 _currentPos.y() + _offsety * SENSITIVITY,
-                                 _currentPos.z());
+          returnVec = _offsety*SENSITIVITY*_y;
           break;
 
         case DIRECTION_Z:
-          _currentPos = QVector3D(_currentPos.x(),
-                                 _currentPos.y(),
-                                 _currentPos.z() - _offsetz * SENSITIVITY);
+          returnVec = _offsetz*SENSITIVITY*_z;
           break;
       }
     }
   }
 
-  return _currentPos;
+  return returnVec;
+}
+
+int Manipulator::getClickedAxis()
+{
+  for(size_t i = 0; i < m_arrows.size(); i++)
+  {
+    if(m_arrows[i].clicked)
+    {
+      return m_arrows[i].axis;
+    }
+  }
+  return -1;
+
 }
 
 void Manipulator::setClicked(QVector3D uColourIdentity, bool _state)

@@ -58,7 +58,7 @@ void PointLight::drawBackBuffer()
   m_manip.drawBackBuffer();
 }
 
-void PointLight::processMouseMovement(float offsetx, float _offsety, float _offsetz)
+void PointLight::processMouseMovement(float offsetx, float _offsety, float _offsetz, QVector3D _campos, QMatrix4x4 _view)
 {
   updateModelMatrix(offsetx, _offsety, _offsetz);
 }
@@ -113,5 +113,6 @@ void PointLight::updateModelMatrix(float offsetx, float _offsety, float _offsetz
   m_model.translate(pointPos);
   GLfloat angle = 0.0f;
   m_model.rotate(angle, QVector3D(1,0.3,0.5));
-  m_position=m_manip.processMouseMovement(offsetx, _offsety, _offsetz, m_position);
+  m_position+=m_manip.processMouseMovement(offsetx, _offsety, _offsetz,
+                                          QVector3D(1,0,0), QVector3D(0,1,0), QVector3D(0,0,1));
 }

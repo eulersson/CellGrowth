@@ -19,6 +19,7 @@
 // Project
 #include "ArcBallCamera.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 #include "SelectObject.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,14 +53,15 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Gets the unique colour at a given screen coordinate. This is the
   /// value written with drawBackBuffer in the SelectObject.
-  /// @param[in] _x !!!MISSING
-  /// @param[in] _y !!!MISSING
-  /// @param[in] m_manipulatorProgram !!!MISSING
+  /// @param[in] _x X screen coordinate.
+  /// @param[in] _y Y screen coordinate.
+  /// @param[in] _manipulatorProgram Program to be used to draw geomtry to back
+  /// buffer.
   //////////////////////////////////////////////////////////////////////////////
   void getUniqueColour(
       const int _x,
       const int _y,
-      QOpenGLShaderProgram* m_manipulatorProgram);
+      QOpenGLShaderProgram* _manipulatorProgram);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Runs getUniqueColour and compares them to the object unique
@@ -72,7 +74,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Add another shader program to the InputManager. These are used to
   /// calculate camera movement and to get unique colours.
-  /// @param[in] _program !!!MISSING
+  /// @param[in] _program Shader program to add.
   //////////////////////////////////////////////////////////////////////////////
   void addShaderProgram(QOpenGLShaderProgram* _program);
 
@@ -84,7 +86,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Load the list of objects to the InputManager. These are the
   /// objects that will be considered for the InputManager calculations.
-  /// @param[in] _objectList !!!MISSING
+  /// @param[in] _objectList Object list to set.
   //////////////////////////////////////////////////////////////////////////////
   void setObjectList(std::vector<std::shared_ptr<SelectObject>> _objectList);
 
