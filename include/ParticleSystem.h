@@ -90,6 +90,8 @@ public:
 
   QVector3D calculateParticleCentre();
 
+  void bulge();
+
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Stores the list of particles in the system.

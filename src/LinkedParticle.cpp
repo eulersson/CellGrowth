@@ -123,6 +123,20 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 }
 
+void LinkedParticle::bulge(QVector3D _particleCentre)
+{
+  //BULGE
+  //Finds the particles closest to the centre and move them outwards on a key press
+
+  QVector3D distance = m_pos - _particleCentre;
+  if(distance.x() <= m_size*2
+                || distance.y() <= m_size*2
+                || distance.z() <= m_size*2)
+  {
+    distance/=10;
+    m_vel += distance;
+  }
+}
 
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
 {

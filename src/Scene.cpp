@@ -251,6 +251,9 @@ void Scene::keyPressed(QKeyEvent *ev)
   case Qt::Key_P:
     m_activeRenderPassIndex = m_positionShadingIndex;
     break;
+  case Qt::Key_B:
+    m_ps.bulge();
+    break;
   case Qt::Key_Space:
     //updateParticleSystem();
     m_ps.splitRandomParticle();
