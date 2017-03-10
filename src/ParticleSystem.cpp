@@ -29,6 +29,7 @@ ParticleSystem::ParticleSystem(int _amount)
 void ParticleSystem::advance()
 {
   m_particleCount=m_particles.size();
+  m_averageDistance=calculateAverageDistanceFromCentre();
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
@@ -41,7 +42,7 @@ void ParticleSystem::advance()
   // Then moving
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -228,3 +229,37 @@ QVector3D ParticleSystem::calculateParticleCentre()
   m_particleCentre = m_particleCentre/(m_particles.size());
   return m_particleCentre;
 }
+
+QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
+{
+  QVector3D averageDistance;
+
+  for (auto&particle : m_particles)
+  {
+    QVector3D particlePosition = particle->getPosition();
+    QVector3D particleCentre = calculateParticleCentre();
+    QVector3D distance = particleCentre - particlePosition;
+    QVector3D fabsDistance;
+    fabsDistance.setX(fabs (distance.x()));
+    fabsDistance.setY(fabs (distance.y()));
+    fabsDistance.setZ(fabs(distance.z()));
+
+    averageDistance += fabsDistance;
+  }
+
+  averageDistance = averageDistance/(m_particles.size());
+  std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
+  return averageDistance;
+
+}
+
+
+
+
+
+
+
+
+
+
+

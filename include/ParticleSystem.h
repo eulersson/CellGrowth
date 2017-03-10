@@ -89,6 +89,7 @@ public:
   void getLinksForDraw(std::vector<QVector3D> &_returnList);
 
   QVector3D calculateParticleCentre();
+  QVector3D calculateAverageDistanceFromCentre();
 
   void bulge();
 
@@ -104,6 +105,8 @@ private:
   unsigned int m_particleCount;
 
   QVector3D m_particleCentre;
+
+  QVector3D m_averageDistance;
 
 };
 

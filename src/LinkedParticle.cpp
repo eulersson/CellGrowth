@@ -29,10 +29,11 @@ LinkedParticle::LinkedParticle(qreal _x,
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList)
+void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance)
 {
     //COHERE
     QVector3D distance = _particleCentre - m_pos;
+   // std::cout<<"distanceLinked: "<<distance.x()<<std::endl;
 
     QVector3D cohesion = distance;
 
@@ -46,6 +47,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
     cohesion/=3000;
     m_vel += cohesion;
     //end of cohere
+
 
     //HOLD
     //coheres linked particles together
@@ -85,7 +87,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
        if(distanceY < m_size && distanceY > (-(m_size)))
        {
            spring.setY(spring.y() - distanceY);
-           spring/=30;
+           spring/=20;
            m_vel += spring;
        }
 
@@ -93,7 +95,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
        if(distanceX < m_size && distanceX > (-(m_size)))
        {
            spring.setX(spring.x() - distanceX);
-           spring/=30;
+           spring/=20;
            m_vel += spring;
        }
 
@@ -101,7 +103,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
        if(distanceZ < m_size && distanceZ > (-(m_size)))
        {
            spring.setZ(spring.z() - distanceZ);
-           spring/=30;
+           spring/=20;
            m_vel += spring;
        }
     }
@@ -120,6 +122,30 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
     planar/=1000;
     m_vel += planar;
+
+    //EQUIDISTANCE
+    //have found average distance away from centre
+    QVector3D m_averageDistance = _averageDistance;
+    m_averageDistance *= 2;
+    QVector3D fabsDistance;
+    fabsDistance.setX(fabs (distance.x()));
+    fabsDistance.setY(fabs (distance.y()));
+    fabsDistance.setZ(fabs (distance.z()));
+
+    if (fabsDistance.x() < m_averageDistance.x()
+        && fabsDistance.y() < m_averageDistance.y()
+        && fabsDistance.z() < m_averageDistance.z())
+    {
+        QVector3D sendAway = distance;
+        sendAway/=800;
+        m_vel -= sendAway;
+    }
+    else
+    {
+        QVector3D sendIn = distance;
+        sendIn/=400;
+        m_vel += sendIn;
+     }
 
 }
 
