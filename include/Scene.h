@@ -145,6 +145,20 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   QMatrix4x4 updateModelMatrix();
 
+
+
+
+
+
+  void generateSphereData();
+
+
+
+
+
+
+
+
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle system associated with the scene.
@@ -250,6 +264,16 @@ private:
   /// @brief Timer counting the time between frames.
   //////////////////////////////////////////////////////////////////////////////
   QTime timer;
+
+
+
+  std::vector<GLfloat>  m_sphereData;
+  QOpenGLBuffer m_sphere_vbo;
+
+
+
+
+
 
 };
 
