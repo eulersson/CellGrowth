@@ -226,3 +226,78 @@ void Scene::sendParticleDataToOpenGL()
   m_part_vbo.release();
   m_part_vao->release();
 }
+
+
+void Scene::setParticleSize(double _size)
+{
+  m_ps.setParticleSize(_size);
+}
+
+void Scene::setParticleType(int _type)
+{
+  //restart
+  //make new Particle System
+  //call Constructor with new Particle Type
+}
+
+void Scene::cancle()
+{
+  //stop program running
+}
+
+void Scene::showConnections(bool _state)
+{
+  //Visualisation changes
+  //maybe there could be an attribute here that could be toggled and tested when rendering
+}
+
+void Scene::setShading(QString _type)
+{
+  //same here maybe have attribute that then gets passed to shader??
+}
+
+void Scene::toggleForces(bool _state)
+{
+  //only for LinkedParticles
+  m_ps.toggleForces(_state);
+}
+
+void Scene::setCohesion(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setCohesion(_amount);
+}
+
+void Scene::setBulge(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setBulge(_amount);
+}
+
+void Scene::setSpring(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setSpring(_amount);
+}
+
+void Scene::setBranchLength(int _amount)
+{
+  //only for GrowthParticles
+  m_ps.setBranchLength(_amount);
+}
+
+void Scene::setGrowthRadius(int _amount)
+{
+  //only for GrowthParticles
+  m_ps.setGrowthRadius(_amount);
+}
+
+void Scene::restart()
+{
+  //restart program
+}
+
+void Scene::setSplitType(QString _type)
+{
+  //not sure where to put this really
+}

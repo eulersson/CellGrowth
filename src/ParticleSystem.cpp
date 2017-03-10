@@ -161,6 +161,7 @@ void ParticleSystem::splitRandomParticle()
 
 void ParticleSystem::deleteParticle(unsigned int _index)
 {
+  //List of particles it's connected
   std::vector<unsigned int> deleteList;
   m_particles[_index]->getConnectionsID(deleteList);
   int ID = m_particles[_index]->getID();
@@ -195,3 +196,43 @@ void ParticleSystem::packageDataForDrawing(std::vector<float> &_packagedData)
   });
 }
 
+void ParticleSystem::setParticleSize(double _size)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setRadius(_size);
+  }
+}
+
+void ParticleSystem::toggleForces(bool _state)
+{
+  //turn influence of forces on and off
+}
+
+void ParticleSystem::setCohesion(int _amount)
+{
+  //setting cohesion value
+  //maybe have attribute in ps
+}
+
+void ParticleSystem::setBulge(int _amount)
+{
+  //setting bulge value
+  //maybe have attribute in ps
+}
+
+void ParticleSystem::setSpring(int _amount)
+{
+  //setting spring value
+  //maybe have attribute in ps
+}
+
+void ParticleSystem::setBranchLength(int _amount)
+{
+  //not sure where to put yet
+}
+
+void ParticleSystem::setGrowthRadius(int _amount)
+{
+  //not sure where to put either
+}

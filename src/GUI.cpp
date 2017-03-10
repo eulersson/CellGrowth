@@ -19,7 +19,7 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_LP_forces,SIGNAL(toggled(bool)),m_gl,SLOT(toggleForces(bool)));
   connect(m_ui->m_LP_cohesion,SIGNAL(valueChanged(int)),m_gl,SLOT(setCohesion(int)));
   connect(m_ui->m_LP_bulge,SIGNAL(valueChanged(int)),m_gl,SLOT(setBulge(int)));
-  connect(m_ui->m_LP_spring,SIGNAL(valueChanged(int)),m_gl,SLOT(setSprint(int)));
+  connect(m_ui->m_LP_spring,SIGNAL(valueChanged(int)),m_gl,SLOT(setSpring(int)));
   connect(m_ui->m_GP_branches,SIGNAL(valueChanged(int)),m_gl,SLOT(setBranchLength(int)));
   connect(m_ui->m_GP_growRadius,SIGNAL(valueChanged(int)),m_gl,SLOT(setGrowthRadius(int)));
   connect(m_ui->m_restart,SIGNAL(pressed()),m_gl,SLOT(restart()));

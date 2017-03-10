@@ -105,6 +105,22 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void sendParticleDataToOpenGL();
 
+public slots:
+  void setParticleSize(double _size);
+  void setParticleType(int _type);
+  void cancle();
+  void showConnections(bool _state);
+  void setShading(QString _type);
+  void toggleForces(bool _state);
+  void setCohesion(int _amount);
+  void setBulge(int _amount);
+  void setSpring(int _amount);
+  void setBranchLength(int _amount);
+  void setGrowthRadius(int _amount);
+  void restart();
+  void setSplitType(QString _type);
+
+
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle system associated with the scene.

@@ -86,6 +86,14 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void getLinksForDraw(std::vector<QVector3D> &_returnList);
 
+  void setParticleSize(double _size);
+  void toggleForces(bool _state);
+  void setCohesion(int _amount);
+  void setBulge(int _amount);
+  void setSpring(int _amount);
+  void setBranchLength(int _amount);
+  void setGrowthRadius(int _amount);
+
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Stores the list of particles in the system.
