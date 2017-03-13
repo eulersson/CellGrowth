@@ -2,7 +2,7 @@
 #include <iostream>
 LinkedParticle::LinkedParticle():Particle()
 {
-  qDebug("Linked Particle default constructor.");
+  //qDebug("Linked Particle default constructor.");
 }
 
 
@@ -11,7 +11,7 @@ LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z):Particle(_x,_y,_z)
 {
-   qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
@@ -21,8 +21,8 @@ LinkedParticle::LinkedParticle(qreal _x,
                                std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
 {
 
-  qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+  //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
+        // "particles", _x, _y, _z);
 
 }
 
@@ -34,14 +34,15 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   //COHERE
   QVector3D distance = _particleCentre - m_pos;
 
-  QVector3D cohesion = distance;
 
-  if((distance.x() <= m_size)
-         && (distance.y() <= m_size)
-         && (distance.z() <= m_size))
-  {
-      m_vel/=1.1;
-  }
+    QVector3D cohesion = distance;
+
+    if((distance.x() <= m_size)
+           && (distance.y() <= m_size)
+           && (distance.z() <= m_size))
+    {
+        m_vel/=1.1;
+    }
 
   cohesion/=3000;
   m_vel += cohesion;
@@ -186,6 +187,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 //      m_vel += repulse;
 //    }
 //  }
+
 }
 
 void LinkedParticle::bulge(QVector3D _particleCentre)
@@ -266,9 +268,6 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
       }
     }
   }
-
-  //
-
 
   normal.normalize();
   //create new particle

@@ -72,7 +72,6 @@ public:
   virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, std::vector<unsigned int> &_returnList) {}
 
   virtual void bulge(QVector3D _particleCentre) {}
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.

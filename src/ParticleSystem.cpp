@@ -9,7 +9,7 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-  qDebug("Default constructor called");
+  //qDebug("Default constructor called");
   m_particleCount=0;
   fill(3);
 }
@@ -17,7 +17,7 @@ ParticleSystem::ParticleSystem()
 // For custom number of particlesm_packagedParticleData
 ParticleSystem::ParticleSystem(int _amount)
 {
-  qDebug("Custom constructor called");
+  //qDebug("Custom constructor called");
   m_particleCount=0;
   fill(_amount);
 
@@ -27,6 +27,7 @@ ParticleSystem::ParticleSystem(int _amount)
 void ParticleSystem::advance()
 {
   m_particleCount=m_particles.size();
+  m_averageDistance=calculateAverageDistanceFromCentre();
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
@@ -251,5 +252,14 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
   return averageDistance;
 
 }
+
+
+
+
+
+
+
+
+
 
 
