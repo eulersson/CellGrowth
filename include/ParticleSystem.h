@@ -94,6 +94,8 @@ public:
   void setBranchLength(int _amount);
   void setGrowthRadius(int _amount);
 
+  void reset(char _particleType);
+
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Stores the state of the forces

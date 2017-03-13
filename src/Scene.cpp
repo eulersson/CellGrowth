@@ -235,9 +235,17 @@ void Scene::setParticleSize(double _size)
 
 void Scene::setParticleType(int _type)
 {
-  //restart
-  //make new Particle System
-  //call Constructor with new Particle Type
+  char particleType;
+  if (_type==0)
+  {
+    particleType='L';
+  }
+  else
+  {
+    particleType='G';
+  }
+
+  m_ps.reset(particleType);
 }
 
 void Scene::cancle()

@@ -160,3 +160,8 @@ int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
   }
   return -1; // Return negative one if none is found.
 }
+
+static void Particle::resetIDCounter()
+{
+  m_ID_counter=0;
+}

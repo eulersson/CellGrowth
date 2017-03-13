@@ -25,10 +25,7 @@ ParticleSystem::ParticleSystem(char _particleType)
   qDebug("Custom constructor called");
   m_particleCount=0;
 
-  m_forces = true;
-  m_cohesion = 30; //percent
-  m_bulge = 30;
-  m_spring = 30;
+
   m_particleType = _particleType;
 
   if (m_particleType=='L')
@@ -38,6 +35,10 @@ ParticleSystem::ParticleSystem(char _particleType)
   else if (m_particleType== 'G')
   {
     fill(1);
+    m_forces = true;
+    m_cohesion = 30; //percent
+    m_bulge = 30;
+    m_spring = 30;
   }
 
 }
@@ -173,9 +174,13 @@ void ParticleSystem::splitRandomParticle()
 
   if(m_particleType=='G')
   {
-
+  m_particles[distribution(gen)]->split(light,m_particles);
   }
-  m_particles[distribution(gen)]->split(m_particles);
+  else if(m_particleType=='L')
+  {
+    m_particles[distribution(gen)]->split(m_particles);
+  }
+
   m_particleCount++;
 //  QVector3D vec;
 //  m_particles[m_particles.size() - 1]->getPos(vec);
@@ -255,4 +260,24 @@ void ParticleSystem::setBranchLength(int _amount)
 void ParticleSystem::setGrowthRadius(int _amount)
 {
   //not sure where to put either
+}
+
+void ParticleSystem::reset(char _particleType)
+{
+  m_particles.clear();
+  m_particleCount=0;
+  Particle::resetIDCounter();
+  m_particleType=_particleType;
+  if (m_particleType=='L')
+  {
+    fill(3);
+  }
+  else if (m_particleType== 'G')
+  {
+    fill(1);
+    m_forces = true;
+    m_cohesion = 30; //percent
+    m_bulge = 30;
+    m_spring = 30;
+  }
 }
