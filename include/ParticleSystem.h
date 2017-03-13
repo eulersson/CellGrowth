@@ -86,7 +86,7 @@ public:
   /// for debug-drawing the links.
   /// @param[out] _returnList Vector to populate.
   //////////////////////////////////////////////////////////////////////////////
-  void getLinksForDraw(std::vector<QVector3D> &_returnList);
+  void getLinksForDraw(std::vector<uint> &_returnList);
 
 private:
   //////////////////////////////////////////////////////////////////////////////

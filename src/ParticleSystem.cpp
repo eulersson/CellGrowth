@@ -102,7 +102,7 @@ unsigned int ParticleSystem::getSize()
   return m_particles.size();
 }
 
-void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
+void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
 {
   _returnList.clear();
   // There is a lot of iterating here maybe there can be find a better way to
@@ -125,15 +125,11 @@ void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
       {
         if (m_particles[k]->getID() == tempList[j])
         {
-          QVector3D vec;
+          // Pushes back the ID of linked Particle
+          _returnList.push_back(m_particles[k]->getID());
 
-          // Pushes back the pos of Linked Particle
-          m_particles[k]->getPos(vec);
-          _returnList.push_back(vec);
-
-          // Pushes back the pos of current Particle
-          m_particles[i]->getPos(vec);
-          _returnList.push_back(vec);
+          // Pushes back the ID of current Particle
+          _returnList.push_back(m_particles[i]->getID());
           break;
         }
       }

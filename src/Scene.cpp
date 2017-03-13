@@ -68,6 +68,7 @@ void Scene::paint()
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
     drawQuad();
+    drawLinks();
 }
 
 void Scene::prepareQuad()
@@ -123,11 +124,25 @@ void Scene::prepareParticles()
   m_part_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/particles.frag");
   m_part_program->link();
 
+  m_links_program = new QOpenGLShaderProgram(this);
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/links.vert");
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/links.frag");
+  m_links_program->link();
+
   m_part_vao = new QOpenGLVertexArrayObject(this);
 
+  m_links_vao = new QOpenGLVertexArrayObject(this);
+
   m_part_vao->create();
+
+  m_links_vao->create();
+
   m_part_vbo.create();
   m_part_vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+  m_links_ebo = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+  m_links_ebo.create();
+  m_links_ebo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
   sendParticleDataToOpenGL();
 }
@@ -152,12 +167,27 @@ void Scene::drawParticles()
   m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
   m_part_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
   m_part_vao->bind();
-  unsigned int pointsToDraw = m_sphere_data.size() / 3;
+  GLuint pointsToDraw = m_sphere_data.size() / 3;
 
   glDrawArraysInstanced(GL_TRIANGLES, 0, pointsToDraw, m_ps.getSize());
 
   m_part_vao->release();
   m_part_program->release();
+}
+
+void Scene::drawLinks()
+{
+  m_links_program->bind();
+  m_links_program->setUniformValue("ProjectionMatrix", m_input_manager.getProjectionMatrix());
+  m_links_program->setUniformValue("ModelMatrix", m_model_matrix);
+  m_links_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
+
+  m_links_vao->bind();
+
+  glDrawElements(GL_LINES, m_links_data.size(), GL_UNSIGNED_INT, 0);
+
+  m_links_vao->release();
+  m_links_program->release();
 }
 
 void Scene::setupFBO()
@@ -256,23 +286,37 @@ void Scene::sendParticleDataToOpenGL()
 
   m_part_vao->bind();
 
-  // Sphere Data ===============================================================
-  m_sphere_vbo.bind();
-  m_sphere_vbo.allocate(&m_sphere_data[0], m_sphere_data.size() * sizeof(GLfloat));
-  m_part_program->enableAttributeArray("position");
-  m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
+    // Sphere Data =============================================================
+    m_sphere_vbo.bind();
+    m_sphere_vbo.allocate(&m_sphere_data[0], m_sphere_data.size() * sizeof(GLfloat));
+    m_part_program->enableAttributeArray("position");
+    m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
 
-  // Buffering Instances= Data =================================================
-  m_part_vbo.bind();
-  m_part_vbo.allocate(&m_particle_data[0], m_ps.getSize() * 4 * sizeof(GLfloat));
+    // Buffering Instances= Data ===============================================
+    m_part_vbo.bind();
+    m_part_vbo.allocate(&m_particle_data[0], m_ps.getSize() * 4 * sizeof(GLfloat));
 
-  m_part_program->enableAttributeArray("instances");
-  m_part_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
+    m_part_program->enableAttributeArray("instances");
+    m_part_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
 
-  m_part_vbo.release();
-  glVertexAttribDivisor(m_part_program->attributeLocation("instances"), 1);
+    m_part_vbo.release();
+    glVertexAttribDivisor(m_part_program->attributeLocation("instances"), 1);
 
   m_part_vao->release();
+
+  // Work on the links O------O
+  m_ps.getLinksForDraw(m_links_data);
+
+  // Uncomment to see what indices are being sent to ebo
+  // for_each(m_links_data.begin(), m_links_data.end(), [](uint i){ qDebug("%d", i);});
+
+  m_links_vao->bind();
+    m_part_vbo.bind();
+    m_links_ebo.bind();
+    m_links_ebo.allocate(&m_links_data[0], m_links_data.size() * sizeof(uint));
+    m_links_program->enableAttributeArray("position");
+    m_links_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 4 * sizeof(GLfloat));
+  m_links_vao->release();
 }
 
 void Scene::updateModelMatrix()
