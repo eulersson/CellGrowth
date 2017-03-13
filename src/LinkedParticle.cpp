@@ -103,9 +103,9 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
   normal.normalize();
   //create new particle
-  qreal x=m_pos.x()+normal.x()/20;
-  qreal y=m_pos.y()+normal.y()/20;
-  qreal z=m_pos.z()+normal.z()/20;
+  qreal x=m_pos.x()+normal.x() * 8.0f;
+  qreal y=m_pos.y()+normal.y() * 8.0f;
+  qreal z=m_pos.z()+normal.z() * 30.0f;
 
 
 

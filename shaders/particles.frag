@@ -7,12 +7,11 @@ layout (location = 0) out vec3 gNormalPass;
 layout (location = 1) out vec3 gPositionPass;
 
 // Data coming from vertex shader
-in vec4 worldPosition;
-in vec3 partRadius;
 in vec3 vNormal;
+in vec3 vViewPosition;
 
 void main(void)
 {
     gNormalPass   = vNormal;
-    gPositionPass = worldPosition.xyz;
+    gPositionPass = vViewPosition.xyz;
 }

@@ -89,7 +89,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   virtual bool recursiveCollision(
       QVector3D,
-      std::vector<std::unique_ptr<Particle>>&) {}
+      std::vector<std::unique_ptr<Particle>>&) { return false; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief checks if the particle has reached its food treshold and therefore
