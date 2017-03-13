@@ -53,7 +53,9 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<QVector3D> m_listOfPositions) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, std::vector<unsigned int> &_returnList) override;
+
+  void bulge(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split.

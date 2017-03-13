@@ -12,7 +12,6 @@ ParticleSystem::ParticleSystem()
   qDebug("Default constructor called");
   m_particleCount=0;
   fill(3);
-  m_particleCentre = calculateParticleCentre();
 }
 
 // For custom number of particlesm_packagedParticleData
@@ -21,7 +20,6 @@ ParticleSystem::ParticleSystem(int _amount)
   qDebug("Custom constructor called");
   m_particleCount=0;
   fill(_amount);
-  m_particleCentre = calculateParticleCentre();
 
 }
 
@@ -39,13 +37,25 @@ void ParticleSystem::advance()
   }
 
   // Then moving
+  std::vector<unsigned int> _returnList;
+
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, listOfPositions());
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, _returnList);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
+    m_particles[i]->advance();
+  }
+}
+
+void ParticleSystem::bulge()
+{
+  m_particleCount=m_particles.size();
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->bulge(m_particleCentre);
     m_particles[i]->advance();
   }
 }
@@ -57,18 +67,18 @@ void ParticleSystem::fill(unsigned int _amount)
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
   std::vector<QVector3D> pos;
-  pos.push_back(QVector3D(1,1,0));
-  pos.push_back(QVector3D(1,-1,0));
-  pos.push_back(QVector3D(-1,-1,0));
+  pos.push_back(QVector3D(0.25,0.25,0));
+  pos.push_back(QVector3D(0.25,-0.25,0));
+  pos.push_back(QVector3D(-0.25,-0.25,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
-    //qreal x=distribution(gen);
-    //qreal y=distribution(gen);
-    //qreal z=distribution(gen);
-    //qreal z = -25.0f;
+//    qreal x=distribution(gen);
+//    qreal y=distribution(gen);
+//    qreal z=distribution(gen);
+//    qreal z = -25.0f;
 
-    //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+//    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(),pos[i].y(),pos[i].z())));
     m_particleCount++;
   }
@@ -211,7 +221,6 @@ QVector3D ParticleSystem::calculateParticleCentre()
   for (auto &particle : m_particles)
   {
     QVector3D particlePosition = particle->getPosition();
-    //std::cout<<"ParticlePosition: "<<particlePosition.x()<<" "<<particlePosition.y()<<" "<<particlePosition.z()<<std::endl;
     m_particleCentre += particlePosition;
 
   }
@@ -220,16 +229,27 @@ QVector3D ParticleSystem::calculateParticleCentre()
   return m_particleCentre;
 }
 
-std::vector<QVector3D> ParticleSystem::listOfPositions()
+QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
 {
-  std::vector<QVector3D> _listOfPositions;
+  QVector3D averageDistance;
 
-  for (auto &particle : m_particles)
+  for (auto&particle : m_particles)
   {
-    _listOfPositions.push_back(particle->getPosition());
+    QVector3D particlePosition = particle->getPosition();
+    QVector3D particleCentre = calculateParticleCentre();
+    QVector3D distance = particleCentre - particlePosition;
+    QVector3D fabsDistance;
+    fabsDistance.setX(fabs (distance.x()));
+    fabsDistance.setY(fabs (distance.y()));
+    fabsDistance.setZ(fabs(distance.z()));
+
+    averageDistance += fabsDistance;
   }
 
-  return _listOfPositions;
+  averageDistance = averageDistance/(m_particles.size());
+  //std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
+  return averageDistance;
+
 }
 
 

@@ -69,7 +69,9 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<QVector3D> m_listOfPositions) {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, std::vector<unsigned int> &_returnList) {}
+
+  virtual void bulge(QVector3D _particleCentre) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
@@ -89,7 +91,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   virtual bool recursiveCollision(
       QVector3D,
-      std::vector<std::unique_ptr<Particle>>&) {}
+      std::vector<std::unique_ptr<Particle>>&) { return false; }
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief checks if the particle has reached its food treshold and therefore
