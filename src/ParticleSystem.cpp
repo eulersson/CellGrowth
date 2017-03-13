@@ -12,14 +12,33 @@ ParticleSystem::ParticleSystem()
   qDebug("Default constructor called");
   m_particleCount=0;
   fill(3);
+  m_forces = true;
+  m_cohesion = 30; //percent
+  m_bulge = 30;
+  m_spring = 30;
+  m_particleType= 'L';
 }
 
 // For custom number of particlesm_packagedParticleData
-ParticleSystem::ParticleSystem(int _amount)
+ParticleSystem::ParticleSystem(char _particleType)
 {
   qDebug("Custom constructor called");
   m_particleCount=0;
-  fill(_amount);
+
+  m_forces = true;
+  m_cohesion = 30; //percent
+  m_bulge = 30;
+  m_spring = 30;
+  m_particleType = _particleType;
+
+  if (m_particleType=='L')
+  {
+    fill(3);
+  }
+  else if (m_particleType== 'G')
+  {
+    fill(1);
+  }
 
 }
 
@@ -59,8 +78,8 @@ void ParticleSystem::fill(unsigned int _amount)
   {
     qreal x=distribution(gen);
     qreal y=distribution(gen);
-    //qreal z=distribution(gen);
-    qreal z = -25.0f;
+    qreal z=distribution(gen);
+    //qreal z = -25.0f;
 
     m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     m_particleCount++;
@@ -152,6 +171,10 @@ void ParticleSystem::splitRandomParticle()
 
   // !!!!!!  ATTENTION SPLIT FUNCTION SHOULD BE BASED ON PARTICLE TYPE
 
+  if(m_particleType=='G')
+  {
+
+  }
   m_particles[distribution(gen)]->split(m_particles);
   m_particleCount++;
 //  QVector3D vec;
@@ -206,25 +229,22 @@ void ParticleSystem::setParticleSize(double _size)
 
 void ParticleSystem::toggleForces(bool _state)
 {
-  //turn influence of forces on and off
+  m_forces=_state;
 }
 
 void ParticleSystem::setCohesion(int _amount)
 {
-  //setting cohesion value
-  //maybe have attribute in ps
+  m_cohesion = _amount;
 }
 
 void ParticleSystem::setBulge(int _amount)
 {
-  //setting bulge value
-  //maybe have attribute in ps
+  m_bulge = _amount;
 }
 
 void ParticleSystem::setSpring(int _amount)
 {
-  //setting spring value
-  //maybe have attribute in ps
+  m_spring = _amount;
 }
 
 void ParticleSystem::setBranchLength(int _amount)
