@@ -1,4 +1,4 @@
-#include "LinkedParticle.h"
+ #include "LinkedParticle.h"
 #include <iostream>
 LinkedParticle::LinkedParticle():Particle()
 {
