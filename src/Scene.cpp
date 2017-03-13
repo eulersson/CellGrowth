@@ -15,7 +15,10 @@
 
 void subdivide(float*, float*, float*, long, std::vector<GLfloat>&);
 
-Scene::Scene(Window *_window) : AbstractScene(_window), m_input_manager(_window)
+Scene::Scene(Window *_window)
+  : AbstractScene(_window)
+  , m_input_manager(_window)
+  , m_draw_links(true)
 {
 }
 
@@ -28,14 +31,18 @@ void Scene::initialize()
   // Allows use of OpenGL commands
   AbstractScene::initialize();
 
-  generateSphereData(4);
+  generateSphereData(4); // Four subdivisions of an icosahedra
 
   m_sphere_vbo.create();
   m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
   // Projection matrix for the particles
   m_projection_matrix.setToIdentity();
-  m_projection_matrix.perspective(45.0f, (float)window()->width()/(float)window()->height(), 0.01f, 100.0f);
+  m_projection_matrix.perspective(
+        45.0f,
+        (float)window()->width()/(float)window()->height(),
+        0.01f,
+        100.0f);
 
   // Prepare for deferred rendering
   prepareQuad();
@@ -43,29 +50,26 @@ void Scene::initialize()
   setupFBO();
   setupLights();
 
-  glViewport(0, 0, window()->width(), window()->height());
+  glViewport(0, 0, 720, 720);
 }
 
 void Scene::paint()
 {
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
   updateModelMatrix();
   m_input_manager.setupCamera();
   m_input_manager.doMovement();
 
   m_fbo->bind();
     glEnable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawParticles();
+    if (m_draw_links) { drawLinks(); }
     for(auto &s : m_object_list) { s->draw(); }
 
   m_fbo->release();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(0));
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(1));
     glDisable(GL_DEPTH_TEST);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     drawQuad();
 }
@@ -82,66 +86,121 @@ void Scene::prepareQuad()
   };
 
   m_quad_program = new QOpenGLShaderProgram(this);
-  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/quad.vert");
-  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/quad.frag");
+
+  m_quad_program->addShaderFromSourceFile(
+        QOpenGLShader::Vertex,
+        "shaders/quad.vert");
+  m_quad_program->addShaderFromSourceFile(
+        QOpenGLShader::Fragment,
+        "shaders/quad.frag");
+
   m_quad_program->link();
 
   m_quad_program->bind();
   m_quad_program->setUniformValue("gpass0Tex", 0);
   m_quad_program->setUniformValue("gpass1Tex", 1);
-  m_normalShadingIndex   = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "normalShading");
-  m_positionShadingIndex = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "positionShading");
+
+  m_normalShadingIndex   = glGetSubroutineIndex(
+        m_quad_program->programId(),
+        GL_FRAGMENT_SHADER,
+        "normalShading");
+
+  m_positionShadingIndex = glGetSubroutineIndex(
+        m_quad_program->programId(),
+        GL_FRAGMENT_SHADER,
+        "positionShading");
+
   m_activeRenderPassIndex = m_normalShadingIndex;
   m_quad_program->release();
 
   m_quad_vao = new QOpenGLVertexArrayObject(this);
-
+  m_quad_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
   m_quad_vao->create();
   m_quad_vbo.create();
-  m_quad_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
   m_quad_vao->bind();
+    m_quad_vbo.bind();
 
-  m_quad_vbo.bind();
+    m_quad_vbo.allocate(quad, 5 * 6 * sizeof(GLfloat));
 
-  m_quad_vbo.allocate(quad, 5 * 6 * sizeof(GLfloat));
+    m_quad_program->setAttributeBuffer(
+          "position",            // Name
+          GL_FLOAT,              // Type
+          0,                     // Offset
+          3,                     // Tuple size
+          5 * sizeof(GLfloat));  // Stride
 
-  m_quad_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
-  m_quad_program->enableAttributeArray("position");
+    m_quad_program->enableAttributeArray("position");
 
-  m_quad_program->setAttributeBuffer("uv", GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
-  m_quad_program->enableAttributeArray("uv");
+    m_quad_program->setAttributeBuffer(
+          "uv",                  // Name
+          GL_FLOAT,              // Type
+          3 * sizeof(GLfloat),   // Offset
+          2,                     // Touple size
+          5 * sizeof(GLfloat));  // Stride
 
-  m_quad_vbo.release();
+    m_quad_program->enableAttributeArray("uv");
+
+    m_quad_vbo.release();
   m_quad_vao->release();
 }
 
 void Scene::prepareParticles()
 {
   m_part_program = new QOpenGLShaderProgram(this);
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/particles.vert");
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/particles.frag");
+
+  m_part_program->addShaderFromSourceFile(
+        QOpenGLShader::Vertex,
+        "shaders/particles.vert");
+
+  m_part_program->addShaderFromSourceFile(
+        QOpenGLShader::Fragment,
+        "shaders/particles.frag");
+
   m_part_program->link();
 
-  m_part_vao = new QOpenGLVertexArrayObject(this);
+  m_links_program = new QOpenGLShaderProgram(this);
 
+  m_links_program->addShaderFromSourceFile(
+        QOpenGLShader::Vertex,
+        "shaders/links.vert");
+
+  m_links_program->addShaderFromSourceFile(
+        QOpenGLShader::Fragment,
+        "shaders/links.frag");
+
+  m_links_program->link();
+
+  m_part_vao = new QOpenGLVertexArrayObject(this);
   m_part_vao->create();
+
+  m_links_vao = new QOpenGLVertexArrayObject(this);
+  m_links_vao->create();
+
   m_part_vbo.create();
   m_part_vbo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-  sendParticleDataToOpenGL();
+  m_links_ebo = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+  m_links_ebo.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+  m_links_ebo.create();
+
+  sendParticleDataToOpenGL();  // Initial batch
 }
 
 void Scene::drawQuad()
 {
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(0));
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(1));
 
   m_quad_program->bind();
+
   m_quad_vao->bind();
-
-  glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
-
-  glDrawArrays(GL_TRIANGLES, 0, 6);
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
   m_quad_vao->release();
+
   m_quad_program->release();
 }
 
@@ -151,13 +210,26 @@ void Scene::drawParticles()
   m_part_program->setUniformValue("ProjectionMatrix", m_input_manager.getProjectionMatrix());
   m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
   m_part_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
+
   m_part_vao->bind();
-  unsigned int pointsToDraw = m_sphere_data.size() / 3;
-
-  glDrawArraysInstanced(GL_TRIANGLES, 0, pointsToDraw, m_ps.getSize());
-
+    glDrawArraysInstanced(GL_TRIANGLES, 0, m_sphere_data.size() / 3, m_ps.getSize());
   m_part_vao->release();
+
   m_part_program->release();
+}
+
+void Scene::drawLinks()
+{
+  m_links_program->bind();
+  m_links_program->setUniformValue("ProjectionMatrix", m_input_manager.getProjectionMatrix());
+  m_links_program->setUniformValue("ModelMatrix", m_model_matrix);
+  m_links_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
+
+  m_links_vao->bind();
+    glDrawElements(GL_LINES, m_links_data.size(), GL_UNSIGNED_INT, 0);
+  m_links_vao->release();
+
+  m_links_program->release();
 }
 
 void Scene::setupFBO()
@@ -168,21 +240,31 @@ void Scene::setupFBO()
 
   m_fbo = new QOpenGLFramebufferObject(720, 720); // GL_COLOR_ATTACHMENT0
   m_fbo->bind();
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT1
+    m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT1
 
-  const GLenum attachments[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-  glDrawBuffers(2, attachments);
+    const GLenum attachments[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, attachments);
 
-  // Create and attach depth buffer (renderbuffer)
-  GLuint rboDepth;
-  glGenRenderbuffers(1, &rboDepth);
-  glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 720, 720);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-
-  // Finally check if framebuffer is complete
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    qCritical("Framebuffer not complete!");
+    // Create and attach depth buffer (renderbuffer) ===========================
+    GLuint rbo_depth;
+    // Generate renderbuffer object names
+    glGenRenderbuffers(1, &rbo_depth);
+    // Bind a named renderbuffer object
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+    // Establish data storage, format and dimensions of a renderbuffer object's image
+    glRenderbufferStorage(
+          GL_RENDERBUFFER,     // Target
+          GL_DEPTH_COMPONENT,  // Internal Format
+          720, 720);           // Size
+    // Attach a renderbuffer object to a framebuffer object
+    glFramebufferRenderbuffer(
+          GL_FRAMEBUFFER,       // Target
+          GL_DEPTH_ATTACHMENT,  // Attachment
+          GL_RENDERBUFFER,      // Renderbuffer Target
+          rbo_depth);           // Renderbuffer
+    // Finally check if framebuffer is complete
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      qCritical("Framebuffer not complete!");
 
   m_fbo->release();
 }
@@ -190,20 +272,35 @@ void Scene::setupFBO()
 void Scene::setupLights()
 {
   m_manipulator_program = new QOpenGLShaderProgram(this);
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/manip.vert");
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manip.frag");
+
+  m_manipulator_program->addShaderFromSourceFile(
+        QOpenGLShader::Vertex,
+        "shaders/manip.vert");
+  m_manipulator_program->addShaderFromSourceFile(
+        QOpenGLShader::Fragment,
+        "shaders/manip.frag");
+
   m_manipulator_program->link();
 
   m_sun_program = new QOpenGLShaderProgram(this);
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Vertex  , "shaders/sun.vert");
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sun.frag");
+
+  m_sun_program->addShaderFromSourceFile(
+        QOpenGLShader::Vertex,
+        "shaders/sun.vert");
+  m_sun_program->addShaderFromSourceFile(
+        QOpenGLShader::Fragment,
+        "shaders/sun.frag");
+
   m_sun_program->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
   for(int x = -4; x < 4; x += 4) {
       for(int y = -4; y < 4; y += 4) {
           PointLight *pointlight;
-          pointlight = new PointLight(QVector3D(x, y, 0), m_manipulator_program, m_sun_program);
+          pointlight = new PointLight(
+                QVector3D(x, y, 0),
+                m_manipulator_program,
+                m_sun_program);
           pointlight->createGeometry(context(), masterUniqueColour);
           m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
       }
@@ -235,7 +332,12 @@ void Scene::generateSphereData(uint _num_subdivisions)
      {6,  1, 10}, {9, 0, 11}, {9, 11, 2}, { 9, 2, 5}, {7, 2, 11}};
 
   for (size_t i = 0; i < 20; i++) {
-    subdivide(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], _num_subdivisions, m_sphere_data);
+    subdivide(
+        vdata[tindices[i][0]],
+        vdata[tindices[i][1]],
+        vdata[tindices[i][2]],
+        _num_subdivisions,
+        m_sphere_data);
   }
 }
 
@@ -252,27 +354,45 @@ void Scene::sendParticleDataToOpenGL()
   m_ps.packageDataForDrawing(m_particle_data);
 
   // Uncomment to see what x, y, z, radius get sent to the shader
-  //for_each(m_particle_data.begin(), m_particle_data.end(), [](float f){ qDebug("%f", f);});
+  // for_each(m_particle_data.begin(), m_particle_data.end(), [](float f){ qDebug("%f", f);});
 
   m_part_vao->bind();
 
-  // Sphere Data ===============================================================
-  m_sphere_vbo.bind();
-  m_sphere_vbo.allocate(&m_sphere_data[0], m_sphere_data.size() * sizeof(GLfloat));
-  m_part_program->enableAttributeArray("position");
-  m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
+    // Sphere Data =============================================================
+    m_sphere_vbo.bind();
+    m_sphere_vbo.allocate(&m_sphere_data[0], m_sphere_data.size() * sizeof(GLfloat));
+    m_part_program->enableAttributeArray("position");
+    m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
 
-  // Buffering Instances= Data =================================================
-  m_part_vbo.bind();
-  m_part_vbo.allocate(&m_particle_data[0], m_ps.getSize() * 4 * sizeof(GLfloat));
+    // Instance Data ===========================================================
+    m_part_vbo.bind();
+    m_part_vbo.allocate(&m_particle_data[0], m_ps.getSize() * 4 * sizeof(GLfloat));
 
-  m_part_program->enableAttributeArray("instances");
-  m_part_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
+    m_part_program->enableAttributeArray("instances");
+    m_part_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
 
-  m_part_vbo.release();
-  glVertexAttribDivisor(m_part_program->attributeLocation("instances"), 1);
+    m_part_vbo.release();
+    glVertexAttribDivisor(m_part_program->attributeLocation("instances"), 1);
 
   m_part_vao->release();
+
+  // Link Data (on request) ====================================================
+  if (m_draw_links)
+  {
+    // Work on the links O------O
+    m_ps.getLinksForDraw(m_links_data);
+
+    // Uncomment to see what indices are being sent to ebo
+    // for_each(m_links_data.begin(), m_links_data.end(), [](uint i){ qDebug("%d", i);});
+
+    m_links_vao->bind();
+      m_part_vbo.bind();
+      m_links_ebo.bind();
+      m_links_ebo.allocate(&m_links_data[0], m_links_data.size() * sizeof(uint));
+      m_links_program->enableAttributeArray("position");
+      m_links_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 4 * sizeof(GLfloat));
+    m_links_vao->release();
+  }
 }
 
 void Scene::updateModelMatrix()
@@ -286,6 +406,8 @@ void Scene::updateModelMatrix()
 void Scene::keyPressed(QKeyEvent *ev)
 {
   switch(ev->key()) {
+  case Qt::Key_L:
+    m_draw_links = !m_draw_links;
   case Qt::Key_N:
     m_activeRenderPassIndex = m_normalShadingIndex;
     break;
@@ -294,6 +416,7 @@ void Scene::keyPressed(QKeyEvent *ev)
     break;
   case Qt::Key_Space:
     updateParticleSystem();
+    qDebug("%d particles in the system", m_ps.getSize());
   default:
     break;
   }

@@ -48,6 +48,8 @@ OTHER_FILES += \
     README.md
 
 DISTFILES += \
+    shaders/links.vert \
+    shaders/links.frag \
     shaders/manip.vert \
     shaders/manip.frag \
     shaders/sun.vert \
