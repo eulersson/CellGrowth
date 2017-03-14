@@ -16,7 +16,7 @@ Window::Window(QWindow *parent) : QOpenGLWindow(NoPartialUpdate, parent)
   if(format().swapInterval() == -1)
   {
       // V_blank synchronization not available (tearing likely to happen)
-      //qDebug("Swap Buffers at v_blank not available: refresh at approx 60fps.");
+      qDebug("Swap Buffers at v_blank not available: refresh at approx 60fps.");
       m_timer.setInterval(17);
   }
   else

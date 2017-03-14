@@ -1,8 +1,8 @@
- #include "LinkedParticle.h"
+#include "LinkedParticle.h"
 #include <iostream>
 LinkedParticle::LinkedParticle():Particle()
 {
-  //qDebug("Linked Particle default constructor.");
+  qDebug("Linked Particle default constructor.");
 }
 
 
@@ -11,7 +11,7 @@ LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z):Particle(_x,_y,_z)
 {
-   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+   qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
@@ -21,8 +21,8 @@ LinkedParticle::LinkedParticle(qreal _x,
                                std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
 {
 
-  //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
-        // "particles", _x, _y, _z);
+  qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
+         "particles", _x, _y, _z);
 
 }
 
@@ -187,7 +187,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 //      m_vel += repulse;
 //    }
 //  }
-
 }
 
 void LinkedParticle::bulge(QVector3D _particleCentre)
@@ -268,6 +267,9 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
       }
     }
   }
+
+  //
+
 
   normal.normalize();
   //create new particle

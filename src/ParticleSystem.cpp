@@ -9,7 +9,7 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-  //qDebug("Default constructor called");
+  qDebug("Default constructor called");
   m_particleCount=0;
   fill(3);
 }
@@ -17,7 +17,7 @@ ParticleSystem::ParticleSystem()
 // For custom number of particlesm_packagedParticleData
 ParticleSystem::ParticleSystem(int _amount)
 {
-  //qDebug("Custom constructor called");
+  qDebug("Custom constructor called");
   m_particleCount=0;
   fill(_amount);
 
@@ -28,6 +28,7 @@ void ParticleSystem::advance()
 {
   m_particleCount=m_particles.size();
   m_averageDistance=calculateAverageDistanceFromCentre();
+
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
@@ -67,20 +68,15 @@ void ParticleSystem::fill(unsigned int _amount)
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
-  std::vector<QVector3D> pos;
-  pos.push_back(QVector3D(0.25,0.25,0));
-  pos.push_back(QVector3D(0.25,-0.25,0));
-  pos.push_back(QVector3D(-0.25,-0.25,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
-//    qreal x=distribution(gen);
-//    qreal y=distribution(gen);
-//    qreal z=distribution(gen);
-//    qreal z = -25.0f;
+    qreal x=distribution(gen);
+    qreal y=distribution(gen);
+    //qreal z=distribution(gen);
+    qreal z = -25.0f;
 
-//    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
-    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(),pos[i].y(),pos[i].z())));
+    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     m_particleCount++;
   }
 
@@ -120,7 +116,7 @@ unsigned int ParticleSystem::getSize()
   return m_particles.size();
 }
 
-void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
+void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
 {
   _returnList.clear();
   // There is a lot of iterating here maybe there can be find a better way to
@@ -143,15 +139,11 @@ void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
       {
         if (m_particles[k]->getID() == tempList[j])
         {
-          QVector3D vec;
+          // Pushes back the ID of linked Particle
+          _returnList.push_back(m_particles[k]->getID());
 
-          // Pushes back the pos of Linked Particle
-          m_particles[k]->getPos(vec);
-          _returnList.push_back(vec);
-
-          // Pushes back the pos of current Particle
-          m_particles[i]->getPos(vec);
-          _returnList.push_back(vec);
+          // Pushes back the ID of current Particle
+          _returnList.push_back(m_particles[i]->getID());
           break;
         }
       }
@@ -252,14 +244,3 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
   return averageDistance;
 
 }
-
-
-
-
-
-
-
-
-
-
-
