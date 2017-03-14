@@ -34,7 +34,7 @@ build/*
 *.debug
 *.pro.autosave
 *.pro.user
-*.stash
+.DS_Store
+.qmake.stash
 Makefile
 cells
-

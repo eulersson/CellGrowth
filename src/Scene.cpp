@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// @file Scene.cpp
 /// @author Ramon Blanquer
+/// @author Fanny Marstrom
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -24,6 +25,7 @@ Scene::Scene(Window *_window)
 
 Scene::~Scene()
 {
+    qDebug("Shutting down Cell Growth.\n");
 }
 
 void Scene::initialize()
@@ -31,24 +33,39 @@ void Scene::initialize()
   // Allows use of OpenGL commands
   AbstractScene::initialize();
 
+
+  glClearColor(1.0f, 0.7f, 0.7f, 1.0f);
+
+  glEnable(GL_DEPTH_TEST);
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_COLOR_MATERIAL);
+
   generateSphereData(4); // Four subdivisions of an icosahedra
 
   m_sphere_vbo.create();
   m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
-  // Projection matrix for the particles
-  m_projection_matrix.setToIdentity();
-  m_projection_matrix.perspective(
-        45.0f,
-        (float)window()->width()/(float)window()->height(),
-        0.01f,
-        100.0f);
+  //Initializing all matricies that will be used.
+  initializeMatrix();
+
+  //Preparing the obj used.
+  //prepareObj();
+
 
   // Prepare for deferred rendering
   prepareQuad();
   prepareParticles();
   setupFBO();
   setupLights();
+
+  //Sending uniform variables used in the shader.
+  loadMaterialToShader();
+  loadLightToShader();
+  loadMatrixToShader();
+  sampleKernel();
+
 
   glViewport(0, 0, 720, 720);
 }
@@ -86,64 +103,142 @@ void Scene::prepareQuad()
   };
 
   m_quad_program = new QOpenGLShaderProgram(this);
-
-  m_quad_program->addShaderFromSourceFile(
-        QOpenGLShader::Vertex,
-        "shaders/quad.vert");
-  m_quad_program->addShaderFromSourceFile(
-        QOpenGLShader::Fragment,
-        "shaders/quad.frag");
-
+  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/quad.vert");
+  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/quad.frag");
   m_quad_program->link();
 
   m_quad_program->bind();
-  m_quad_program->setUniformValue("gpass0Tex", 0);
-  m_quad_program->setUniformValue("gpass1Tex", 1);
 
-  m_normalShadingIndex   = glGetSubroutineIndex(
-        m_quad_program->programId(),
-        GL_FRAGMENT_SHADER,
-        "normalShading");
+  //Passing textures to shader.
+  m_quad_program->setUniformValue("depth", 0);
+  m_quad_program->setUniformValue("positionTex", 1);
+  m_quad_program->setUniformValue("normal", 2);
+  m_quad_program->setUniformValue("diffuse", 3);
+  m_quad_program->setUniformValue("ssaoNoiseTex", 4);
 
-  m_positionShadingIndex = glGetSubroutineIndex(
-        m_quad_program->programId(),
-        GL_FRAGMENT_SHADER,
-        "positionShading");
+  //Subroutine ShadingPass Index.
+  m_ADSIndex = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "ADSRender");
+  m_AOIndex = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "AORender");
+  m_xRayIndex   = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "xRayRender");
 
-  m_activeRenderPassIndex = m_normalShadingIndex;
+  //Setting the active renderpass.
+  m_activeRenderPassIndex = m_ADSIndex;
   m_quad_program->release();
 
   m_quad_vao = new QOpenGLVertexArrayObject(this);
-  m_quad_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+
   m_quad_vao->create();
   m_quad_vbo.create();
+  m_quad_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
   m_quad_vao->bind();
-    m_quad_vbo.bind();
+  m_quad_vbo.bind();
 
-    m_quad_vbo.allocate(quad, 5 * 6 * sizeof(GLfloat));
+  m_quad_vbo.allocate(quad, 5 * 6 * sizeof(GLfloat));
 
-    m_quad_program->setAttributeBuffer(
-          "position",            // Name
-          GL_FLOAT,              // Type
-          0,                     // Offset
-          3,                     // Tuple size
-          5 * sizeof(GLfloat));  // Stride
+  m_quad_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+  m_quad_program->enableAttributeArray("position");
 
-    m_quad_program->enableAttributeArray("position");
+  m_quad_program->setAttributeBuffer("uv", GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
+  m_quad_program->enableAttributeArray("uv");
 
-    m_quad_program->setAttributeBuffer(
-          "uv",                  // Name
-          GL_FLOAT,              // Type
-          3 * sizeof(GLfloat),   // Offset
-          2,                     // Touple size
-          5 * sizeof(GLfloat));  // Stride
-
-    m_quad_program->enableAttributeArray("uv");
-
-    m_quad_vbo.release();
+  m_quad_vbo.release();
   m_quad_vao->release();
 }
+
+
+void Scene::initializeMatrix()
+{
+    glViewport(0, 0, window()->width(), window()->height());
+    m_projection_matrix.setToIdentity();
+    m_projection_matrix.perspective(
+          45.0f,
+          (float)window()->width()/(float)window()->height(),
+          0.01f,
+          100.0f);
+
+
+    m_model_matrix.setToIdentity();
+    m_model_matrix.translate(0.0, 0.0, 0.0);
+
+    //m_normalMatrix = QMatrix4x4::normalMatrix();
+    m_mv = m_view_matrix * m_model_matrix;
+    m_mvp = m_projection_matrix * m_mv;
+
+}
+
+void Scene::loadMatrixToShader()
+{
+  m_quad_program->bind();
+  m_quad_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
+  m_quad_program->setUniformValue("FakeViewMatrix", m_view_matrix);
+  m_quad_program->setUniformValue("ModelMatrix", m_model_matrix);
+  m_quad_program->setUniformValue("MV", m_mv);
+  m_quad_program->setUniformValue("MVP", m_mvp);
+  m_quad_program->release();
+
+
+  m_part_program->bind();
+  m_part_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
+  m_part_program->setUniformValue("FakeViewMatrix", m_view_matrix);
+  m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
+  m_part_program->release();
+
+}
+
+
+void Scene::loadLightToShader()
+{
+  m_quad_program->bind();
+
+  lightPos = QVector3D(0.0, 0.0, 0.0);
+  m_quad_program->setUniformValue("lightPos", lightPos);
+
+  //Phong Lighting
+  //The ambient lighting used as a global illumination.
+  m_quad_program->setUniformValue("light.ambient", QVector3D(1.0f, 1.0f, 1.0f));
+
+  //Diffuse light to make fragments closer to a light source more birght.
+  m_quad_program->setUniformValue("light.diffuse", QVector3D(0.3f, 0.3f, 0.3f));
+
+  //Specular lighting to change the reflective properties.
+  m_quad_program->setUniformValue("light.specular", QVector3D(0.5f, 0.5f, 0.5f));
+
+  //Specular lighting to change the reflective properties.
+  m_quad_program->setUniformValue("light.colour", QVector3D(1.0f, 1.0f, 1.0f));
+
+  m_quad_program->setUniformValue("light.Linear", 0.09f);
+  m_quad_program->setUniformValue("light.Quadratic", 0.032f);
+
+  m_quad_program->release();
+}
+
+
+void Scene::loadMaterialToShader()
+{
+    m_quad_program->bind();
+
+    //Phong material properties.
+    m_quad_program->setUniformValue("material.ambient", QVector3D(0.5f, 0.5f, 0.5f));
+    m_quad_program->setUniformValue("material.diffuse", QVector3D(0.3f, 0.3f, 0.3f));
+    m_quad_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
+    m_quad_program->setUniformValue("material.shininess", 32.0f);
+
+    //X-Ray Fall of to make only edges in full opacity.
+    m_quad_program->setUniformValue("material.attenuation", 0.5f);
+
+    m_quad_program->release();
+
+}
+
+void Scene::updateModelMatrix()
+{
+  // Insert particle system position here
+  QVector3D pointPos = QVector3D(0, 0, 0);
+  m_model_matrix.translate(pointPos);
+}
+
+
 
 void Scene::prepareParticles()
 {
@@ -195,12 +290,15 @@ void Scene::drawQuad()
   glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(1));
 
   m_quad_program->bind();
-
   m_quad_vao->bind();
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-  m_quad_vao->release();
 
+  glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
+
+  glDisable(GL_DEPTH_TEST);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+  glEnable(GL_DEPTH_TEST);
+
+  m_quad_vao->release();
   m_quad_program->release();
 }
 
@@ -238,13 +336,19 @@ void Scene::setupFBO()
   // GL_COLOR_ATTACHMENT0: gNormalPass
   // GL_COLOR_ATTACHMENT1: gPositionPass
 
-  m_fbo = new QOpenGLFramebufferObject(720, 720); // GL_COLOR_ATTACHMENT0
+  m_fbo =new QOpenGLFramebufferObject(720, 720, QOpenGLFramebufferObject::Depth); // GL_COLOR_ATTACHMENT0
   m_fbo->bind();
-    m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT1
 
-    const GLenum attachments[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, attachments);
+  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT1
+  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT2
+  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT3
+  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT4
 
+  const GLenum attachments[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+                                GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+
+  //Drawing multiple buffers.
+  glDrawBuffers(5, attachments);
     // Create and attach depth buffer (renderbuffer) ===========================
     GLuint rbo_depth;
     // Generate renderbuffer object names
@@ -395,30 +499,57 @@ void Scene::sendParticleDataToOpenGL()
   }
 }
 
-void Scene::updateModelMatrix()
-{
-  // Insert particle system position here
-  QVector3D pointPos = QVector3D(0, 0, 0);
-  m_model_matrix.setToIdentity();
-  m_model_matrix.translate(pointPos);
-}
-
 void Scene::keyPressed(QKeyEvent *ev)
 {
   switch(ev->key()) {
-  case Qt::Key_L:
-    m_draw_links = !m_draw_links;
-  case Qt::Key_N:
-    m_activeRenderPassIndex = m_normalShadingIndex;
-    break;
-  case Qt::Key_P:
-    m_activeRenderPassIndex = m_positionShadingIndex;
-    break;
+
   case Qt::Key_Space:
     updateParticleSystem();
     qDebug("%d particles in the system", m_ps.getSize());
-  default:
+      break;
+
+
+  case Qt::Key_1:
+    m_activeRenderPassIndex = m_ADSIndex;
+    qDebug("ADS shading activated. Key 1 has been pressed.\n");
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+
+    //Calling clear colour, otherwise previous pass' colour is not cleared completely.
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     break;
+
+  case Qt::Key_2:
+    m_activeRenderPassIndex = m_xRayIndex;
+    qDebug("X-Ray visualisation. Key 2 pressed.\n");
+    glEnable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+
+    /* For checking what blendfunc I wanted, this visualisation
+    was useful: http://www.andersriggelsen.dk/glblendfunc.php */
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_MIN);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    break;
+
+  case Qt::Key_3:
+      m_activeRenderPassIndex = m_AOIndex;
+      qDebug("Ambient Occlusion render activated. Key 3 pressed.\n");
+      glDisable(GL_CULL_FACE);
+      glDisable(GL_BLEND);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+      break;
+
+    default:
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+    break;
+
   }
 
   m_input_manager.keyPressEvent(ev);
@@ -452,6 +583,10 @@ void Scene::wheelEvent(QWheelEvent *event)
 void Scene::windowResized(int _w, int _h)
 {
   qDebug("Window resized to %d and %d", _w, _h);
+  m_quad_program->bind();
+  m_quad_program->setUniformValue("width", _w);
+  m_quad_program->setUniformValue("height", _h);
+  m_quad_program->release();
 }
 
 void pushTriangle(float *v1, float *v2, float *v3, std::vector<GLfloat>& _data)
@@ -492,4 +627,69 @@ void subdivide(float *v1, float *v2, float *v3, long depth,std::vector<GLfloat>&
   subdivide(v2, v23, v12,  depth-1, _data);
   subdivide(v3, v31, v23,  depth-1, _data);
   subdivide(v12, v23, v31, depth-1, _data);
+}
+
+
+// //////////////////////////////////////////////////////////////////////////////
+//                     SSAO sample kernel
+// Source: https://learnopengl.com/#!Advanced-Lighting/SSAO
+// //////////////////////////////////////////////////////////////////////////////
+float Scene::lerp(float a, float b, float f)
+{
+    return a + f * (b -a);
+}
+
+void Scene::sampleKernel()
+{
+  std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
+  for(GLuint i = 0; i < m_ssaoKernel.size(); i++)
+  {
+      QVector3D sample(
+
+              randomFloats(generator) * 2.0 - 1.0,
+              randomFloats(generator) * 2.0 - 1.0,
+              randomFloats(generator)
+       );
+       sample.normalize();
+       sample *= randomFloats(generator);
+       GLfloat scale = GLfloat(i) / 64.0;
+       scale = lerp(0.1f, 1.0f, scale * scale);
+       sample *= scale;
+
+       m_ssaoKernel[i] = sample;
+
+       m_quad_program->bind();
+       char buffer [12];
+       int n = sprintf (buffer, "ssamples[%d]", i);
+       m_quad_program->setUniformValue(buffer, sample);
+       m_quad_program->release();
+  }
+}
+
+
+void Scene::randomKernel()
+{
+    std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
+    m_ssaoNoise.clear();
+    for(GLuint i = 0; i < 16; i++)
+    {
+        m_ssaoNoise.push_back(randomFloats(generator) * 2.0 - 1.0);
+        m_ssaoNoise.push_back(randomFloats(generator) * 2.0 - 1.0);
+        m_ssaoNoise.push_back(0.0f);
+
+    }
+
+    QOpenGLTexture* ssaoNoise_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+    ssaoNoise_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    ssaoNoise_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+    ssaoNoise_texture->setWrapMode(QOpenGLTexture::Repeat);
+
+    ssaoNoise_texture->setSize(4,4);
+    ssaoNoise_texture->setFormat(QOpenGLTexture::RGB16F);
+
+
+    ssaoNoise_texture->allocateStorage();
+    ssaoNoise_texture->setData(0, QOpenGLTexture::RGB, QOpenGLTexture::Float32, &m_ssaoNoise[0]);
+
+    ssaoNoise_texture->bind(5);
 }
