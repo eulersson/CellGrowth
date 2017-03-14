@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file ParticleSystem.cpp
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 // Native
 #include <math.h>
 #include <iostream>
@@ -28,10 +35,12 @@ ParticleSystem::ParticleSystem(char _particleType)
 
   m_particleType = _particleType;
 
+  //if it's a linked particle we need 3 particle
   if (m_particleType=='L')
   {
     fill(3);
   }
+  //if it's a Growth particle we need 1 particle to start with
   else if (m_particleType== 'G')
   {
     fill(1);
@@ -43,32 +52,36 @@ ParticleSystem::ParticleSystem(char _particleType)
 
 }
 
-// Calculates new forces on each particles and advects them
+
 void ParticleSystem::advance()
 {
+  //reseting the particle count to the size of the particle list
   m_particleCount=m_particles.size();
+
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
+    //split only if triggered by light
 //    if(m_particles[i]->testForSplit())
 //    {
 //      m_particles[i]->split(m_particles);
 //    }
   }
 
-  // Then moving
+  //calcuting the forces
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     //m_particles[i]->calculate();
   }
 
+  //moving all particles
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     m_particles[i]->advance();
   }
 }
 
-// Starting with 4 particles that are all linked together
+
 void ParticleSystem::fill(unsigned int _amount)
 {
   std::random_device rd;
@@ -80,7 +93,6 @@ void ParticleSystem::fill(unsigned int _amount)
     qreal x=distribution(gen);
     qreal y=distribution(gen);
     qreal z=distribution(gen);
-    //qreal z = -25.0f;
 
     m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     m_particleCount++;
@@ -102,8 +114,7 @@ void ParticleSystem::fill(unsigned int _amount)
 
   else
   {
-    //run a triangulation algorithm
-    //This will need to be added later
+    qDebug("To many particles to link");
   }
 }
 
@@ -125,12 +136,9 @@ unsigned int ParticleSystem::getSize()
 void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
 {
   _returnList.clear();
-  // There is a lot of iterating here maybe there can be find a better way to
-  // do this. Using pointers would maybe get rid of the the iterations but it
-  // might cause problems with vectors reallocating their memory as the memory
-  // address changes we could have a fixed size array and maybe have a max
-  // particle treshold. Using size of vetor for this because Jon said I should
-  // be doing that we can change it to particle Count though
+
+
+
   for (unsigned int i = 0; i < m_particles.size(); i++)
   {
     // Gets the links from the current particle and than looks for the position
@@ -168,9 +176,11 @@ void ParticleSystem::splitRandomParticle()
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
+
+  //needs to be replaced by the actual light direction
   QVector3D light(-100*sin(m_particleCount*10),- 100,100+sin(m_particleCount*10));
 
-  // !!!!!!  ATTENTION SPLIT FUNCTION SHOULD BE BASED ON PARTICLE TYPE
+  // calling diffrent split function based on the particle type
 
   if(m_particleType=='G')
   {
@@ -182,14 +192,11 @@ void ParticleSystem::splitRandomParticle()
   }
 
   m_particleCount++;
-//  QVector3D vec;
-//  m_particles[m_particles.size() - 1]->getPos(vec);
 
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)
 {
-  //List of particles it's connected
   std::vector<unsigned int> deleteList;
   m_particles[_index]->getConnectionsID(deleteList);
   int ID = m_particles[_index]->getID();
