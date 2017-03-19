@@ -35,8 +35,6 @@ cells
 # Build files
 *.pro.user
 build/*
-Makefile
+Makefile`
 
-# Other files
-.DS_Store
-
+# i am a comment
