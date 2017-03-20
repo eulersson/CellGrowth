@@ -8,8 +8,8 @@ CONFIG -= app_bundle
 
 SOURCES += \
     src/main.cpp \
-    src/AbstractScene.cpp \
     src/ArcBallCamera.cpp \
+    src/GLWindow.cpp \
     src/GrowthParticle.cpp \
     src/InputManager.cpp \
     src/LinkedParticle.cpp \
@@ -17,10 +17,8 @@ SOURCES += \
     src/Particle.cpp \
     src/ParticleSystem.cpp \
     src/PointLight.cpp \
-    src/Scene.cpp \
     src/SelectObject.cpp \
-    src/SpotLight.cpp \
-    src/Window.cpp
+    src/SpotLight.cpp
 
 OBJECTS_DIR = build/obj
 MOC_DIR = build/moc
@@ -28,8 +26,8 @@ MOC_DIR = build/moc
 INCLUDEPATH += include
 
 HEADERS += \
-    include/AbstractScene.h \
     include/ArcBallCamera.h \
+    include/GLWindow.h \
     include/GrowthParticle.h \
     include/InputManager.h \
     include/LinkedParticle.h \
@@ -37,10 +35,8 @@ HEADERS += \
     include/Particle.h \
     include/ParticleSystem.h \
     include/PointLight.h \
-    include/Scene.h \
     include/SelectObject.h \
-    include/SpotLight.h \
-    include/Window.h
+    include/SpotLight.h
 
 OTHER_FILES += \
     .gitignore \

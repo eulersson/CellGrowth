@@ -11,10 +11,10 @@
 #include <memory>
 
 // Qt
+#include <QOpenGLWindow>
 #include <QKeyEvent>
 #include <QMatrix4x4>
 #include <QVector3D>
-#include <QWindow>
 
 // Project
 #include "ArcBallCamera.h"
@@ -37,7 +37,7 @@ public:
   /// @brief Custom constructor taking a QWindow.
   /// @param[in] _window Window the InputManager is associated with.
   //////////////////////////////////////////////////////////////////////////////
-  InputManager (QWindow *_window);
+  InputManager (QOpenGLWindow* _window);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Run Hover function for all objects currently under mouse cursor.

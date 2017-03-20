@@ -1,11 +1,10 @@
 #version 450 core
 
-
-uniform sampler2D depth;
-uniform sampler2D positionTex;
-uniform sampler2D normal;
-uniform sampler2D diffuse;
-uniform sampler2D ssaoNoiseTex;
+uniform sampler2D depth;         // Color Attachment 0
+uniform sampler2D positionTex;   // Color Attachment 1
+uniform sampler2D normal;        // Color Attachment 2
+uniform sampler2D diffuse;       // Color Attachment 3
+uniform sampler2D ssaoNoiseTex;  // Color Attachment 4
 
 uniform vec3 lightPos;
 uniform vec3 samples[64];
@@ -64,6 +63,17 @@ subroutine uniform ShadingPass ShaderPassSelection;
 /// Source: https://learnopengl.com/#!Lighting/Materials
 ////////////////////////////////////////////////////////////////////////////////
 subroutine (ShadingPass)
+vec4 normalRender()
+{
+    return vec4(texture2D(normal, TexCoord).rgb, 1.0f);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///                         ADS SHADING
+/// Source: https://learnopengl.com/#!Lighting/Basic-Lighting
+/// Source: https://learnopengl.com/#!Lighting/Materials
+////////////////////////////////////////////////////////////////////////////////
+subroutine (ShadingPass)
 vec4 ADSRender()
 {
     /*Temp viewPos until camera is created*/
@@ -97,7 +107,6 @@ vec4 ADSRender()
 
     //Returning ambient * diffuse * specular
     return vec4((ambient + ddiffuse + specular) * partPos, 1.0f);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -200,6 +209,8 @@ vec4 AORender()
     return vec4(positions, 1.0);
 
 }
+
+
 
 
 void main(void)
