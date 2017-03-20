@@ -11,23 +11,13 @@
 
 #include <QGuiApplication>
 
-#include "Scene.h"
-#include "Window.h"
+#include "GLWindow.h"
 
 int main(int argc, char *argv[])
 {
   QGuiApplication app(argc, argv);
 
-  Window window;
-  QSurfaceFormat fmt;
-  fmt.setProfile(QSurfaceFormat::CoreProfile);
-  fmt.setVersion(4,5);
-  fmt.setSamples(16);
-  fmt.setSwapInterval(1);
-  window.setFormat(fmt);
-
-  Scene scene(&window);
-  window.setScene(&scene);
+  GLWindow window;
 
   window.resize(720, 720);
   window.show();

@@ -6,7 +6,7 @@
 
 #include "InputManager.h"
 
-InputManager::InputManager (QWindow *_window) :
+InputManager::InputManager (QOpenGLWindow *_window) :
   m_camera(QVector3D(0.0f, 0.0f, 10.0f)),
   m_window(_window),
   m_keys{0},
