@@ -75,11 +75,6 @@ void GLWindow::initializeGL()
   prepareParticles();
   setupFBO();
   setupLights();
-
-  //Sending uniform variables used in the shader.
-  loadMaterialToShader();
-  loadLightToShader();
-  loadMatrixToShader();
   sampleKernel();
 
   glViewport(0, 0, 720, 720);
@@ -99,11 +94,18 @@ void GLWindow::paintGL()
     if (m_draw_links) { drawLinks(); }
     for(auto &s : m_object_list) { s->draw(); }
 
+
+    //Update light, material and matrix data.
+    loadMaterialToShader();
+    loadLightToShader();
+    loadMatrixToShader();
+
   m_fbo->release();
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     drawQuad();
+    loadLightToShader();
 }
 
 void GLWindow::resizeGL(int _w, int _h)
@@ -135,7 +137,6 @@ void GLWindow::initializeMatrix()
 
 void GLWindow::loadMatrixToShader()
 {
-
     m_quad_program->bind();
     m_quad_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
     m_quad_program->setUniformValue("ViewMatrix", m_view_matrix);
@@ -153,13 +154,23 @@ void GLWindow::loadMatrixToShader()
 
 }
 
+void GLWindow::loadCameraInfoToShader()
+{
+    m_quad_program->bind();
+    m_viewPos = QVector3D(0.0, 0.0, 0.0);
+    m_quad_program->setUniformValue("viewPos", m_viewPos);
+    m_quad_program->release();
+}
+
 
 void GLWindow::loadLightToShader()
 {
     m_quad_program->bind();
 
-    lightPos = QVector3D(0.0, 0.0, 0.0);
-    m_quad_program->setUniformValue("lightPos", lightPos);
+
+    m_lightPos = m_object_list[0]->getPosition();
+    m_quad_program->setUniformValue("lightPos", m_lightPos);
+
 
     //Phong Lighting
     //The ambient lighting used as a global illumination.
@@ -172,7 +183,7 @@ void GLWindow::loadLightToShader()
     m_quad_program->setUniformValue("light.specular", QVector3D(1.0f, 1.0f, 1.0f));
 
     //Specular lighting to change the reflective properties.
-    m_quad_program->setUniformValue("light.colour", QVector3D(1.0f, 1.0f, 1.0f));
+    m_quad_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
 
     m_quad_program->setUniformValue("light.Linear", 0.09f);
     m_quad_program->setUniformValue("light.Quadratic", 0.032f);
@@ -221,7 +232,7 @@ void GLWindow::prepareQuad()
   m_quad_program->setUniformValue("normal", 2);
   m_quad_program->setUniformValue("diffuse", 3);
   m_quad_program->setUniformValue("ssaoNoiseTex", 4);
-  m_quad_program->setUniformValue("WSNormals", 5);
+  m_quad_program->setUniformValue("ScreenNormals", 5);
 
 
   //Subroutine ShadingPass Index.

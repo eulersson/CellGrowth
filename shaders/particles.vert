@@ -21,8 +21,11 @@ void main(void)
     vNormal = normalize(position);
     vViewPosition = position;
     //vViewPosition = vec4(ViewMatrix * ModelMatrix * vec4(instances.w * position + instances.xyz, 1.0)).xyz;
+
+    mat3 normalMatrix = transpose(inverse(mat3(ViewMatrix * ModelMatrix)));
+    vScreenSpaceNormals = normalMatrix * vNormal;
+
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(instances.w * position + instances.xyz, 1.0);
 
-    mat3 normalMatrix = transpose(inverse(mat3(MV)));
-    vScreenSpaceNormals = normalMatrix * vNormal;
+
 }

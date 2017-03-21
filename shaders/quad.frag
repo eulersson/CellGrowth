@@ -5,9 +5,8 @@ uniform sampler2D positionTex;   // Color Attachment 1
 uniform sampler2D normal;        // Color Attachment 2
 uniform sampler2D diffuse;       // Color Attachment 3
 uniform sampler2D ssaoNoiseTex;  // Color Attachment 4
-uniform sampler2D WSNormals;     //Colour Attachment 5
+uniform sampler2D ScreenNormals; //Colour Attachment 5
 
-uniform vec3 lightPos;
 uniform vec3 samples[64];
 
 
@@ -44,6 +43,8 @@ uniform Light light;
 
 in vec2 TexCoord;
 in vec3 FragPos;
+in vec3 LightPos;
+in vec3 ViewPos;
 
 uniform int width;
 uniform int height;
@@ -69,10 +70,6 @@ subroutine uniform ShadingPass ShaderPassSelection;
 subroutine (ShadingPass)
 vec4 ADSRender()
 {
-    /*Temp viewPos until camera is created*/
-    vec3 viewPos = vec3(0.0, 0.0, 0.0);
-    /*Temp viewPos ends heresamples*/
-
     //Particle positions in greyscale.
     //float Grey = dot(texture2D(positionTex, TexCoord).rgb, vec3(texture2D(positionTex, TexCoord).r, texture2D(positionTex, TexCoord).g,texture2D(positionTex, TexCoord).b));
 
@@ -84,21 +81,21 @@ vec4 ADSRender()
     vec3 ambient = light.ambient * material.ambient;
 
     //Diffuse
-    vec3 sampledNormal = texture2D(WSNormals, TexCoord).rgb;
+    vec3 sampledNormal = texture2D(ScreenNormals, TexCoord).rgb;
 
     vec3 norm = sampledNormal;
-    vec3 lightDir = normalize(lightPos - FragPos);
+    vec3 lightDir = normalize(LightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 ddiffuse = light.diffuse * (diff * material.diffuse);
 
     //Specular Light
-    vec3 viewDir =  normalize(viewPos - FragPos);
+    vec3 viewDir =  normalize(ViewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * (spec * material.specular);
 
-    //Returning ambient * diffuse * specular
     return vec4((ambient + ddiffuse + specular) * depth * light.colour, 1.0f);
+
 }
 
 
@@ -112,7 +109,7 @@ subroutine (ShadingPass)
 vec4 xRayRender()
 {
     // Translucent Opacity
-    float Grey = dot(texture2D(WSNormals, TexCoord).rgb, vec3(texture2D(WSNormals, TexCoord).r, texture2D(WSNormals, TexCoord).g,texture2D(WSNormals, TexCoord).b));
+    float Grey = dot(texture2D(ScreenNormals, TexCoord).rgb, vec3(texture2D(ScreenNormals, TexCoord).r, texture2D(ScreenNormals, TexCoord).g,texture2D(ScreenNormals, TexCoord).b));
 
     //Transparent Opacity
     // float Grey = dot(texture2D(depth, TexCoord).rgb, vec3(texture2D(depth, TexCoord).r, texture2D(depth, TexCoord).g,texture2D(depth, TexCoord).b));
@@ -205,6 +202,9 @@ vec4 AORender()
 
 
     return vec4(vec3(AO), 1.0);
+
+   // return vec4(texture2D(ScreenNormals, TexCoord).rgb, 1.0f);
+   // return vec4(texture2D(normal, TexCoord).rgb, 1.0f);
 
 }
 

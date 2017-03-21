@@ -7,7 +7,7 @@ layout (location = 1) out vec3 gPositionPass;           // Color Attachment 1
 layout (location = 2) out vec3 gNormalPass;             // Color Attachment 2
 layout (location = 3) out vec3 gDiffusePass;            // Color Attachment 3
 layout (location = 4) out vec3 gSSAONoisePass;          // Color Attachment 4
-layout (location = 5) out vec3 gWSNormalPass;           // Color Attachment 5
+layout (location = 5) out vec3 gScreenNormalPass;       // Color Attachment 5
 
 
 in vec3 vNormal;
@@ -35,5 +35,5 @@ void main(void)
     gNormalPass = vNormal;
     gDiffusePass = vec3(0.95);
     gSSAONoisePass = gSSAONoisePass;
-    gWSNormalPass = vScreenSpaceNormals; //World Space Normal Pass.
+    gScreenNormalPass = vScreenSpaceNormals; //World Space Normal Pass.
 }
