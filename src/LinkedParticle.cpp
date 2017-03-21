@@ -64,8 +64,8 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 //  SPRING
 //  pushes particles away from each other
 
-  QVector3D hold;
-  QVector3D spring;
+ //QVector3D hold;
+  //QVector3D spring;
   QVector3D connectionCentre;
   QVector3D planar;
   float distanceY = 0;
@@ -81,41 +81,130 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   {
      connectionCentre += linkPosition[i];
 
-     hold = linkPosition[i] - m_pos;
+//     hold = linkPosition[i] - m_pos;
 
-     if (hold.x() <= m_size
-               || hold.y() <= m_size
-               || hold.z() <= m_size)
-     {
-        m_vel/=1.1;
-     }
+//     if (hold.x() >= m_size
+//               || hold.y() >= m_size
+//               || hold.z() >= m_size)
+//     {
+//        m_vel/=1.1;
+//     }
 
-     hold/=5000;
-     m_vel+=hold;
+//     if hold is large, then divide by smaller number 1
+//     if hold is small, then divide by a large number 5000
+
+
+//     for (unsigned int factor = 0; factor < 5000; factor++)
+//     {
+//         if ((hold.x() < factor/1000 && hold.x() > (-factor/5000))
+//            && (hold.y() < factor/1000 && hold.y() > (-factor/5000))
+//            && (hold.z() < factor/1000 && hold.z() > (-factor/5000)))
+//            {
+//            hold/=5000-factor;
+//            m_vel+=hold;
+//            }
+//     }
+    // hold/=500;
+    // m_vel+=hold;
+
+     //SPRING
 
      distanceY = linkPosition[i].y() - m_pos.y();
      if(distanceY < m_size && distanceY > (-(m_size)))
      {
+         QVector3D spring;
          spring.setY(spring.y() - distanceY);
-         spring/=20;
+         spring/=10;
          m_vel += spring;
+     }
+     else
+     {
+       float velY = m_vel.y();
+       velY /= 1.5;
+       m_vel.setY(velY);
      }
 
      distanceX = linkPosition[i].x() - m_pos.x();
      if(distanceX < m_size && distanceX > (-(m_size)))
      {
+         QVector3D spring;
          spring.setX(spring.x() - distanceX);
-         spring/=20;
+         spring/=10;
          m_vel += spring;
+     }
+
+     else
+     {
+       float velX = m_vel.x();
+       velX /= 1.5;
+       m_vel.setX(velX);
      }
 
      distanceZ = linkPosition[i].z() - m_pos.z();
      if(distanceZ < m_size && distanceZ > (-(m_size)))
      {
+         QVector3D spring;
          spring.setZ(spring.z() - distanceZ);
-         spring/=20;
+         spring/=10;
          m_vel += spring;
      }
+     else
+     {
+       float velZ = m_vel.z();
+       velZ /= 1.5;
+       m_vel.setZ(velZ);
+     }
+
+
+//     //HOLD
+
+
+//     distanceY = linkPosition[i].y() - m_pos.y();
+//     if(distanceY > m_size && distanceY < (-(m_size)))
+//     {
+//         QVector3D hold;
+//         hold.setY(hold.y() - distanceY);
+//         hold/=1;
+//         m_vel -= hold;
+//     }
+//     else
+//     {
+//       float velY = m_vel.y();
+//       velY /= 1.1;
+//       m_vel.setY(velY);
+//     }
+
+//     distanceX = linkPosition[i].x() - m_pos.x();
+//     if(distanceX > m_size && distanceX < (-(m_size)))
+//     {
+//         QVector3D hold;
+//         hold.setX(hold.x() - distanceX);
+//         hold/=1;
+//         m_vel += hold;
+//     }
+
+//     else
+//     {
+//       float velX = m_vel.x();
+//       velX /= 1.1;
+//       m_vel.setX(velX);
+//     }
+
+//     distanceZ = linkPosition[i].z() - m_pos.z();
+//     if(distanceZ > m_size && distanceZ < (-(m_size)))
+//     {
+//         QVector3D hold;
+//         hold.setZ(hold.z() - distanceZ);
+//         hold/=1;
+//         m_vel += hold;
+//     }
+//     else
+//     {
+//       float velZ = m_vel.z();
+//       velZ /= 1.1;
+//       m_vel.setZ(velZ);
+//     }
+
   }
 
 //  PLANAR
@@ -123,15 +212,15 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   connectionCentre = connectionCentre/connectionCount;
   planar = connectionCentre - m_pos;
 
-  if((planar.x() <= m_size)
-         && (planar.y() <= m_size)
-         && (planar.z() <= m_size))
-  {
-      m_vel/=1.1;
-  }
+//  if((planar.x() <= m_size)
+//         && (planar.y() <= m_size)
+//         && (planar.z() <= m_size))
+//  {
+//      m_vel/=1.1;
+//  }
 
-  planar/=1000;
-  m_vel += planar;
+//  planar/=1000;
+//  m_vel += planar;
 
 //  EQUIDISTANCE
 //  have found average distance away from centre

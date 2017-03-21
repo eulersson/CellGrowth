@@ -166,6 +166,14 @@ void ParticleSystem::splitRandomParticle()
 
   // !!!!!!  ATTENTION SPLIT FUNCTION SHOULD BE BASED ON PARTICLE TYPE
 
+  //m_particleCount=m_particles.size();
+  //m_averageDistance=calculateAverageDistanceFromCentre();
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+  }
+
   m_particles[distribution(gen)]->split(m_particles);
   m_particleCount++;
 //  QVector3D vec;
