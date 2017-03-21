@@ -5,9 +5,17 @@ uniform sampler2D positionTex;   // Color Attachment 1
 uniform sampler2D normal;        // Color Attachment 2
 uniform sampler2D diffuse;       // Color Attachment 3
 uniform sampler2D ssaoNoiseTex;  // Color Attachment 4
+uniform sampler2D WSNormals;     //Colour Attachment 5
 
 uniform vec3 lightPos;
 uniform vec3 samples[64];
+
+
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ModelMatrix;
+uniform mat4 MV;
+uniform mat4 MVP;
 
 struct Material {
     vec3 ambient;
@@ -34,12 +42,6 @@ struct Light {
 
 uniform Light light;
 
-uniform mat4 ProjectionMatrix;
-uniform mat4 FakeViewMatrix;
-uniform mat4 ModelMatrix;
-uniform mat4 MV;
-uniform mat4 MVP;
-
 in vec2 TexCoord;
 in vec3 FragPos;
 
@@ -57,16 +59,7 @@ out vec4 FragColor;
 subroutine vec4 ShadingPass();
 subroutine uniform ShadingPass ShaderPassSelection;
 
-////////////////////////////////////////////////////////////////////////////////
-///                         ADS SHADING
-/// Source: https://learnopengl.com/#!Lighting/Basic-Lighting
-/// Source: https://learnopengl.com/#!Lighting/Materials
-////////////////////////////////////////////////////////////////////////////////
-subroutine (ShadingPass)
-vec4 normalRender()
-{
-    return vec4(texture2D(normal, TexCoord).rgb, 1.0f);
-}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///                         ADS SHADING
@@ -81,19 +74,18 @@ vec4 ADSRender()
     /*Temp viewPos ends heresamples*/
 
     //Particle positions in greyscale.
-    float Grey = dot(texture2D(positionTex, TexCoord).rgb, vec3(texture2D(positionTex, TexCoord).r, texture2D(positionTex, TexCoord).g,texture2D(positionTex, TexCoord).b));
+    //float Grey = dot(texture2D(positionTex, TexCoord).rgb, vec3(texture2D(positionTex, TexCoord).r, texture2D(positionTex, TexCoord).g,texture2D(positionTex, TexCoord).b));
 
-    vec3 partPos = texture2D(positionTex, TexCoord).rgb;
-    partPos.r = Grey;
-    partPos.g = Grey;
-    partPos.b = Grey;
+
+    vec3 depth = texture2D(depth, TexCoord).rgb;
 
 
     //Ambient
     vec3 ambient = light.ambient * material.ambient;
 
     //Diffuse
-    vec3 sampledNormal = texture2D(normal, TexCoord).rgb;
+    vec3 sampledNormal = texture2D(WSNormals, TexCoord).rgb;
+
     vec3 norm = sampledNormal;
     vec3 lightDir = normalize(lightPos - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
@@ -106,8 +98,10 @@ vec4 ADSRender()
     vec3 specular = light.specular * (spec * material.specular);
 
     //Returning ambient * diffuse * specular
-    return vec4((ambient + ddiffuse + specular) * partPos, 1.0f);
+    return vec4((ambient + ddiffuse + specular) * depth * light.colour, 1.0f);
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///                             X-RAY SHADING
@@ -118,13 +112,17 @@ subroutine (ShadingPass)
 vec4 xRayRender()
 {
     // Translucent Opacity
-    float Grey = dot(texture2D(normal, TexCoord).rgb, vec3(texture2D(normal, TexCoord).r, texture2D(normal, TexCoord).g,texture2D(normal, TexCoord).b));
+    float Grey = dot(texture2D(WSNormals, TexCoord).rgb, vec3(texture2D(WSNormals, TexCoord).r, texture2D(WSNormals, TexCoord).g,texture2D(WSNormals, TexCoord).b));
 
     //Transparent Opacity
     // float Grey = dot(texture2D(depth, TexCoord).rgb, vec3(texture2D(depth, TexCoord).r, texture2D(depth, TexCoord).g,texture2D(depth, TexCoord).b));
 
-    return vec4(Grey, Grey, Grey, 1.0f);
+    vec3 XRay = vec3(Grey, Grey, Grey);
+
+    return vec4(XRay * light.colour, 1.0f);
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///                      AMBIENT OCCLUSION SHADING
@@ -179,7 +177,7 @@ vec4 AORender()
     vec3 lightpositions = texture2D(positionTex, offset.xy).rgb;
 
     vec3 Diffuse = texture2D(diffuse, TexCoord).rgb;
-    float AO = texture2D(diffuse, TexCoord).r;
+    float AO = Diffuse.r;
 
 
 
@@ -206,7 +204,7 @@ vec4 AORender()
     lighting += diffuse + specular;
 
 
-    return vec4(positions, 1.0);
+    return vec4(vec3(AO), 1.0);
 
 }
 

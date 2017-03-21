@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// @file Window.cpp
 /// @author Ramon Blanquer
+/// @author Fanny Marstrom
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -114,32 +115,6 @@ void GLWindow::resizeGL(int _w, int _h)
   m_quad_program->release();
 }
 
-void GLWindow::loadMatrixToShader()
-{
-  m_quad_program->bind();
-
-  lightPos = QVector3D(0.0, 0.0, 0.0);
-  m_quad_program->setUniformValue("lightPos", lightPos);
-
-  //Phong Lighting
-  //The ambient lighting used as a global illumination.
-  m_quad_program->setUniformValue("light.ambient", QVector3D(1.0f, 1.0f, 1.0f));
-
-  //Diffuse light to make fragments closer to a light source more birght.
-  m_quad_program->setUniformValue("light.diffuse", QVector3D(0.3f, 0.3f, 0.3f));
-
-  //Specular lighting to change the reflective properties.
-  m_quad_program->setUniformValue("light.specular", QVector3D(0.5f, 0.5f, 0.5f));
-
-  //Specular lighting to change the reflective properties.
-  m_quad_program->setUniformValue("light.colour", QVector3D(1.0f, 1.0f, 1.0f));
-
-  m_quad_program->setUniformValue("light.Linear", 0.09f);
-  m_quad_program->setUniformValue("light.Quadratic", 0.032f);
-
-  m_quad_program->release();
-}
-
 void GLWindow::initializeMatrix()
 {
   m_projection_matrix.setToIdentity();
@@ -152,26 +127,58 @@ void GLWindow::initializeMatrix()
   m_model_matrix.setToIdentity();
   m_model_matrix.translate(0.0, 0.0, 0.0);
 
-  //m_normalMatrix = QMatrix4x4::normalMatrix();
+
   m_mv = m_view_matrix * m_model_matrix;
   m_mvp = m_projection_matrix * m_mv;
 }
 
+
+void GLWindow::loadMatrixToShader()
+{
+
+    m_quad_program->bind();
+    m_quad_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
+    m_quad_program->setUniformValue("ViewMatrix", m_view_matrix);
+    m_quad_program->setUniformValue("ModelMatrix", m_model_matrix);
+    m_quad_program->setUniformValue("MV", m_mv);
+    m_quad_program->setUniformValue("MVP", m_mvp);
+    m_quad_program->release();
+
+    m_part_program->bind();
+    m_part_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
+    m_part_program->setUniformValue("ViewMatrix", m_view_matrix);
+    m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
+    m_part_program->setUniformValue("MV", m_mv);
+    m_part_program->release();
+
+}
+
+
 void GLWindow::loadLightToShader()
 {
-  m_quad_program->bind();
-  m_quad_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
-  m_quad_program->setUniformValue("FakeViewMatrix", m_view_matrix);
-  m_quad_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_quad_program->setUniformValue("MV", m_mv);
-  m_quad_program->setUniformValue("MVP", m_mvp);
-  m_quad_program->release();
+    m_quad_program->bind();
 
-  m_part_program->bind();
-  m_part_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
-  m_part_program->setUniformValue("FakeViewMatrix", m_view_matrix);
-  m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_part_program->release();
+    lightPos = QVector3D(0.0, 0.0, 0.0);
+    m_quad_program->setUniformValue("lightPos", lightPos);
+
+    //Phong Lighting
+    //The ambient lighting used as a global illumination.
+    m_quad_program->setUniformValue("light.ambient", QVector3D(1.0f, 1.0f, 1.0f));
+
+    //Diffuse light to make fragments closer to a light source more birght.
+    m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
+
+    //Specular lighting to change the reflective properties.
+    m_quad_program->setUniformValue("light.specular", QVector3D(1.0f, 1.0f, 1.0f));
+
+    //Specular lighting to change the reflective properties.
+    m_quad_program->setUniformValue("light.colour", QVector3D(1.0f, 1.0f, 1.0f));
+
+    m_quad_program->setUniformValue("light.Linear", 0.09f);
+    m_quad_program->setUniformValue("light.Quadratic", 0.032f);
+
+    m_quad_program->release();
+
 }
 
 void GLWindow::loadMaterialToShader()
@@ -214,9 +221,10 @@ void GLWindow::prepareQuad()
   m_quad_program->setUniformValue("normal", 2);
   m_quad_program->setUniformValue("diffuse", 3);
   m_quad_program->setUniformValue("ssaoNoiseTex", 4);
+  m_quad_program->setUniformValue("WSNormals", 5);
+
 
   //Subroutine ShadingPass Index.
-  m_normalIndex = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "NormalRender");
   m_ADSIndex    = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "ADSRender");
   m_AOIndex     = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "AORender");
   m_xRayIndex   = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "xRayRender");
@@ -300,6 +308,9 @@ void GLWindow::drawQuad()
   glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(3));
   glActiveTexture(GL_TEXTURE4);
   glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(4));
+  glActiveTexture(GL_TEXTURE5);
+  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(5));
+
 
   m_quad_program->bind();
   m_quad_vao->bind();
@@ -352,12 +363,13 @@ void GLWindow::setupFBO()
   m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT2
   m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT3
   m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT4
+  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT4
 
   const GLenum attachments[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
-                                GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+                                GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5};
 
   // Drawing multiple buffers.
-  glDrawBuffers(5, attachments);
+  glDrawBuffers(6, attachments);
     // Create and attach depth buffer (renderbuffer) ===========================
     GLuint rbo_depth;
     // Generate renderbuffer object names
@@ -531,6 +543,7 @@ void GLWindow::sendParticleDataToOpenGL()
     m_part_program->enableAttributeArray("position");
     m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
 
+
     // Instance Data ===========================================================
     m_part_vbo.bind();
     m_part_vbo.allocate(&m_particle_data[0], m_ps.getSize() * 4 * sizeof(GLfloat));
@@ -571,52 +584,47 @@ void GLWindow::updateModelMatrix()
 
 void GLWindow::keyPressEvent(QKeyEvent* ev)
 {
-  switch(ev->key()) {
+    switch(ev->key())
+    {
+        case Qt::Key_Space:
+            updateParticleSystem();
+            qDebug("%d particles in the system", m_ps.getSize());
+            break;
 
-  case Qt::Key_Space:
-    updateParticleSystem();
-    qDebug("%d particles in the system", m_ps.getSize());
-    break;
+        case Qt::Key_1:
+            m_activeRenderPassIndex = m_ADSIndex;
+            qDebug("ADS Render.\n");
+            glDisable(GL_CULL_FACE);
+            glDisable(GL_BLEND);
+            break;
 
-  case Qt::Key_1:
-    m_activeRenderPassIndex = m_normalIndex;
-    qDebug("Normal render activated. Key 1 pressed.\n");
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_BLEND);
+        case Qt::Key_2:
+            m_activeRenderPassIndex = m_xRayIndex;
+            qDebug("X-Ray visualisation. Key 2 pressed.\n");
+            glEnable(GL_BLEND);
+            glEnable(GL_CULL_FACE);
+
+            /* For checking what blendfunc I wanted, this visualisation
+            was useful: http://www.andersriggelsen.dk/glblendfunc.php */
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendEquation(GL_MAX);
+
+            break;
+
+        case Qt::Key_3:
+            m_activeRenderPassIndex = m_AOIndex;
+            qDebug("Ambient Occlusion.\n");
+            glDisable(GL_CULL_FACE);
+            glDisable(GL_BLEND);
+            break;
+
+        default:
+            break;
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    break;
 
-  case Qt::Key_2:
-    m_activeRenderPassIndex = m_ADSIndex;
-    qDebug("ADS shading activated. Key 2 has been pressed.\n");
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_BLEND);
-
-    //Calling clear colour, otherwise previous pass' colour is not cleared completely.
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    break;
-
-  case Qt::Key_3:
-    m_activeRenderPassIndex = m_xRayIndex;
-    qDebug("X-Ray visualisation. Key 3 pressed.\n");
-    glEnable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
-
-    /* For checking what blendfunc I wanted, this visualisation
-    was useful: http://www.andersriggelsen.dk/glblendfunc.php */
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendEquation(GL_MIN);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    break;
-
-    default:
-      glDisable(GL_CULL_FACE);
-      glDisable(GL_BLEND);
-      break;
-  }
-
-  m_input_manager.keyPressEvent(ev);
+    m_input_manager.keyPressEvent(ev);
 }
 
 void GLWindow::keyReleaseEvent(QKeyEvent *key)

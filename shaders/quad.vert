@@ -4,6 +4,12 @@
 in vec3 position;
 in vec2 uv;
 
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ModelMatrix;
+uniform mat4 MV;
+uniform mat4 MVP;
+
 // Outs
 //@brief Frament position on quad.
 out vec3 FragPos;
@@ -11,14 +17,6 @@ out vec3 FragPos;
 out vec3 lightDir;
 //@brief Texture coordinates on quad.
 out vec2 TexCoord;
-
-//Matrix
-uniform mat4 ProjectionMatrix;
-uniform mat4 FakeViewMatrix;
-uniform mat4 ModelMatrix;
-uniform mat4 MV;
-uniform mat4 MVP;
-
 
 uniform int width;
 uniform int height;
