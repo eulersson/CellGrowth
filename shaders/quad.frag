@@ -49,9 +49,13 @@ in vec3 ViewPos;
 uniform int width;
 uniform int height;
 
+
+float bias = 0.025;
+int kernelSize = 64;
+float radius = 0.5;
 /*SSAOnoise texture will not tile, finding how
 much it needs to be scaled with.*/
-const vec2 noiseScale = vec2(720/4.0, 720/4.0);
+const vec2 noiseScale = vec2(width/4.0, height/4.0);
 
 
 out vec4 FragColor;
@@ -128,83 +132,35 @@ vec4 xRayRender()
 subroutine (ShadingPass)
 vec4 AORender()
 {
-    vec3 positions = texture2D(positionTex, TexCoord).xyz;
-    vec3 normals = normalize(texture2D(ScreenNormals, TexCoord).rgb);
+    vec3 fragPos = texture(positionTex, TexCoord).xyz;
+    vec3 normal = normalize(texture(ScreenNormals, TexCoord).rgb);
+    vec3 randomVec = normalize(texture(ssaoNoiseTex, TexCoord * noiseScale).xyz);
 
-    //Random rotationfor each fragment.
-    vec3 randomVec = texture(ssaoNoiseTex, TexCoord * noiseScale).xyz;
-
-    //GrammSchmidt process
-    vec3 tangent = normalize(randomVec - normals * dot(randomVec, normals));
-    vec3 bitangent = cross(normals, tangent);
-    mat3 TBN = mat3(tangent, bitangent, normals);
-
-    //Iterating over Kernel samples taking them from tangent to view-space.
-
-    float bias = 0.025;
-    int KernelSize = 64;
-    float radius = 0.5;
-    vec3 samplePos;
-    float occlusion = 0.0f;
+    vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+    vec3 bitangent = cross(normal, tangent);
+    mat3 TBN = mat3(tangent, bitangent, normal);
 
 
-    for(int i = 0; i < KernelSize; i++)
-   {
-        samplePos = TBN * samples[i];
-        samplePos = samplePos * radius + positions;
-    };
+    float occlusion = 0.0;
 
-    vec4 offset = vec4(samplePos, 1.0);
-    offset = ProjectionMatrix * offset;
-    offset.xy /= offset.w;
-    offset.xy = offset.xy * 0.5 + 0.5;
+    for(int i = 0; i < kernelSize; ++i)
+    {
+        vec3 samplePos = TBN * samples[i];
+        samplePos = fragPos + samplePos * radius;
 
+        vec4 offset = vec4(samplePos, 1.0);
+        offset = ProjectionMatrix * offset;
+        offset.xy /= offset.w;
+        offset.xy = offset.xy * 0.5 + 0.5;
 
-    float sampleDepth =  texture2D(positionTex, offset.xy).r;
+        float sampleDepth = texture(positionTex, offset.xy).z;
+        float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
+        occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
+    }
 
-    occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0);
+    occlusion = 1.0 - (occlusion / kernelSize);
 
-    float rangeCheck = smoothstep(0.0, 1.0, radius / abs(positions.z - sampleDepth));
-    occlusion += (sampleDepth <= samplePos.z ? 1.0 : 0.0) * rangeCheck;
-
-
-    occlusion = 1.0 - (occlusion / KernelSize);
-
-    //creating lighting pass
-    vec3 lightpositions = texture2D(positionTex, offset.xy).rgb;
-
-    vec3 Diffuse = texture2D(diffuse, TexCoord).rgb;
-    float AO = Diffuse.r;
-
-
-
-
-    // Calculate light
-    vec3 ambient = vec3(0.3 * Diffuse * AO);
-    vec3 lighting  = ambient;
-    vec3 viewDir  = normalize(-positions); // Viewpos is (0.0.0)
-
-    // Diffuse
-    vec3 lightDir = normalize(light.position - positions);
-    vec3 diffuse = max(dot(normals, lightDir), 0.0) * Diffuse * light.colour;
-
-    // Specular
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normals, halfwayDir), 0.0), 8.0);
-    vec3 specular = light.colour * spec;
-
-    // Attenuation
-    float distance = length(light.position - positions);
-    float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
-    diffuse *= attenuation;
-    specular *= attenuation;
-    lighting += diffuse + specular;
-
-
-    return vec4(vec3(occlusion), 1.0);
-
-   // return vec4(texture2D(ScreenNormals, TexCoord).rgb, 1.0f);
-   // return vec4(texture2D(normal, TexCoord).rgb, 1.0f);
+    return vec4(vec3(occlusion), 1.0f);
 
 }
 
