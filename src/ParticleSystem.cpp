@@ -1,3 +1,4 @@
+
 // Native
 #include <math.h>
 #include <iostream>
@@ -27,7 +28,7 @@ ParticleSystem::ParticleSystem(int _amount)
 void ParticleSystem::advance()
 {
   m_particleCount=m_particles.size();
-  m_averageDistance=calculateAverageDistanceFromCentre();
+  //m_averageDistance=calculateAverageDistanceFromCentre();
 
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -39,11 +40,9 @@ void ParticleSystem::advance()
   }
 
   // Then moving
-  std::vector<unsigned int> _returnList;
-
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, _returnList);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -68,15 +67,20 @@ void ParticleSystem::fill(unsigned int _amount)
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
+  std::vector<QVector3D> pos;
+  pos.push_back(QVector3D(0.5,0.5,0));
+  pos.push_back(QVector3D(0.5,-0.5,0));
+  pos.push_back(QVector3D(-0.5,-0.5,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
-    qreal x=distribution(gen);
-    qreal y=distribution(gen);
+    //qreal x=distribution(gen);
+    //qreal y=distribution(gen);
     //qreal z=distribution(gen);
-    qreal z = -25.0f;
+    //qreal z = -25.0f;
 
-    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(),pos[i].y(),pos[i].z())));
     m_particleCount++;
   }
 
@@ -167,6 +171,26 @@ void ParticleSystem::splitRandomParticle()
 //  QVector3D vec;
 //  m_particles[m_particles.size() - 1]->getPos(vec);
 
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+  }
+}
+
+void ParticleSystem::splitHitParticle()
+{
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->getHitParticles(m_particles);
+  }
+
+  m_particles[0]->split(m_particles);
+  m_particleCount++;
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+  }
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)

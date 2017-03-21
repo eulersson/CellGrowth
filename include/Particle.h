@@ -69,7 +69,9 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, std::vector<unsigned int> &_returnList) {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance) {}
+
+  virtual void calculateUnlinked() {}
 
   virtual void bulge(QVector3D _particleCentre) {}
   //////////////////////////////////////////////////////////////////////////////
@@ -93,7 +95,7 @@ public:
       std::vector<std::unique_ptr<Particle>>&) { return false; }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief checks if the particle has reached its food treshold and therefore
+  /// @brief checks if the particle has reached its food threshold and therefore
   /// needs to be split.
   //////////////////////////////////////////////////////////////////////////////
   void testForSplit();
@@ -105,6 +107,8 @@ public:
   void getPos(QVector3D &_pos);
 
   QVector3D getPosition(){return m_pos;}
+
+  QVector3D getUnlinkedPos(){return m_unlinkedPos;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the Particles position
@@ -151,6 +155,8 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   int getConnectionCount();
 
+  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle> > &_particleList);
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns the particles ID.
   /// @return ID of the particle.
@@ -187,10 +193,14 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   QVector3D m_pos;
 
+  QVector3D m_unlinkedPos;
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Velocity that is used to move the particle each frame.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D m_vel;
+
+  QVector3D m_unlinkedVel;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Counts the number of objects created from this class.
@@ -212,6 +222,8 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   bool m_split;
 
+  bool m_hit;
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief holds IDs of all particles connected to this particle.
   //////////////////////////////////////////////////////////////////////////////
@@ -225,7 +237,9 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Food threshold, when reached particle is split.
   //////////////////////////////////////////////////////////////////////////////
-  unsigned int m_foodTreshold;
+  unsigned int m_foodThreshold;
+
+  std::vector<unsigned int> m_hitParticles;
 
 };
 
