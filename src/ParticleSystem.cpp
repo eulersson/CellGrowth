@@ -133,12 +133,15 @@ unsigned int ParticleSystem::getSize()
   return m_particles.size();
 }
 
-void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
+void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
 {
   _returnList.clear();
-
-
-
+  // There is a lot of iterating here maybe there can be find a better way to
+  // do this. Using pointers would maybe get rid of the the iterations but it
+  // might cause problems with vectors reallocating their memory as the memory
+  // address changes we could have a fixed size array and maybe have a max
+  // particle treshold. Using size of vetor for this because Jon said I should
+  // be doing that we can change it to particle Count though
   for (unsigned int i = 0; i < m_particles.size(); i++)
   {
     // Gets the links from the current particle and than looks for the position
@@ -153,15 +156,11 @@ void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
       {
         if (m_particles[k]->getID() == tempList[j])
         {
-          QVector3D vec;
+          // Pushes back the ID of linked Particle
+          _returnList.push_back(m_particles[k]->getID());
 
-          // Pushes back the pos of Linked Particle
-          m_particles[k]->getPos(vec);
-          _returnList.push_back(vec);
-
-          // Pushes back the pos of current Particle
-          m_particles[i]->getPos(vec);
-          _returnList.push_back(vec);
+          // Pushes back the ID of current Particle
+          _returnList.push_back(m_particles[i]->getID());
           break;
         }
       }
@@ -249,9 +248,9 @@ void ParticleSystem::setCohesion(int _amount)
   m_cohesion = _amount;
 }
 
-void ParticleSystem::setBulge(int _amount)
+void ParticleSystem::bulge()
 {
-  m_bulge = _amount;
+  //for lydia and esme
 }
 
 void ParticleSystem::setSpring(int _amount)

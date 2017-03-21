@@ -110,7 +110,7 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
 
     // create new particle and add to particle list
 
-    _particleList.push_back(std::unique_ptr<GrowthParticle> (new GrowthParticle(x,y,z,newLinkedParticles)));
+    _particleList.push_back(std::unique_ptr<GrowthParticle> (new GrowthParticle(x,y,z,newConnectedParticles)));
 
     // add particle to links in mother particle
     int new_ID = _particleList[_particleList.size()-1 ]->getID();
@@ -176,7 +176,7 @@ bool GrowthParticle::testCollision(QVector3D _particlePos)
 bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::unique_ptr<Particle>> &_particleList)
 {
   //tests for collision of the current particle
-  if(testCollision(_particle,m_size))
+  if(testCollision(_particle))
   {
      return true;
   }

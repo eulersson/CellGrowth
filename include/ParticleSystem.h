@@ -84,7 +84,7 @@ public:
   /// for debug-drawing the links.
   /// @param[out] _returnList Vector to populate.
   //////////////////////////////////////////////////////////////////////////////
-  void getLinksForDraw(std::vector<QVector3D> &_returnList);
+  void getLinksForDraw(std::vector<uint> &_returnList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief This will delete a particle and all the connections to it.
@@ -108,7 +108,7 @@ public:
   /// @brief Sets Bulge amount.
   /// @param[in] _amount new Bulge amount.
   //////////////////////////////////////////////////////////////////////////////
-  void setBulge(int _amount);
+  void bulge();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets Spring amount.

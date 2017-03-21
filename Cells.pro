@@ -1,21 +1,25 @@
 TARGET = cells
 TEMPLATE = app
 
-QT += core gui\
-        opengl
+QT += core gui opengl
+
 CONFIG += c++11
 CONFIG -= app_bundle
 
 SOURCES += \
     src/main.cpp \
-    src/AbstractScene.cpp \
+    src/ArcBallCamera.cpp \
+    src/GLWindow.cpp \
     src/GrowthParticle.cpp \
+    src/InputManager.cpp \
     src/LinkedParticle.cpp \
+    src/Manipulator.cpp \
     src/Particle.cpp \
     src/ParticleSystem.cpp \
-    src/Scene.cpp \
     src/GUI.cpp \
-    src/GLWindow.cpp
+    src/PointLight.cpp \
+    src/SelectObject.cpp \
+    src/SpotLight.cpp\
 
 OBJECTS_DIR = build/obj
 MOC_DIR = build/moc
@@ -23,14 +27,18 @@ MOC_DIR = build/moc
 INCLUDEPATH += include
 
 HEADERS += \
-    include/AbstractScene.h \
+    include/ArcBallCamera.h \
+    include/GLWindow.h \
     include/GrowthParticle.h \
+    include/InputManager.h \
     include/LinkedParticle.h \
+    include/Manipulator.h \
     include/Particle.h \
     include/ParticleSystem.h \
-    include/Scene.h \
     include/GUI.h \
-    include/GLWindow.h
+    include/PointLight.h \
+    include/SelectObject.h \
+    include/SpotLight.h \
 
 OTHER_FILES += \
     .gitignore \
@@ -38,10 +46,17 @@ OTHER_FILES += \
     README.md
 
 DISTFILES += \
+    shaders/links.vert \
+    shaders/links.frag \
+    shaders/manip.vert \
+    shaders/manip.frag \
+    shaders/sun.vert \
+    shaders/sun.frag \
     shaders/particles.vert \
     shaders/particles.frag \
     shaders/quad.vert \
     shaders/quad.frag
+
 
 FORMS += \
     ui/GUI.ui

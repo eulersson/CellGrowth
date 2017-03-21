@@ -2,7 +2,7 @@
 #define GUI_H
 
 #include <QMainWindow>
-#include "Scene.h"
+#include "GLWindow.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @file GUI.h
@@ -28,7 +28,7 @@ private:
   Ui::GUI *m_ui;
 
   // Open Gl widget which displays the Cells
-  Scene *m_gl;
+  GLWindow *m_gl;
 
 };
 

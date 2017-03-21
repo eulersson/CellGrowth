@@ -71,7 +71,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
   //pick two random particles out of the particle list
   //saving index number of it in list not Id or Pos to
-  avoid searching th particle list for the particle again
+  //avoid searching th particle list for the particle again
 
   unsigned int a=0;
 

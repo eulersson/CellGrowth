@@ -9,15 +9,15 @@
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <QGuiApplication>
+#include <QApplication>
 
-#include "Scene.h"
+
 #include "GUI.h"
+
 int main(int argc, char *argv[])
 {
 
-
-
+  //double check if need that
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
   fmt.setVersion(4,5);
@@ -28,10 +28,8 @@ int main(int argc, char *argv[])
   //window.setFormat(fmt);
 
 
-  QGuiApplication app(argc, argv);
+  QApplication app(argc, argv);
   GUI window;
-  //Scene scene(&window);
-  //window.setScene(&scene);
 
   window.show();
 
