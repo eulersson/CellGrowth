@@ -51,7 +51,7 @@ uniform int height;
 
 /*SSAOnoise texture will not tile, finding how
 much it needs to be scaled with.*/
-const vec2 noiseScale = vec2(width/4.0, height/4.0);
+const vec2 noiseScale = vec2(720/4.0, 720/4.0);
 
 
 out vec4 FragColor;
@@ -129,7 +129,7 @@ subroutine (ShadingPass)
 vec4 AORender()
 {
     vec3 positions = texture2D(positionTex, TexCoord).xyz;
-    vec3 normals = normalize(texture2D(normal, TexCoord).rgb);
+    vec3 normals = normalize(texture2D(ScreenNormals, TexCoord).rgb);
 
     //Random rotationfor each fragment.
     vec3 randomVec = texture(ssaoNoiseTex, TexCoord * noiseScale).xyz;
@@ -201,7 +201,7 @@ vec4 AORender()
     lighting += diffuse + specular;
 
 
-    return vec4(vec3(AO), 1.0);
+    return vec4(vec3(occlusion), 1.0);
 
    // return vec4(texture2D(ScreenNormals, TexCoord).rgb, 1.0f);
    // return vec4(texture2D(normal, TexCoord).rgb, 1.0f);
