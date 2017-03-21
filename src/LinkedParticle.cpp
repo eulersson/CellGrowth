@@ -29,23 +29,23 @@ LinkedParticle::LinkedParticle(qreal _x,
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, std::vector<unsigned int> &_returnList)
+void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance)
 {
   //COHERE
-  QVector3D distance = _particleCentre - m_pos;
+//  QVector3D distance = _particleCentre - m_pos;
 
 
-    QVector3D cohesion = distance;
+//    QVector3D cohesion = distance;
 
-    if((distance.x() <= m_size)
-           && (distance.y() <= m_size)
-           && (distance.z() <= m_size))
-    {
-        m_vel/=1.1;
-    }
+//    if((distance.x() <= m_size)
+//           && (distance.y() <= m_size)
+//           && (distance.z() <= m_size))
+//    {
+//        m_vel/=1.1;
+//    }
 
-  cohesion/=3000;
-  m_vel += cohesion;
+//  cohesion/=1000;
+//  m_vel += cohesion;
   //end of cohere
 
 
@@ -54,8 +54,8 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   //SPRING
   //pushes particles away from each other
 
-  QVector3D hold;
-  QVector3D spring;
+ //QVector3D hold;
+  //QVector3D spring;
   QVector3D connectionCentre;
   QVector3D planar;
   float distanceY = 0;
@@ -71,122 +71,172 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   {
      connectionCentre += linkPosition[i];
 
-     hold = linkPosition[i] - m_pos;
+//     hold = linkPosition[i] - m_pos;
 
-     if (hold.x() <= m_size
-               || hold.y() <= m_size
-               || hold.z() <= m_size)
-     {
-        m_vel/=1.1;
-     }
+//     if (hold.x() >= m_size
+//               || hold.y() >= m_size
+//               || hold.z() >= m_size)
+//     {
+//        m_vel/=1.1;
+//     }
 
-     hold/=5000;
-     m_vel+=hold;
+//     if hold is large, then divide by smaller number 1
+//     if hold is small, then divide by a large number 5000
+
+
+//     for (unsigned int factor = 0; factor < 5000; factor++)
+//     {
+//         if ((hold.x() < factor/1000 && hold.x() > (-factor/5000))
+//            && (hold.y() < factor/1000 && hold.y() > (-factor/5000))
+//            && (hold.z() < factor/1000 && hold.z() > (-factor/5000)))
+//            {
+//            hold/=5000-factor;
+//            m_vel+=hold;
+//            }
+//     }
+    // hold/=500;
+    // m_vel+=hold;
+
+     ////SPRING
 
      distanceY = linkPosition[i].y() - m_pos.y();
      if(distanceY < m_size && distanceY > (-(m_size)))
      {
+         QVector3D spring;
          spring.setY(spring.y() - distanceY);
-         spring/=20;
+         spring/=10;
          m_vel += spring;
+     }
+     else
+     {
+       float velY = m_vel.y();
+       velY /= 1.5;
+       m_vel.setY(velY);
      }
 
      distanceX = linkPosition[i].x() - m_pos.x();
      if(distanceX < m_size && distanceX > (-(m_size)))
      {
+         QVector3D spring;
          spring.setX(spring.x() - distanceX);
-         spring/=20;
+         spring/=10;
          m_vel += spring;
+     }
+
+     else
+     {
+       float velX = m_vel.x();
+       velX /= 1.5;
+       m_vel.setX(velX);
      }
 
      distanceZ = linkPosition[i].z() - m_pos.z();
      if(distanceZ < m_size && distanceZ > (-(m_size)))
      {
+         QVector3D spring;
          spring.setZ(spring.z() - distanceZ);
-         spring/=20;
+         spring/=10;
          m_vel += spring;
      }
+     else
+     {
+       float velZ = m_vel.z();
+       velZ /= 1.5;
+       m_vel.setZ(velZ);
+     }
+
+
+//     //HOLD
+
+
+//     distanceY = linkPosition[i].y() - m_pos.y();
+//     if(distanceY > m_size && distanceY < (-(m_size)))
+//     {
+//         QVector3D hold;
+//         hold.setY(hold.y() - distanceY);
+//         hold/=1;
+//         m_vel -= hold;
+//     }
+//////     else
+//////     {
+//////       float velY = m_vel.y();
+//////       velY /= 1.1;
+//////       m_vel.setY(velY);
+//////     }
+
+//     distanceX = linkPosition[i].x() - m_pos.x();
+//     if(distanceX > m_size && distanceX < (-(m_size)))
+//     {
+//         QVector3D hold;
+//         hold.setX(hold.x() - distanceX);
+//         hold/=1;
+//         m_vel += hold;
+//     }
+
+//////     else
+//////     {
+//////       float velX = m_vel.x();
+//////       velX /= 1.1;
+//////       m_vel.setX(velX);
+//////     }
+
+//     distanceZ = linkPosition[i].z() - m_pos.z();
+//     if(distanceZ > m_size && distanceZ < (-(m_size)))
+//     {
+//         QVector3D hold;
+//         hold.setZ(hold.z() - distanceZ);
+//         hold/=1;
+//         m_vel += hold;
+//     }
+//////     else
+//////     {
+//////       float velZ = m_vel.z();
+//////       velZ /= 1.1;
+//////       m_vel.setZ(velZ);
+//////     }
+
   }
 
   //PLANAR
   //Moves a particle to the average position of it's linked neighbours
-  connectionCentre = connectionCentre/connectionCount;
-  planar = connectionCentre - m_pos;
+//  connectionCentre = connectionCentre/connectionCount;
+//  planar = connectionCentre - m_pos;
 
-  if((planar.x() <= m_size)
-         && (planar.y() <= m_size)
-         && (planar.z() <= m_size))
-  {
-      m_vel/=1.1;
-  }
+//  if((planar.x() <= m_size)
+//         && (planar.y() <= m_size)
+//         && (planar.z() <= m_size))
+//  {
+//      m_vel/=1.1;
+//  }
 
-  planar/=1000;
-  m_vel += planar;
+//  planar/=1000;
+//  m_vel += planar;
 
   //EQUIDISTANCE
   //have found average distance away from centre
-  QVector3D m_averageDistance = _averageDistance;
-  m_averageDistance *= 2;
-  QVector3D fabsDistance;
-  fabsDistance.setX(fabs (distance.x()));
-  fabsDistance.setY(fabs (distance.y()));
-  fabsDistance.setZ(fabs (distance.z()));
+//  QVector3D m_averageDistance = _averageDistance;
+//  m_averageDistance *= 2;
+//  QVector3D fabsDistance;
+//  fabsDistance.setX(fabs (distance.x()));
+//  fabsDistance.setY(fabs (distance.y()));
+//  fabsDistance.setZ(fabs (distance.z()));
 
-  if (fabsDistance.x() < m_averageDistance.x()
-      && fabsDistance.y() < m_averageDistance.y()
-      && fabsDistance.z() < m_averageDistance.z())
-  {
-      QVector3D sendAway = distance;
-      sendAway/=800;
-      m_vel -= sendAway;
-  }
-  else
-  {
-      QVector3D sendIn = distance;
-      sendIn/=400;
-      m_vel += sendIn;
-   }
-
-  //REPLUSE
-  //Move the particles which aren't linked away from each other
-  std::vector<unsigned int> allParticles; //IDs of all particles
-  std::vector<unsigned int> notConnected; //IDs of all the unlinked particles
-  std::vector<unsigned int> connectedParticles; //IDs of all the linked particles
-
-  for(unsigned int s=0; s<m_ID_counter; s++)
-  {
-    allParticles.push_back(s);
-  }
-
-  getConnectionsID(_returnList);
-  connectedParticles = _returnList;
-
-  std::sort(allParticles.begin(), allParticles.end());
-  std::sort(connectedParticles.begin(), connectedParticles.end());
-
-  //creates a vector of unlinked particles by finding all of the IDs in the allParticles list which aren't in the connectedParticles list
-  std::set_difference(allParticles.begin(), allParticles.end(),
-                      connectedParticles.begin(), connectedParticles.end(),
-                      std::back_inserter(notConnected));
-
-//    std::cout<<"allParticles.size: "<<allParticles.size()<<std::endl;
-//    std::cout<<"notConnected.size: "<<notConnected.size()<<std::endl;
-
-//  QVector3D repulse;
-//  QVector3D unlinkedPos;
-
-//  for(unsigned int t=0; t<notConnected.size(); t++)
+//  if (fabsDistance.x() < m_averageDistance.x()
+//      && fabsDistance.y() < m_averageDistance.y()
+//      && fabsDistance.z() < m_averageDistance.z())
 //  {
-//    if(m_ID == notConnected[t])
-//    {
-//      getPos(unlinkedPos);
-//      std::cout<<"unlinkedPos: "<<t<<" "<<unlinkedPos.x()<<" "<<unlinkedPos.y()<<" "<<unlinkedPos.z()<<std::endl;
-//      repulse = unlinkedPos - m_pos;
-//      //std::cout<<"repulse: "<<repulse.x()<<" "<<repulse.y()<<" "<<repulse.z()<<std::endl;
-//      //repulse /= 100;
-//      m_vel += repulse;
-//    }
+//      QVector3D sendAway = distance;
+//      sendAway/=800;
+//      m_vel -= sendAway;
 //  }
+//  else
+//  {
+//      QVector3D sendIn = distance;
+//      sendIn/=400;
+//      m_vel += sendIn;
+//   }
+
+
 }
 
 void LinkedParticle::bulge(QVector3D _particleCentre)
@@ -273,9 +323,9 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
   normal.normalize();
   //create new particle
-  qreal x=m_pos.x()+normal.x() * 8.0f;
-  qreal y=m_pos.y()+normal.y() * 8.0f;
-  qreal z=m_pos.z()+normal.z() * 30.0f;
+  qreal x=m_pos.x()+normal.x();
+  qreal y=m_pos.y()+normal.y();
+  qreal z=m_pos.z()+normal.z();
 
 
 

@@ -39,11 +39,10 @@ void ParticleSystem::advance()
   }
 
   // Then moving
-  std::vector<unsigned int> _returnList;
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, _returnList);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -68,15 +67,20 @@ void ParticleSystem::fill(unsigned int _amount)
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
+  std::vector<QVector3D> pos;
+  pos.push_back(QVector3D(0.5,0.5,0));
+  pos.push_back(QVector3D(0.5,-0.5,0));
+  pos.push_back(QVector3D(-0.5,-0.5,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
-    qreal x=distribution(gen);
-    qreal y=distribution(gen);
+    //qreal x=distribution(gen);
+    //qreal y=distribution(gen);
     //qreal z=distribution(gen);
-    qreal z = -25.0f;
+    //qreal z = -25.0f;
 
-    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(),pos[i].y(),pos[i].z())));
     m_particleCount++;
   }
 
@@ -161,6 +165,14 @@ void ParticleSystem::splitRandomParticle()
   QVector3D light(-100*sin(m_particleCount*10),- 100,100+sin(m_particleCount*10));
 
   // !!!!!!  ATTENTION SPLIT FUNCTION SHOULD BE BASED ON PARTICLE TYPE
+
+  //m_particleCount=m_particles.size();
+  //m_averageDistance=calculateAverageDistanceFromCentre();
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+  }
 
   m_particles[distribution(gen)]->split(m_particles);
   m_particleCount++;

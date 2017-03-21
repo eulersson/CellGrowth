@@ -53,7 +53,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Needs description.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, std::vector<unsigned int> &_returnList) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance) override;
 
   void bulge(QVector3D _particleCentre) override;
 

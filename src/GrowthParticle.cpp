@@ -24,7 +24,7 @@ GrowthParticle::GrowthParticle(
          "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, std::vector<unsigned int> &_returnList)
+void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance)
 {
 
 }

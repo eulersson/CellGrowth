@@ -296,17 +296,26 @@ void Scene::setupLights()
   m_sun_program->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
-  for(int x = -4; x < 4; x += 4) {
-      for(int y = -4; y < 4; y += 4) {
-          PointLight *pointlight;
-          pointlight = new PointLight(
-                QVector3D(x, y, 0),
-                m_manipulator_program,
-                m_sun_program);
-          pointlight->createGeometry(context(), masterUniqueColour);
-          m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
-      }
-  }
+  PointLight *pointlight;
+  pointlight = new PointLight(
+        QVector3D(0.0, 3.0, 0.0),
+        m_manipulator_program,
+        m_sun_program);
+  pointlight->createGeometry(context(), masterUniqueColour);
+  m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+
+
+//  for(int x = -4; x < 4; x += 4) {
+//      for(int y = -4; y < 4; y += 4) {
+//          PointLight *pointlight;
+//          pointlight = new PointLight(
+//                QVector3D(x, y, 0),
+//                m_manipulator_program,
+//                m_sun_program);
+//          pointlight->createGeometry(context(), masterUniqueColour);
+//          m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+//      }
+//  }
   m_input_manager.addShaderProgram(m_manipulator_program);
   m_input_manager.addShaderProgram(m_sun_program);
   m_input_manager.setObjectList(m_object_list);
