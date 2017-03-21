@@ -57,6 +57,7 @@ void GLWindow::initializeGL()
   initializeOpenGLFunctions();
 
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MULTISAMPLE);
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
@@ -105,7 +106,6 @@ void GLWindow::paintGL()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     drawQuad();
-    loadLightToShader();
 }
 
 void GLWindow::resizeGL(int _w, int _h)
