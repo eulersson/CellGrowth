@@ -159,6 +159,7 @@ void InputManager::mouseReleaseEvent(QMouseEvent *event)
 
 void InputManager::mousePressEvent(QMouseEvent *event)
 {
+  qDebug()<<event->pos().x();
   m_mousePressed=true;
 
   if(m_alt_key==false)

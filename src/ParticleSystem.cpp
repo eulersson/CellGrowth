@@ -18,12 +18,12 @@ ParticleSystem::ParticleSystem()
 {
   qDebug("Default constructor called");
   m_particleCount=0;
+  m_particleType= 'L';
   fill(3);
   m_forces = true;
   m_cohesion = 30; //percent
-  m_bulge = 30;
   m_spring = 30;
-  m_particleType= 'L';
+
 }
 
 // For custom number of particlesm_packagedParticleData
@@ -46,7 +46,6 @@ ParticleSystem::ParticleSystem(char _particleType)
     fill(1);
     m_forces = true;
     m_cohesion = 30; //percent
-    m_bulge = 30;
     m_spring = 30;
   }
 
@@ -94,7 +93,15 @@ void ParticleSystem::fill(unsigned int _amount)
     qreal y=distribution(gen);
     qreal z=distribution(gen);
 
-    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    if(m_particleType=='G')
+    {
+      m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(x, y, z)));
+    }
+    else if(m_particleType=='L')
+    {
+      m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    }
+    //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     m_particleCount++;
   }
 
@@ -260,7 +267,10 @@ void ParticleSystem::setSpring(int _amount)
 
 void ParticleSystem::setBranchLength(int _amount)
 {
-  //not sure where to put yet
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setChildThreshold(_amount);
+  }
 }
 
 void ParticleSystem::setGrowthRadius(int _amount)
@@ -277,13 +287,13 @@ void ParticleSystem::reset(char _particleType)
   if (m_particleType=='L')
   {
     fill(3);
+
+    m_forces = true;
+    m_cohesion = 30; //percent
+    m_spring = 30;
   }
   else if (m_particleType== 'G')
   {
     fill(1);
-    m_forces = true;
-    m_cohesion = 30; //percent
-    m_bulge = 30;
-    m_spring = 30;
   }
 }

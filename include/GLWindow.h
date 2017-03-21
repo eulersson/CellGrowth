@@ -50,7 +50,9 @@ public:
   /// @brief Constructor
   /// @param[in] parent Sets the upper class parent
   //////////////////////////////////////////////////////////////////////////////
-  GLWindow(QMainWindow *_parent);
+  //GLWindow(QMainWindow *_parent);
+  GLWindow(QWidget *_parent);
+
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Destructor
@@ -391,6 +393,10 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   void wheelEvent(QWheelEvent *event);
 
+
+
+  GLuint VertexArrayID;
+
 public slots:
   void setParticleSize(double _size);
   void setParticleType(int _type);
@@ -405,7 +411,6 @@ public slots:
   void setGrowthRadius(int _amount);
   void restart();
   void setSplitType(QString _type);
-
 
 
 

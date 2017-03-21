@@ -59,7 +59,7 @@ public:
   void split(
       QVector3D _lightDirection,
       std::vector<std::unique_ptr<Particle>> &_particleList) override;
-
+  void setChildThreshold(int _amount);
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief hold the threshold of how many children/branches one Particle can have.

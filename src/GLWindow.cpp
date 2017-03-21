@@ -11,6 +11,7 @@
 // Project
 #include "GLWindow.h"
 
+
 // Recursion subdivision algorithm from:
 // http://www.opengl.org.ru/docs/pg/0208.html
 
@@ -20,14 +21,16 @@
 void subdivide(float*, float*, float*, long, std::vector<GLfloat>&);
 float lerp(float a, float b, float f);
 
-GLWindow::GLWindow(QMainWindow*_parent)
-  : QOpenGLWidget(_parent)
-  , m_draw_links(true)
-  , m_input_manager(this)
+GLWindow::GLWindow(QWidget*_parent)
+  : m_draw_links(true)  , m_input_manager(this)
+//GLWindow::GLWindow(QMainWindow*_parent)
+//  : QOpenGLWidget(_parent)
+//  , m_draw_links(true)
+//  , m_input_manager(this)
 {
   setFocus();
   //m_input_manager = InputManager(this);
-
+  this->resize(_parent->size());
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
   fmt.setVersion(4,5);
@@ -97,8 +100,11 @@ void GLWindow::paintGL()
 
   m_fbo->bind();
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
     drawParticles();
     if (m_draw_links) { drawLinks(); }
     for(auto &s : m_object_list) { s->draw(); }
@@ -112,6 +118,8 @@ void GLWindow::paintGL()
 
 void GLWindow::resizeGL(int _w, int _h)
 {
+//  glViewport(0,0,_w,_h);
+
   qDebug("Window resized to %d and %d", _w, _h);
   m_quad_program->bind();
   m_quad_program->setUniformValue("width", _w);
@@ -324,7 +332,7 @@ void GLWindow::drawParticles()
   m_part_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
 
   m_part_vao->bind();
-    glDrawArraysInstanced(GL_TRIANGLES, 0, m_sphere_data.size() / 3, m_ps.getSize());
+  glDrawArraysInstanced(GL_TRIANGLES, 0, m_sphere_data.size() / 3, m_ps.getSize());
   m_part_vao->release();
 
   m_part_program->release();
@@ -576,6 +584,7 @@ void GLWindow::updateModelMatrix()
 
 void GLWindow::keyPressEvent(QKeyEvent* ev)
 {
+  setFocus();
   switch(ev->key()) {
 
   case Qt::Key_Space:
@@ -626,26 +635,31 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
 
 void GLWindow::keyReleaseEvent(QKeyEvent *key)
 {
+  setFocus();
   m_input_manager.keyReleaseEvent(key);
 }
 
 void GLWindow::mouseMoveEvent(QMouseEvent* event)
 {
+  setFocus();
   m_input_manager.mouseMoveEvent(event);
 }
 
 void GLWindow::mousePressEvent(QMouseEvent *event)
 {
+  setFocus();
   m_input_manager.mousePressEvent(event);
 }
 
 void GLWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+  setFocus();
   m_input_manager.mouseReleaseEvent(event);
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
 {
+  setFocus();
   m_input_manager.wheelEvent(event);
 }
 
@@ -700,10 +714,12 @@ void subdivide(float *v1, float *v2, float *v3, long depth,std::vector<GLfloat>&
 void GLWindow::setParticleSize(double _size)
 {
   m_ps.setParticleSize(_size);
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::setParticleType(int _type)
 {
+
   char particleType;
   if (_type==0)
   {
@@ -715,6 +731,7 @@ void GLWindow::setParticleType(int _type)
   }
 
   m_ps.reset(particleType);
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::cancle()
@@ -726,47 +743,55 @@ void GLWindow::showConnections(bool _state)
 {
   //Visualisation changes
   //maybe there could be an attribute here that could be toggled and tested when rendering
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::setShading(QString _type)
 {
   //same here maybe have attribute that then gets passed to shader??
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::toggleForces(bool _state)
 {
   //only for LinkedParticles
   m_ps.toggleForces(_state);
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::setCohesion(int _amount)
 {
   //only for LinkedParticles
   m_ps.setCohesion(_amount);
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::bulge()
 {
   //only for LinkedParticles
   m_ps.bulge();
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::setSpring(int _amount)
 {
   //only for LinkedParticles
   m_ps.setSpring(_amount);
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::setBranchLength(int _amount)
 {
   //only for GrowthParticles
   m_ps.setBranchLength(_amount);
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::setGrowthRadius(int _amount)
 {
   //only for GrowthParticles
   m_ps.setGrowthRadius(_amount);
+  sendParticleDataToOpenGL();
 }
 
 void GLWindow::restart()

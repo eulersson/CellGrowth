@@ -38,23 +38,9 @@ class Ui_GUI
 public:
     QWidget *centralwidget;
     QGridLayout *MainWindow_gridLayout;
-    QPushButton *m_restart;
-    QGroupBox *groupBox;
-    QGridLayout *gridLayout;
-    QDoubleSpinBox *m_particleSize;
-    QLabel *label_2;
-    QLabel *label;
-    QComboBox *m_particleType;
-    QPushButton *m_cancle;
-    QGroupBox *groupBox_2;
-    QGridLayout *gridLayout_2;
-    QComboBox *m_splitType;
-    QLabel *label_8;
-    QGroupBox *groupBox_4;
-    QGridLayout *gridLayout_4;
-    QCheckBox *m_showConnections;
-    QLabel *label_9;
-    QComboBox *m_shadineType;
+    QSpacerItem *horizontalSpacer;
+    QGroupBox *groupBox_3;
+    QGridLayout *gridLayout_6;
     QTabWidget *m_particleTab;
     QWidget *m_linkedParticleTab;
     QGridLayout *gridLayout_7;
@@ -71,7 +57,25 @@ public:
     QSpinBox *m_GP_growRadius;
     QSpinBox *m_GP_branches;
     QLabel *label_6;
-    QSpacerItem *horizontalSpacer;
+    QGroupBox *groupBox_2;
+    QGridLayout *gridLayout_2;
+    QComboBox *m_splitType;
+    QLabel *label_8;
+    QGroupBox *groupBox;
+    QGridLayout *gridLayout;
+    QDoubleSpinBox *m_particleSize;
+    QLabel *label_2;
+    QLabel *label;
+    QComboBox *m_particleType;
+    QGroupBox *groupBox_4;
+    QGridLayout *gridLayout_4;
+    QCheckBox *m_showConnections;
+    QLabel *label_9;
+    QComboBox *m_shadineType;
+    QGroupBox *groupBox_5;
+    QGridLayout *gridLayout_8;
+    QPushButton *m_restart;
+    QPushButton *m_cancle;
     QMenuBar *menubar;
     QMenu *menuCells_ControlUI;
     QStatusBar *statusbar;
@@ -80,114 +84,27 @@ public:
     {
         if (GUI->objectName().isEmpty())
             GUI->setObjectName(QStringLiteral("GUI"));
-        GUI->resize(932, 528);
+        GUI->resize(1122, 584);
         centralwidget = new QWidget(GUI);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         MainWindow_gridLayout = new QGridLayout(centralwidget);
         MainWindow_gridLayout->setObjectName(QStringLiteral("MainWindow_gridLayout"));
-        m_restart = new QPushButton(centralwidget);
-        m_restart->setObjectName(QStringLiteral("m_restart"));
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        MainWindow_gridLayout->addWidget(m_restart, 5, 1, 1, 1);
+        MainWindow_gridLayout->addItem(horizontalSpacer, 0, 0, 1, 1);
 
-        groupBox = new QGroupBox(centralwidget);
-        groupBox->setObjectName(QStringLiteral("groupBox"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(groupBox->sizePolicy().hasHeightForWidth());
-        groupBox->setSizePolicy(sizePolicy);
-        groupBox->setMinimumSize(QSize(10, 18));
-        gridLayout = new QGridLayout(groupBox);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        m_particleSize = new QDoubleSpinBox(groupBox);
-        m_particleSize->setObjectName(QStringLiteral("m_particleSize"));
-        m_particleSize->setMinimum(0.01);
-        m_particleSize->setValue(1);
-
-        gridLayout->addWidget(m_particleSize, 1, 1, 1, 1);
-
-        label_2 = new QLabel(groupBox);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 1, 0, 1, 1);
-
-        label = new QLabel(groupBox);
-        label->setObjectName(QStringLiteral("label"));
-
-        gridLayout->addWidget(label, 0, 0, 1, 1);
-
-        m_particleType = new QComboBox(groupBox);
-        m_particleType->setObjectName(QStringLiteral("m_particleType"));
-
-        gridLayout->addWidget(m_particleType, 0, 1, 1, 1);
-
-
-        MainWindow_gridLayout->addWidget(groupBox, 0, 1, 1, 2);
-
-        m_cancle = new QPushButton(centralwidget);
-        m_cancle->setObjectName(QStringLiteral("m_cancle"));
-
-        MainWindow_gridLayout->addWidget(m_cancle, 5, 2, 1, 1);
-
-        groupBox_2 = new QGroupBox(centralwidget);
-        groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
-        QSizePolicy sizePolicy1(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(groupBox_2->sizePolicy().hasHeightForWidth());
-        groupBox_2->setSizePolicy(sizePolicy1);
-        groupBox_2->setMinimumSize(QSize(0, 8));
-        groupBox_2->setBaseSize(QSize(0, 7));
-        gridLayout_2 = new QGridLayout(groupBox_2);
-        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
-        m_splitType = new QComboBox(groupBox_2);
-        m_splitType->setObjectName(QStringLiteral("m_splitType"));
-
-        gridLayout_2->addWidget(m_splitType, 0, 1, 1, 1);
-
-        label_8 = new QLabel(groupBox_2);
-        label_8->setObjectName(QStringLiteral("label_8"));
-
-        gridLayout_2->addWidget(label_8, 0, 0, 1, 1);
-
-
-        MainWindow_gridLayout->addWidget(groupBox_2, 2, 1, 1, 2);
-
-        groupBox_4 = new QGroupBox(centralwidget);
-        groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
-        sizePolicy.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
-        groupBox_4->setSizePolicy(sizePolicy);
-        groupBox_4->setFlat(false);
-        groupBox_4->setCheckable(false);
-        gridLayout_4 = new QGridLayout(groupBox_4);
-        gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
-        m_showConnections = new QCheckBox(groupBox_4);
-        m_showConnections->setObjectName(QStringLiteral("m_showConnections"));
-
-        gridLayout_4->addWidget(m_showConnections, 0, 0, 1, 1);
-
-        label_9 = new QLabel(groupBox_4);
-        label_9->setObjectName(QStringLiteral("label_9"));
-
-        gridLayout_4->addWidget(label_9, 1, 0, 1, 1);
-
-        m_shadineType = new QComboBox(groupBox_4);
-        m_shadineType->setObjectName(QStringLiteral("m_shadineType"));
-
-        gridLayout_4->addWidget(m_shadineType, 1, 1, 1, 1);
-
-
-        MainWindow_gridLayout->addWidget(groupBox_4, 3, 1, 1, 2);
-
-        m_particleTab = new QTabWidget(centralwidget);
+        groupBox_3 = new QGroupBox(centralwidget);
+        groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
+        gridLayout_6 = new QGridLayout(groupBox_3);
+        gridLayout_6->setObjectName(QStringLiteral("gridLayout_6"));
+        m_particleTab = new QTabWidget(groupBox_3);
         m_particleTab->setObjectName(QStringLiteral("m_particleTab"));
         m_particleTab->setEnabled(true);
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(m_particleTab->sizePolicy().hasHeightForWidth());
-        m_particleTab->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(m_particleTab->sizePolicy().hasHeightForWidth());
+        m_particleTab->setSizePolicy(sizePolicy);
         m_particleTab->setMinimumSize(QSize(2, 0));
         m_particleTab->setBaseSize(QSize(2, 0));
         m_linkedParticleTab = new QWidget();
@@ -197,8 +114,11 @@ public:
         m_LP_forces = new QGroupBox(m_linkedParticleTab);
         m_LP_forces->setObjectName(QStringLiteral("m_LP_forces"));
         m_LP_forces->setEnabled(true);
-        sizePolicy2.setHeightForWidth(m_LP_forces->sizePolicy().hasHeightForWidth());
-        m_LP_forces->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(m_LP_forces->sizePolicy().hasHeightForWidth());
+        m_LP_forces->setSizePolicy(sizePolicy1);
         m_LP_forces->setCheckable(true);
         gridLayout_5 = new QGridLayout(m_LP_forces);
         gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
@@ -209,12 +129,14 @@ public:
 
         m_LP_cohesion = new QSlider(m_LP_forces);
         m_LP_cohesion->setObjectName(QStringLiteral("m_LP_cohesion"));
+        m_LP_cohesion->setValue(30);
         m_LP_cohesion->setOrientation(Qt::Horizontal);
 
         gridLayout_5->addWidget(m_LP_cohesion, 0, 1, 1, 1);
 
         m_LP_spring = new QSlider(m_LP_forces);
         m_LP_spring->setObjectName(QStringLiteral("m_LP_spring"));
+        m_LP_spring->setValue(30);
         m_LP_spring->setOrientation(Qt::Horizontal);
 
         gridLayout_5->addWidget(m_LP_spring, 1, 1, 1, 1);
@@ -249,6 +171,8 @@ public:
 
         m_GP_branches = new QSpinBox(m_growthParticleTab);
         m_GP_branches->setObjectName(QStringLiteral("m_GP_branches"));
+        m_GP_branches->setMinimum(1);
+        m_GP_branches->setValue(3);
 
         gridLayout_3->addWidget(m_GP_branches, 2, 1, 1, 1);
 
@@ -259,16 +183,115 @@ public:
 
         m_particleTab->addTab(m_growthParticleTab, QString());
 
-        MainWindow_gridLayout->addWidget(m_particleTab, 1, 1, 1, 2);
+        gridLayout_6->addWidget(m_particleTab, 1, 0, 1, 1);
 
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        groupBox_2 = new QGroupBox(groupBox_3);
+        groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
+        QSizePolicy sizePolicy2(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(groupBox_2->sizePolicy().hasHeightForWidth());
+        groupBox_2->setSizePolicy(sizePolicy2);
+        groupBox_2->setMinimumSize(QSize(0, 8));
+        groupBox_2->setBaseSize(QSize(0, 7));
+        gridLayout_2 = new QGridLayout(groupBox_2);
+        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
+        m_splitType = new QComboBox(groupBox_2);
+        m_splitType->setObjectName(QStringLiteral("m_splitType"));
 
-        MainWindow_gridLayout->addItem(horizontalSpacer, 1, 0, 1, 1);
+        gridLayout_2->addWidget(m_splitType, 0, 1, 1, 1);
+
+        label_8 = new QLabel(groupBox_2);
+        label_8->setObjectName(QStringLiteral("label_8"));
+
+        gridLayout_2->addWidget(label_8, 0, 0, 1, 1);
+
+
+        gridLayout_6->addWidget(groupBox_2, 2, 0, 1, 2);
+
+        groupBox = new QGroupBox(groupBox_3);
+        groupBox->setObjectName(QStringLiteral("groupBox"));
+        sizePolicy1.setHeightForWidth(groupBox->sizePolicy().hasHeightForWidth());
+        groupBox->setSizePolicy(sizePolicy1);
+        groupBox->setMinimumSize(QSize(10, 18));
+        gridLayout = new QGridLayout(groupBox);
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        m_particleSize = new QDoubleSpinBox(groupBox);
+        m_particleSize->setObjectName(QStringLiteral("m_particleSize"));
+        m_particleSize->setMinimum(0.1);
+        m_particleSize->setMaximum(100);
+        m_particleSize->setValue(2);
+
+        gridLayout->addWidget(m_particleSize, 1, 1, 1, 1);
+
+        label_2 = new QLabel(groupBox);
+        label_2->setObjectName(QStringLiteral("label_2"));
+
+        gridLayout->addWidget(label_2, 1, 0, 1, 1);
+
+        label = new QLabel(groupBox);
+        label->setObjectName(QStringLiteral("label"));
+
+        gridLayout->addWidget(label, 0, 0, 1, 1);
+
+        m_particleType = new QComboBox(groupBox);
+        m_particleType->setObjectName(QStringLiteral("m_particleType"));
+
+        gridLayout->addWidget(m_particleType, 0, 1, 1, 1);
+
+
+        gridLayout_6->addWidget(groupBox, 0, 0, 1, 2);
+
+        groupBox_4 = new QGroupBox(groupBox_3);
+        groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
+        sizePolicy1.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
+        groupBox_4->setSizePolicy(sizePolicy1);
+        groupBox_4->setFlat(false);
+        groupBox_4->setCheckable(false);
+        gridLayout_4 = new QGridLayout(groupBox_4);
+        gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
+        m_showConnections = new QCheckBox(groupBox_4);
+        m_showConnections->setObjectName(QStringLiteral("m_showConnections"));
+
+        gridLayout_4->addWidget(m_showConnections, 0, 0, 1, 1);
+
+        label_9 = new QLabel(groupBox_4);
+        label_9->setObjectName(QStringLiteral("label_9"));
+
+        gridLayout_4->addWidget(label_9, 1, 0, 1, 1);
+
+        m_shadineType = new QComboBox(groupBox_4);
+        m_shadineType->setObjectName(QStringLiteral("m_shadineType"));
+
+        gridLayout_4->addWidget(m_shadineType, 1, 1, 1, 1);
+
+
+        gridLayout_6->addWidget(groupBox_4, 3, 0, 1, 2);
+
+        groupBox_5 = new QGroupBox(groupBox_3);
+        groupBox_5->setObjectName(QStringLiteral("groupBox_5"));
+        gridLayout_8 = new QGridLayout(groupBox_5);
+        gridLayout_8->setObjectName(QStringLiteral("gridLayout_8"));
+        m_restart = new QPushButton(groupBox_5);
+        m_restart->setObjectName(QStringLiteral("m_restart"));
+
+        gridLayout_8->addWidget(m_restart, 0, 0, 1, 1);
+
+        m_cancle = new QPushButton(groupBox_5);
+        m_cancle->setObjectName(QStringLiteral("m_cancle"));
+
+        gridLayout_8->addWidget(m_cancle, 0, 1, 1, 1);
+
+
+        gridLayout_6->addWidget(groupBox_5, 4, 0, 1, 1);
+
+
+        MainWindow_gridLayout->addWidget(groupBox_3, 0, 2, 1, 1);
 
         GUI->setCentralWidget(centralwidget);
         menubar = new QMenuBar(GUI);
         menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 932, 19));
+        menubar->setGeometry(QRect(0, 0, 1122, 19));
         menuCells_ControlUI = new QMenu(menubar);
         menuCells_ControlUI->setObjectName(QStringLiteral("menuCells_ControlUI"));
         GUI->setMenuBar(menubar);
@@ -289,16 +312,15 @@ public:
     void retranslateUi(QMainWindow *GUI)
     {
         GUI->setWindowTitle(QApplication::translate("GUI", "MainWindow", 0));
-        m_restart->setText(QApplication::translate("GUI", "Restart", 0));
-        groupBox->setTitle(QApplication::translate("GUI", "Particle", 0));
-        label_2->setText(QApplication::translate("GUI", "Particle Size", 0));
-        label->setText(QApplication::translate("GUI", "Particle Type", 0));
-        m_particleType->clear();
-        m_particleType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "Linked Particles", 0)
-         << QApplication::translate("GUI", "Growth Particles", 0)
-        );
-        m_cancle->setText(QApplication::translate("GUI", "Cancle", 0));
+        groupBox_3->setTitle(QApplication::translate("GUI", "GroupBox", 0));
+        m_LP_forces->setTitle(QApplication::translate("GUI", "Forces", 0));
+        label_3->setText(QApplication::translate("GUI", "Cohesion", 0));
+        label_4->setText(QApplication::translate("GUI", "Spring", 0));
+        LP_bulge->setText(QApplication::translate("GUI", "Bulge", 0));
+        m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", 0));
+        label_7->setText(QApplication::translate("GUI", "Radius for Branch Growth", 0));
+        label_6->setText(QApplication::translate("GUI", "Branches per particle", 0));
+        m_particleTab->setTabText(m_particleTab->indexOf(m_growthParticleTab), QApplication::translate("GUI", "Growth Particles", 0));
         groupBox_2->setTitle(QApplication::translate("GUI", "Interaction", 0));
         m_splitType->clear();
         m_splitType->insertItems(0, QStringList()
@@ -307,6 +329,14 @@ public:
          << QApplication::translate("GUI", "Random", 0)
         );
         label_8->setText(QApplication::translate("GUI", "Split Type", 0));
+        groupBox->setTitle(QApplication::translate("GUI", "Particle", 0));
+        label_2->setText(QApplication::translate("GUI", "Particle Size", 0));
+        label->setText(QApplication::translate("GUI", "Particle Type", 0));
+        m_particleType->clear();
+        m_particleType->insertItems(0, QStringList()
+         << QApplication::translate("GUI", "Linked Particles", 0)
+         << QApplication::translate("GUI", "Growth Particles", 0)
+        );
         groupBox_4->setTitle(QApplication::translate("GUI", "Display Options", 0));
         m_showConnections->setText(QApplication::translate("GUI", "Show connections", 0));
         label_9->setText(QApplication::translate("GUI", "Type of Shading", 0));
@@ -316,14 +346,9 @@ public:
          << QApplication::translate("GUI", "X Ray", 0)
          << QApplication::translate("GUI", "ADS", 0)
         );
-        m_LP_forces->setTitle(QApplication::translate("GUI", "Forces", 0));
-        label_3->setText(QApplication::translate("GUI", "Cohesion", 0));
-        label_4->setText(QApplication::translate("GUI", "Spring", 0));
-        LP_bulge->setText(QApplication::translate("GUI", "Bulge", 0));
-        m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", 0));
-        label_7->setText(QApplication::translate("GUI", "Radius for Branch Growth", 0));
-        label_6->setText(QApplication::translate("GUI", "Branches per particle", 0));
-        m_particleTab->setTabText(m_particleTab->indexOf(m_growthParticleTab), QApplication::translate("GUI", "Growth Particles", 0));
+        groupBox_5->setTitle(QApplication::translate("GUI", "GroupBox", 0));
+        m_restart->setText(QApplication::translate("GUI", "Restart", 0));
+        m_cancle->setText(QApplication::translate("GUI", "Cancle", 0));
         menuCells_ControlUI->setTitle(QApplication::translate("GUI", "Cells ControlUI", 0));
     } // retranslateUi
 

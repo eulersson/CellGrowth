@@ -203,3 +203,9 @@ bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::uni
   return false;
 
 }
+
+
+void GrowthParticle::setChildThreshold(int _amount)
+{
+  m_childrenTreshold=_amount;
+}
