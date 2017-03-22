@@ -22,14 +22,12 @@ void subdivide(float*, float*, float*, long, std::vector<GLfloat>&);
 float lerp(float a, float b, float f);
 
 GLWindow::GLWindow(QWidget*_parent)
-  : m_draw_links(true)  , m_input_manager(this)
+  : m_draw_links(true)
 //GLWindow::GLWindow(QMainWindow*_parent)
 //  : QOpenGLWidget(_parent)
 //  , m_draw_links(true)
 //  , m_input_manager(this)
 {
-  setFocus();
-  //m_input_manager = InputManager(this);
   this->resize(_parent->size());
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
@@ -37,6 +35,9 @@ GLWindow::GLWindow(QWidget*_parent)
   fmt.setSamples(16);
   fmt.setSwapInterval(1);
   setFormat(fmt);
+
+  setMouseTracking(true);
+  setFocus();
 
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
   if(format().swapInterval() == -1)
@@ -62,6 +63,8 @@ GLWindow::~GLWindow()
 void GLWindow::initializeGL()
 {
   initializeOpenGLFunctions();
+
+  m_input_manager = new InputManager(this);
 
   glEnable(GL_DEPTH_TEST);
   glShadeModel(GL_SMOOTH);
@@ -89,18 +92,18 @@ void GLWindow::initializeGL()
   loadMatrixToShader();
   sampleKernel();
 
-  glViewport(0, 0, 720, 720);
 }
 
 void GLWindow::paintGL()
 {
   updateModelMatrix();
-  m_input_manager.setupCamera();
-  m_input_manager.doMovement();
+
+  m_input_manager->setupCamera(width(), height());
+  m_input_manager->doMovement();
 
   m_fbo->bind();
     glEnable(GL_DEPTH_TEST);
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -119,6 +122,21 @@ void GLWindow::paintGL()
 void GLWindow::resizeGL(int _w, int _h)
 {
 //  glViewport(0,0,_w,_h);
+  delete m_fbo;
+  setupFBO();
+
+  //m_input_manager->setupCamera(_w, _h);
+
+
+  m_projection_matrix.setToIdentity();
+  m_projection_matrix.perspective(
+        45.0f,
+        (float)_w / (float)_h,
+        0.1f,
+        100.0f);
+
+  //m_mv = m_view_matrix * m_model_matrix;
+  //m_mvp = m_projection_matrix * m_mv;
 
   qDebug("Window resized to %d and %d", _w, _h);
   m_quad_program->bind();
@@ -157,8 +175,8 @@ void GLWindow::initializeMatrix()
 {
   m_projection_matrix.setToIdentity();
   m_projection_matrix.perspective(
-        90.0f,
-        720.0f/720.0f,
+        45.0f,
+        (float)width() / (float)height(),
         0.1f,
         100.0f);
 
@@ -327,9 +345,9 @@ void GLWindow::drawQuad()
 void GLWindow::drawParticles()
 {
   m_part_program->bind();
-  m_part_program->setUniformValue("ProjectionMatrix", m_input_manager.getProjectionMatrix());
+  m_part_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
   m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_part_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
+  m_part_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
 
   m_part_vao->bind();
   glDrawArraysInstanced(GL_TRIANGLES, 0, m_sphere_data.size() / 3, m_ps.getSize());
@@ -342,9 +360,9 @@ void GLWindow::drawLinks()
 {
   m_links_program->bind();
 
-  m_links_program->setUniformValue("ProjectionMatrix", m_input_manager.getProjectionMatrix());
+  m_links_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
   m_links_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_links_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
+  m_links_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
 
   m_links_vao->bind();
     glDrawElements(GL_LINES, m_links_data.size(), GL_UNSIGNED_INT, 0);
@@ -356,15 +374,15 @@ void GLWindow::drawLinks()
 void GLWindow::setupFBO()
 {
   m_fbo =new QOpenGLFramebufferObject(
-        720, 720,
+        width(), height(),
         QOpenGLFramebufferObject::Depth);         // GL_COLOR_ATTACHMENT0
 
   m_fbo->bind();
 
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT1
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT2
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT3
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT4
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT1
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT2
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT3
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT4
 
   const GLenum attachments[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
                                 GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
@@ -381,7 +399,7 @@ void GLWindow::setupFBO()
     glRenderbufferStorage(
           GL_RENDERBUFFER,     // Target
           GL_DEPTH_COMPONENT,  // Internal Format
-          720, 720);           // Size
+          width(), height());           // Size
     // Attach a renderbuffer object to a framebuffer object
     glFramebufferRenderbuffer(
           GL_FRAMEBUFFER,       // Target
@@ -392,7 +410,7 @@ void GLWindow::setupFBO()
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       qCritical("Framebuffer not complete!");
 
-  glViewport(0, 0, 720, 720);
+  glViewport(0, 0, width(), height());
   m_fbo->release();
 }
 
@@ -473,21 +491,21 @@ void GLWindow::setupLights()
 
   m_sun_program->link();
 
+
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
-  for(int x = -4; x < 4; x += 4) {
-      for(int y = -4; y < 4; y += 4) {
-          PointLight *pointlight;
-          pointlight = new PointLight(
-                QVector3D(x, y, 0),
-                m_manipulator_program,
-                m_sun_program);
-          pointlight->createGeometry(context(), masterUniqueColour);
-          m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
-      }
-  }
-  m_input_manager.addShaderProgram(m_manipulator_program);
-  m_input_manager.addShaderProgram(m_sun_program);
-  m_input_manager.setObjectList(m_object_list);
+
+  PointLight *pointlight;
+  pointlight = new PointLight(
+        QVector3D(0, 0, 0),
+        m_manipulator_program,
+        m_sun_program);
+  pointlight->createGeometry(context(), masterUniqueColour);
+  m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+
+
+  m_input_manager->addShaderProgram(m_manipulator_program);
+  m_input_manager->addShaderProgram(m_sun_program);
+  m_input_manager->setObjectList(m_object_list);
 }
 
 void GLWindow::generateSphereData(uint _num_subdivisions)
@@ -630,37 +648,37 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
       break;
   }
 
-  m_input_manager.keyPressEvent(ev);
+  m_input_manager->keyPressEvent(ev);
 }
 
 void GLWindow::keyReleaseEvent(QKeyEvent *key)
 {
   setFocus();
-  m_input_manager.keyReleaseEvent(key);
+  m_input_manager->keyReleaseEvent(key);
 }
 
 void GLWindow::mouseMoveEvent(QMouseEvent* event)
 {
   setFocus();
-  m_input_manager.mouseMoveEvent(event);
+  m_input_manager->mouseMoveEvent(event);
 }
 
 void GLWindow::mousePressEvent(QMouseEvent *event)
 {
   setFocus();
-  m_input_manager.mousePressEvent(event);
+  m_input_manager->mousePressEvent(event);
 }
 
 void GLWindow::mouseReleaseEvent(QMouseEvent *event)
 {
   setFocus();
-  m_input_manager.mouseReleaseEvent(event);
+  m_input_manager->mouseReleaseEvent(event);
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
 {
   setFocus();
-  m_input_manager.wheelEvent(event);
+  m_input_manager->wheelEvent(event);
 }
 
 // Helpers

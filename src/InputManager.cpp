@@ -14,7 +14,6 @@ InputManager::InputManager (QOpenGLWidget *_window) :
 {
     // Camera initialisation
     // Must be run on start for camera to calculate its position and orientation
-    setupCamera();
     m_camera.processMouseMovement(0, 0);
 }
 
@@ -23,6 +22,7 @@ void InputManager::onHover()
   for(auto &s : m_objectList)
   {
     int id = s->compareUniqueColour(m_currentUniqueColour);
+
     s->setHover(id);
   }
 }
@@ -74,6 +74,7 @@ void InputManager::getUniqueColour(const int _x, const int _y,
     &pixel[0]);
 
   QVector3D pixelColour = QVector3D(pixel[0], pixel[1], pixel[2]);
+  qDebug("%f %f %f", pixelColour.x(), pixelColour.y(), pixelColour.z());
   setCurrentUniqueColour(pixelColour);
 }
 
@@ -94,14 +95,12 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
   m_programs.push_back(_program);
 }
 
-void InputManager::setupCamera()
+void InputManager::setupCamera(int _w, int _h)
 {
-  int screenWidth = 720;
-  int screenHeight = 480;
 
   m_projection.setToIdentity();
-  m_projection.perspective(45, (float)screenWidth / (float)screenHeight,
-                         0.1f, 1000.0f);
+  m_projection.perspective(45.0f, (float)_w / (float)_h,
+                         0.1f, 100.0f);
 
   for(int i = 0; i < m_programs.size(); i++)
   {
@@ -159,7 +158,6 @@ void InputManager::mouseReleaseEvent(QMouseEvent *event)
 
 void InputManager::mousePressEvent(QMouseEvent *event)
 {
-  qDebug()<<event->pos().x();
   m_mousePressed=true;
 
   if(m_alt_key==false)
@@ -174,6 +172,10 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
   GLfloat ypos = event->pos().y();
   GLfloat xoffset = xpos - m_lastX;
   GLfloat yoffset = m_lastY - ypos;
+
+//  qDebug("last: %f %f", m_lastX, m_lastY);
+//  qDebug("pos: %f %f", xpos, ypos);
+//  qDebug("offset: %f %f", xoffset, yoffset);
 
   // Only process movement if the mouse button and alt is pressed
   if (m_mousePressed && m_alt_key==true)
@@ -274,3 +276,4 @@ void InputManager::wheelEvent(QWheelEvent *event)
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
 }
+
