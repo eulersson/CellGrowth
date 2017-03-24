@@ -12,6 +12,7 @@ InputManager::InputManager (QOpenGLWidget *_window) :
   m_keys{0},
   m_mousePressed(false)
 {
+  m_fbo = new QOpenGLFramebufferObject(_window->width(), _window->height());
     // Camera initialisation
     // Must be run on start for camera to calculate its position and orientation
     m_camera.processMouseMovement(0, 0);
@@ -50,32 +51,24 @@ void InputManager::doMovement()
 void InputManager::getUniqueColour(const int _x, const int _y,
                                    QOpenGLShaderProgram* m_manipulatorProgram)
 {
+  m_fbo->bind();
   // Clear colour buffer for temporary drawing
   // This must be run before actual drawing to frame buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // Draw all objects in a unique colour
   for(auto &s : m_objectList) { s->drawBackBuffer(); }
-  // Pixel storing colour information
-  std::array<unsigned char, 3> pixel;
 
-  // Get viewport
-  std::array<GLint, 4> viewport;
-  glGetIntegerv(GL_VIEWPORT, &viewport[0]);
+  QImage img = m_fbo->toImage();
+//  img.save("/home/i7243466/Desktop/koko.jpg");
 
-  // Read pixel at 1 by 1 pixels
-  glReadPixels(
-    _x* m_window->devicePixelRatio(),
-    viewport[3] - _y*m_window->devicePixelRatio(),
-    1,
-    1,
-    GL_RGB,
-    GL_UNSIGNED_BYTE,
-    &pixel[0]);
+  QColor col = img.pixelColor(_x, _y);
+  //qDebug("%d %d %d", col.red(), col.green(), col.blue());
 
-  QVector3D pixelColour = QVector3D(pixel[0], pixel[1], pixel[2]);
-  qDebug("%f %f %f", pixelColour.x(), pixelColour.y(), pixelColour.z());
+  QVector3D pixelColour = QVector3D(col.red(), col.green(), col.blue());
   setCurrentUniqueColour(pixelColour);
+
+   m_fbo->release();
 }
 
 void InputManager::doSelection(const int _x, const int _y)
@@ -275,5 +268,13 @@ void InputManager::wheelEvent(QWheelEvent *event)
   m_camera.processMouseScroll(event->delta());
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
+}
+
+void InputManager::resized(int _w, int _h)
+{
+  delete m_fbo;
+  m_fbo = new QOpenGLFramebufferObject(_w, _h);
+
+
 }
 

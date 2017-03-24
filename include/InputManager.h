@@ -15,6 +15,7 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 #include <QOpenGLWidget>
+#include <QOpenGLFramebufferObject>
 
 // Project
 #include "ArcBallCamera.h"
@@ -33,6 +34,7 @@ class InputManager
 {
 
 public:
+  QOpenGLFramebufferObject* m_fbo;
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor taking a QWindow.
   /// @param[in] _window Window the InputManager is associated with.
@@ -147,6 +149,8 @@ public:
   /// @param[in] event Key event.
   //////////////////////////////////////////////////////////////////////////////
   void wheelEvent(QWheelEvent *event);
+
+  void resized(int _w, int _h);
 
 
 private:

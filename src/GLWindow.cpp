@@ -125,6 +125,7 @@ void GLWindow::resizeGL(int _w, int _h)
   delete m_fbo;
   setupFBO();
 
+  m_input_manager->resized(_w, _h);
   //m_input_manager->setupCamera(_w, _h);
 
 
@@ -659,24 +660,28 @@ void GLWindow::keyReleaseEvent(QKeyEvent *key)
 
 void GLWindow::mouseMoveEvent(QMouseEvent* event)
 {
+  makeCurrent();
   setFocus();
   m_input_manager->mouseMoveEvent(event);
 }
 
 void GLWindow::mousePressEvent(QMouseEvent *event)
 {
+  makeCurrent();
   setFocus();
   m_input_manager->mousePressEvent(event);
 }
 
 void GLWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+  makeCurrent();
   setFocus();
   m_input_manager->mouseReleaseEvent(event);
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
 {
+  makeCurrent();
   setFocus();
   m_input_manager->wheelEvent(event);
 }
