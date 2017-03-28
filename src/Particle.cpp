@@ -60,7 +60,6 @@ Particle::Particle(qreal _x,
 void Particle::advance()
 {
   m_pos += m_vel;
-  m_unlinkedPos += m_unlinkedVel;
 }
 
 void Particle::testForSplit()
@@ -142,7 +141,6 @@ std::vector<unsigned int> Particle::getHitParticles(std::vector<std::unique_ptr<
       break;
     }
   }
-  std::cout<<"hit paticle list size: "<<m_hitParticles.size()<<std::endl;
   return m_hitParticles;
 }
 

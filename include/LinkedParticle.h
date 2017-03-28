@@ -53,9 +53,11 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Needs description.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
 
-  void calculateUnlinked() override;
+  void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList);
+
+  void spring(std::vector<std::unique_ptr<Particle>> &_particleList);
 
   void bulge(QVector3D _particleCentre) override;
 

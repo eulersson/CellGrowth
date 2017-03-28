@@ -429,8 +429,8 @@ void Scene::keyPressed(QKeyEvent *ev)
     break;
   case Qt::Key_Space:
     //updateParticleSystem();
-    m_ps.splitHitParticle();
-    //m_ps.splitRandomParticle();
+    //m_ps.splitHitParticle();
+    m_ps.splitRandomParticle();
     //qDebug("%d particles in the system", m_ps.getSize());
   default:
     break;

@@ -69,9 +69,7 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance) {}
-
-  virtual void calculateUnlinked() {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount) {}
 
   virtual void bulge(QVector3D _particleCentre) {}
   //////////////////////////////////////////////////////////////////////////////
@@ -107,8 +105,6 @@ public:
   void getPos(QVector3D &_pos);
 
   QVector3D getPosition(){return m_pos;}
-
-  QVector3D getUnlinkedPos(){return m_unlinkedPos;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the Particles position
@@ -193,14 +189,10 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   QVector3D m_pos;
 
-  QVector3D m_unlinkedPos;
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Velocity that is used to move the particle each frame.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D m_vel;
-
-  QVector3D m_unlinkedVel;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Counts the number of objects created from this class.

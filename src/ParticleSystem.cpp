@@ -42,7 +42,7 @@ void ParticleSystem::advance()
   // Then moving
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -59,6 +59,7 @@ void ParticleSystem::bulge()
     m_particles[i]->bulge(m_particleCentre);
     m_particles[i]->advance();
   }
+  calculateParticleCentre();
 }
 
 // Starting with 4 particles that are all linked together
@@ -171,7 +172,7 @@ void ParticleSystem::splitRandomParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
 
   m_particles[distribution(gen)]->split(m_particles);
@@ -181,7 +182,7 @@ void ParticleSystem::splitRandomParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
 }
 
@@ -197,7 +198,7 @@ void ParticleSystem::splitHitParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
 }
 
