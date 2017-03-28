@@ -10,7 +10,7 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-  qDebug("Default constructor called");
+  //qDebug("Default constructor called");
   m_particleCount=0;
   fill(3);
 }
@@ -18,7 +18,7 @@ ParticleSystem::ParticleSystem()
 // For custom number of particlesm_packagedParticleData
 ParticleSystem::ParticleSystem(int _amount)
 {
-  qDebug("Custom constructor called");
+  //qDebug("Custom constructor called");
   m_particleCount=0;
   fill(_amount);
 
@@ -184,6 +184,7 @@ void ParticleSystem::splitRandomParticle()
   {
     m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
+  std::cout<<"particles: "<<m_particleCount<<std::endl;
 }
 
 void ParticleSystem::splitHitParticle()

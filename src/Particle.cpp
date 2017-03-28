@@ -24,7 +24,7 @@ Particle::Particle()
     , m_foodLevel(0)
     , m_foodThreshold(0)
 {
-  qDebug("Particle default constructor.");
+  //qDebug("Particle default constructor.");
   m_hit = true;
 }
 
@@ -36,7 +36,7 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
     , m_foodLevel(0)
     , m_foodThreshold(100)
 {
-  qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+  //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
   m_hit = true;
 }
 
@@ -51,8 +51,8 @@ Particle::Particle(qreal _x,
     , m_foodLevel(0)
     , m_foodThreshold(100)
 {
-  qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+ // qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
+         //"particles", _x, _y, _z);
   m_hit = true;
   m_connectedParticles = _connectedParticles;
 }

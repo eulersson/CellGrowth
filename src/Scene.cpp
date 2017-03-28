@@ -466,7 +466,7 @@ void Scene::wheelEvent(QWheelEvent *event)
 
 void Scene::windowResized(int _w, int _h)
 {
-  qDebug("Window resized to %d and %d", _w, _h);
+  //qDebug("Window resized to %d and %d", _w, _h);
 }
 
 void pushTriangle(float *v1, float *v2, float *v3, std::vector<GLfloat>& _data)

@@ -2,7 +2,7 @@
 #include <iostream>
 LinkedParticle::LinkedParticle():Particle()
 {
-  qDebug("Linked Particle default constructor.");
+  //qDebug("Linked Particle default constructor.");
 }
 
 
@@ -11,7 +11,7 @@ LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z):Particle(_x,_y,_z)
 {
-   qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
@@ -21,8 +21,8 @@ LinkedParticle::LinkedParticle(qreal _x,
                                std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
 {
 
-  qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+  //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
+         //"particles", _x, _y, _z);
 
 }
 
@@ -61,43 +61,29 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
     m_vel/=1.5;
   }
 
-//  QVector3D cohesion = distance;
-
-//  if((distance.x() <= m_size)
-//         && (distance.y() <= m_size)
-//         && (distance.z() <= m_size))
-//  {
-//      m_vel/=1.1;
-//  }
-
-//  unsigned int cohesionFactor = 3000;
-//  cohesion/=cohesionFactor;
-//  m_vel += cohesion;
-//  //end of cohere
-
-//  SEPARATE
-  QVector3D separate = -(distance);
-  unsigned int separateFactor = 3000;
-  for(unsigned int j=0; j<=_particleList.size(); j++)
+  //COHESION
+  QVector3D cohesion = distance;
+  float cohesionLength = cohesion.length();
+  float cohesionDist = m_size+(cohesionLength/2);
+  if(cohesionLength>=m_size*2)
   {
-    separateFactor-=_particleList.size();
+    m_vel/=1.1;
   }
-  separate/=separateFactor;
-  m_vel+=separate;
-  //end of separate
+
+  cohesion.normalize();
+  cohesion*=(cohesionDist/100);
+  m_vel+=cohesion;
+  //end of cohere
 
   QVector3D connectionCentre;
   QVector3D planar;
-//  float distanceY = 0;
-//  float distanceX = 0;
-//  float distanceZ = 0;
 
   unsigned int connectionCount = getConnectionCount(); //gets number of connected particles
 
   std::vector<QVector3D> linkPosition;
   getPosFromConnections(linkPosition, _particleList);
 
-  spring(_particleList);
+  //spring(_particleList);
 
 //  PLANAR
 //  Moves a particle to the average position of it's linked neighbours
@@ -108,168 +94,193 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   connectionCentre = connectionCentre/connectionCount;
   planar = connectionCentre - m_pos;
 
-  if((planar.x() <= m_size)
-         && (planar.y() <= m_size)
-         && (planar.z() <= m_size))
-  {
-      m_vel/=1.1;
-  }
-
-  planar/=100;
-  m_vel += planar;
+  float planarLength = planar.length();
+  float planarDist = m_size+(planarLength/2);
+  planar.normalize();
+  planar*=(planarDist/40);
+  m_vel+=planar;
+  //end of planar
 
   calculateUnlinked(_particleList);
 }
 
 void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleList)
 {
-  QVector3D connectionCentre;
-  float distanceY = 0;
-  float distanceX = 0;
-  float distanceZ = 0;
+  QVector3D spring;
+  QVector3D hold;
+  QVector3D linkedPos;
+  std::vector<unsigned int> connectedParticles; //IDs of all the linked particles
 
-  unsigned int connectionCount = getConnectionCount(); //gets number of connected particles
+  getConnectionsID(connectedParticles);
 
-  std::vector<QVector3D> linkPosition;
-  getPosFromConnections(linkPosition, _particleList);
-
-  //SPRING
-  //send particles that are too close away from each other
-  for(unsigned int i=0; i<connectionCount; i++)
+  //SPRING AND HOLD #2
+  for(unsigned int i=0; i<connectedParticles.size(); i++)
   {
-   connectionCentre += linkPosition[i];
+    linkedPos = _particleList[i]->getPosition();
+    spring = linkedPos - m_pos;
+    float springLength = spring.length();
+    if(springLength>=m_size*2)
+    {
+      float springDist = m_size-(springLength/2);
+      spring.normalize();
+      spring*=(springDist/100);
+      m_vel+=spring;
+    }
 
-   distanceY = linkPosition[i].y() - m_pos.y();
-   if(distanceY < m_size && distanceY > (-(m_size)))
-   {
-       QVector3D spring;
-       spring.setY(spring.y() - distanceY);
-       float factor = 10/fabs (distanceY);
-       spring/=10;
-       m_vel += spring;
-   }
-   else
-   {
-     float velY = m_vel.y();
-     velY /= 1.5;
-     m_vel.setY(velY);
-   }
-
-   distanceX = linkPosition[i].x() - m_pos.x();
-   if(distanceX < m_size && distanceX > (-(m_size)))
-   {
-       QVector3D spring;
-       spring.setX(spring.x() - distanceX);
-       spring/=10;
-       m_vel += spring;
-   }
-
-   else
-   {
-     float velX = m_vel.x();
-     velX /= 1.5;
-     m_vel.setX(velX);
-   }
-
-   distanceZ = linkPosition[i].z() - m_pos.z();
-   if(distanceZ < m_size && distanceZ > (-(m_size)))
-   {
-       QVector3D spring;
-       spring.setZ(spring.z() - distanceZ);
-       spring/=10;
-       m_vel += spring;
-   }
-   else
-   {
-     float velZ = m_vel.z();
-     velZ /= 1.5;
-     m_vel.setZ(velZ);
-   }
-
+    hold = m_pos - linkedPos;
+    float holdLength = hold.length();
+    if(holdLength<=m_size*2)
+    {
+      float holdDist = m_size-(holdLength/2);
+      hold.normalize();
+      hold*=holdDist;
+      m_vel+=hold;
+    }
   }
 
-  //HOLD
-  //sends particles that are too far away towards each other
+//  float distanceY = 0;
+//  float distanceX = 0;
+//  float distanceZ = 0;
 
- for(unsigned int i=0; i<connectionCount; i++)
- {
-   distanceY = linkPosition[i].y() - m_pos.y();
-   if(distanceY > m_size || distanceY < (-(m_size)))
-   {
-       QVector3D hold;
-       hold.setY(distanceY);
-       float factor = 500/fabs (distanceY);
-       if (distanceY > 1.5 || distanceY <(-1.5))
-       {
-         hold/=(factor/2);
-         m_vel+=hold;
+//  unsigned int connectionCount = getConnectionCount(); //gets number of connected particles
 
-       }
-       else
-       {
-         hold/=factor;
-         m_vel+=hold;
-       }
-   }
-   else
-   {
-     float velY = m_vel.y();
-     velY /= 1.5;
-     m_vel.setY(velY);
-   }
+//  std::vector<QVector3D> linkPosition;
+//  getPosFromConnections(linkPosition, _particleList);
 
-   distanceX = linkPosition[i].x() - m_pos.x();
-   if(distanceX > m_size || distanceX < (-(m_size)))
-   {
-       QVector3D hold;
-       hold.setX(distanceX);
-       float factor = 500/fabs (distanceX);
-       if (distanceX > 1.5 || distanceX <(-1.5))
-       {
-         hold/=(factor/2);
-         m_vel+=hold;
+  //SPRING AND HOLD #2
+//  for(unsigned int i=0; i<connectionCount; i++)
+//  {
+//   distanceY = linkPosition[i].y() - m_pos.y();
+//   if(distanceY < m_size && distanceY > (-(m_size)))
+//   {
+//       QVector3D spring;
+//       spring.setY(spring.y() - distanceY);
+//       float factor = 10/fabs (distanceY);
+//       spring/=10;
+//       m_vel += spring;
+//   }
+//   else
+//   {
+//     float velY = m_vel.y();
+//     velY /= 1.5;
+//     m_vel.setY(velY);
+//   }
 
-       }
-       else
-       {
-         hold/=factor;
-         m_vel+=hold;
-       }
-   }
+//   distanceX = linkPosition[i].x() - m_pos.x();
+//   if(distanceX < m_size && distanceX > (-(m_size)))
+//   {
+//       QVector3D spring;
+//       spring.setX(spring.x() - distanceX);
+//       spring/=10;
+//       m_vel += spring;
+//   }
 
-   else
-   {
-     float velX = m_vel.x();
-     velX /= 1.5;
-     m_vel.setX(velX);
-   }
+//   else
+//   {
+//     float velX = m_vel.x();
+//     velX /= 1.5;
+//     m_vel.setX(velX);
+//   }
 
-   distanceZ = linkPosition[i].z() - m_pos.z();
-   if(distanceZ > m_size || distanceZ < (-(m_size)))
-   {
-       QVector3D hold;
-       hold.setZ(distanceZ);
-       float factor = 500/fabs (distanceZ);
-       if (distanceZ > 1.5 || distanceZ <(-1.5))
-       {
-         hold/=(factor/2);
-         m_vel+=hold;
+//   distanceZ = linkPosition[i].z() - m_pos.z();
+//   if(distanceZ < m_size && distanceZ > (-(m_size)))
+//   {
+//       QVector3D spring;
+//       spring.setZ(spring.z() - distanceZ);
+//       spring/=10;
+//       m_vel += spring;
+//   }
+//   else
+//   {
+//     float velZ = m_vel.z();
+//     velZ /= 1.5;
+//     m_vel.setZ(velZ);
+//   }
 
-       }
-       else
-       {
-         hold/=factor;
-         m_vel+=hold;
-       }
+//  }
 
-   }
-   else
-   {
-     float velZ = m_vel.z();
-     velZ /= 1.5;
-    m_vel.setZ(velZ);
-   }
- }
+//  //HOLD
+//  //sends particles that are too far away towards each other
+
+// for(unsigned int i=0; i<connectionCount; i++)
+// {
+//   distanceY = linkPosition[i].y() - m_pos.y();
+//   if(distanceY > m_size || distanceY < (-(m_size)))
+//   {
+//       QVector3D hold;
+//       hold.setY(distanceY);
+//       float factor = 500/fabs (distanceY);
+//       if (distanceY > 1.5 || distanceY <(-1.5))
+//       {
+//         hold/=(factor/2);
+//         m_vel+=hold;
+
+//       }
+//       else
+//       {
+//         hold/=factor;
+//         m_vel+=hold;
+//       }
+//   }
+//   else
+//   {
+//     float velY = m_vel.y();
+//     velY /= 1.5;
+//     m_vel.setY(velY);
+//   }
+
+//   distanceX = linkPosition[i].x() - m_pos.x();
+//   if(distanceX > m_size || distanceX < (-(m_size)))
+//   {
+//       QVector3D hold;
+//       hold.setX(distanceX);
+//       float factor = 500/fabs (distanceX);
+//       if (distanceX > 1.5 || distanceX <(-1.5))
+//       {
+//         hold/=(factor/2);
+//         m_vel+=hold;
+
+//       }
+//       else
+//       {
+//         hold/=factor;
+//         m_vel+=hold;
+//       }
+//   }
+
+//   else
+//   {
+//     float velX = m_vel.x();
+//     velX /= 1.5;
+//     m_vel.setX(velX);
+//   }
+
+//   distanceZ = linkPosition[i].z() - m_pos.z();
+//   if(distanceZ > m_size || distanceZ < (-(m_size)))
+//   {
+//       QVector3D hold;
+//       hold.setZ(distanceZ);
+//       float factor = 500/fabs (distanceZ);
+//       if (distanceZ > 1.5 || distanceZ <(-1.5))
+//       {
+//         hold/=(factor/2);
+//         m_vel+=hold;
+
+//       }
+//       else
+//       {
+//         hold/=factor;
+//         m_vel+=hold;
+//       }
+
+//   }
+//   else
+//   {
+//     float velZ = m_vel.z();
+//     velZ /= 1.5;
+//    m_vel.setZ(velZ);
+//   }
+// }
 }
 
 void LinkedParticle::calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList)
