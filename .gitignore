@@ -31,6 +31,11 @@ cells
 
 # Custom
 build/*
+<<<<<<< HEAD
+Makefile`
+
+# i am a comment
+=======
 *.debug
 *.pro.autosave
 *.pro.user
@@ -38,3 +43,4 @@ build/*
 .qmake.stash
 Makefile
 cells
+>>>>>>> master

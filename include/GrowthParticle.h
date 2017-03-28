@@ -1,15 +1,12 @@
-////////////////////////////////////////////////////////////////////////////////
-/// @file GrowthParticle.h
-/// @author Carola Gille
-/// @version 0.0.1
-////////////////////////////////////////////////////////////////////////////////
-
 #ifndef GROWTHPARTICLE_H
 #define GROWTHPARTICLE_H
 
 #include"Particle.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+/// @file GrowthParticle.h
+/// @author Carola Gille
+/// @version 0.0.1
 /// @class GrowthParticle
 /// @brief Growth Particle Inheriting from  Particle class, imitates plant like
 /// growth.
@@ -50,13 +47,12 @@ public:
       std::vector<unsigned int> _connectedParticles);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Calculates the new velocity of the particle based on the forces
-  /// that act on it.
+  /// @brief Does not do anything for this class.
   //////////////////////////////////////////////////////////////////////////////
   void calculate() override;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Called when particle needs to be split.
+  /// @brief Called when particle needs to be split and creates a new branch from that Particle.
   /// @param[in] _lightDirection Light direction.
   /// @param[in] _particleList List of all particles.
   //////////////////////////////////////////////////////////////////////////////
@@ -64,18 +60,40 @@ public:
       QVector3D _lightDirection,
       std::vector<std::unique_ptr<Particle>> &_particleList) override;
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief sets the child threshold
+  /// @param[in] _amount amount of children allowed per branch.
+  //////////////////////////////////////////////////////////////////////////////
+  void setChildThreshold(int _amount);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief sets the branch length of a branch.
+  /// @param[in] _value length of the branch.
+  //////////////////////////////////////////////////////////////////////////////
+  void setBranchLength(float _value);
+
+
+
+
+
+
+
+
 private:
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Needs documentation.
+  /// @brief hold the threshold of how many children/branches one Particle can have.
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_childrenTreshold;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Needs documentation.
-  /// @param[in] _levels Needs documentation.
-  /// @param[in] _testPosition Needs documentation.
-  /// @param[in] _particleList Needs documentation.
-  /// @returns Needs documentation.
+  /// @brief Finds the parent according to the levels to call the recursive
+  /// collsion on it.
+  /// @param[in] _levels represents the levels of collision testing it will do.
+  /// 1 level is the equivalent of one generation earlier.
+  /// @param[in] _testPosition the position that needs collision testing.
+  /// @param[in] _particleList List of all particles.
+  /// @returns returns true if colliding and false if it's not colliding.
   //////////////////////////////////////////////////////////////////////////////
   bool collision(
       int _levels,
@@ -83,20 +101,27 @@ private:
       std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Needs documentation.
-  /// @param[in] _particle Needs documentation.
-  /// @param[in] _size Needs documentation.
+  /// @brief Tests directly for one on one collision between the particle and the
+  /// input particle position.
+  /// @param[in] _particlePos position of the particle that is meant to be tested
+  /// against.
   //////////////////////////////////////////////////////////////////////////////
-  bool testCollision(QVector3D _particle,float _size);
+  bool testCollision(QVector3D _particlePos);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Needs documentation.
-  /// @param[in] _particle Needs documentation.
-  /// @param[in] _particleList Needs documentation.
+  /// @brief Recursively calling on parent to run collisions on all children of
+  ///  a particle.
+  /// @param[in] _particle Parent Particle.
+  /// @param[in] _particleList List of all Particles.
   //////////////////////////////////////////////////////////////////////////////
   bool recursiveCollision(
       QVector3D _particle,
       std::vector<std::unique_ptr<Particle>> &_particleList) override;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Length of a branches connecting to the particle
+  //////////////////////////////////////////////////////////////////////////////
+  float m_branchLength;
 
 };
 
