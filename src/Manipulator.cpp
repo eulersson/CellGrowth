@@ -4,6 +4,9 @@ const int DIRECTION_X = 0;
 const int DIRECTION_Y = 1;
 const int DIRECTION_Z = 2;
 
+const int ROTATION_Y = 3;
+const int ROTATION_Z = 4;
+
 // Manipulator move sensitivity
 const GLfloat SENSITIVITY = 0.04f;
 
@@ -32,6 +35,14 @@ int Manipulator::compareUniqueColour(QVector3D _colour)
        return m_arrows[i].axis;
     }
   }
+
+  for(size_t i = 0; i < m_circles.size(); i++)
+  {
+    if(_colour == m_circles[i].uniqueColour)
+    {
+       return m_circles[i].axis;
+    }
+  }
   return -1;
 }
 
@@ -39,51 +50,86 @@ void Manipulator::createGeometry(QOpenGLContext *_context, std::vector<QVector3D
 {
   // X ARROW
   QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject();
-  createArrow(vao_x, QVector3D(1.2, 0, 0), _uColourVec[0], 0);
+  createArrow(vao_x, QVector3D(1.2, 0, 0), _uColourVec[0], DIRECTION_X);
 
   // Y ARROW
   QOpenGLVertexArrayObject *vao_y = new QOpenGLVertexArrayObject();
-  createArrow(vao_y, QVector3D(0, 1.2, 0), _uColourVec[1], 1);
+  createArrow(vao_y, QVector3D(0, 1.2, 0), _uColourVec[1], DIRECTION_Y);
 
   // Z ARROW
   QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject();
-  createArrow(vao_z, QVector3D(0, 0, 1.2), _uColourVec[2], 2);
+  createArrow(vao_z, QVector3D(0, 0, 1.2), _uColourVec[2], DIRECTION_Z);
+
+  // ROT AROUND Y
+  QOpenGLVertexArrayObject *vao_rot_y = new QOpenGLVertexArrayObject();
+  createRotCircle(vao_rot_y, _uColourVec[3], ROTATION_Y);
+
+  // ROT AROUND Z
+  QOpenGLVertexArrayObject *vao_rot_z = new QOpenGLVertexArrayObject();
+  createRotCircle(vao_rot_z, _uColourVec[4], ROTATION_Z);
 }
 
 void Manipulator::draw()
 {
   QVector3D baseColour(0.0f, 0.0f, 1.0f);
   m_manipshaderp->bind();
+  m_manipshaderp->setUniformValue("backRender", false);
 
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
-    Arrow arrow= m_arrows[i];
-
-    m_manipshaderp->setUniformValue("backRender", false);
-    m_manipshaderp->setUniformValue("renderColour", {arrow.renderColour.x(),arrow.renderColour.y(),arrow.renderColour.z()});
+    Geo arrow= m_arrows[i];
+    m_manipshaderp->setUniformValue("renderColour", {arrow.renderColour.x(),
+                                                     arrow.renderColour.y(),
+                                                     arrow.renderColour.z()});
 
     switch(arrow.axis)
     {
       case DIRECTION_X:
         baseColour= QVector3D(0.2f, 0.0f, 0.0f);
-        m_manipshaderp->setUniformValue("baseColour", baseColour);
         break;
 
       case DIRECTION_Y:
         baseColour= QVector3D(0.0f, 0.2f, 0.0f);
-        m_manipshaderp->setUniformValue("baseColour", baseColour);
         break;
 
       case DIRECTION_Z:
         baseColour= QVector3D(0.0f, 0.0f, 0.2f);
-        m_manipshaderp->setUniformValue("baseColour", baseColour);
         break;
     }
+    m_manipshaderp->setUniformValue("baseColour", baseColour);
 
     arrow.vao->bind();
     glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints); // Previously GL_POINTS
     arrow.vao->release();
   }
+
+
+
+  for(size_t i = 0; i < m_circles.size(); i++)
+  {
+      Geo circle= m_circles[i];
+      m_manipshaderp->setUniformValue("renderColour", {circle.renderColour.x(),
+                                                       circle.renderColour.y(),
+                                                       circle.renderColour.z()});
+      switch(circle.axis)
+      {
+        case ROTATION_Y:
+          baseColour= QVector3D(0.0f, 0.4f, 0.0f);
+          break;
+
+        case ROTATION_Z:
+          baseColour= QVector3D(0.0f, 0.0f, 0.4f);
+          break;
+      }
+      m_manipshaderp->setUniformValue("baseColour", baseColour);
+
+      circle.vao->bind();
+      glDrawArrays(GL_TRIANGLES, 0, circle.numberOfPoints); // Previously GL_POINTS
+      circle.vao->release();
+  }
+
+
+
   m_manipshaderp->release();
 }
 
@@ -92,16 +138,24 @@ void Manipulator::drawBackBuffer()
   m_manipshaderp->bind();
   m_manipshaderp->setUniformValue("backRender", true);
 
+  // Draw arrows
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
-    Arrow arrow= m_arrows[i];
+    Geo arrow= m_arrows[i];
     arrow.vao->bind();
-
     m_manipshaderp->setUniformValue("baseColour", arrow.uniqueColour);
-
     glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints); // Previously GL_POINTS
-
     arrow.vao->release();
+  }
+
+  // Draw rotation circles
+  for(size_t i = 0; i < m_circles.size(); i++)
+  {
+      Geo circle= m_circles[i];
+      m_manipshaderp->setUniformValue("baseColour", circle.uniqueColour);
+      circle.vao->bind();
+      glDrawArrays(GL_TRIANGLES, 0, circle.numberOfPoints);
+      circle.vao->release();
   }
 }
 
@@ -120,9 +174,7 @@ QVector3D Manipulator::processMouseMovement(float _offsetx,
       switch(m_arrows[i].axis)
       {
         case DIRECTION_X:
-
           returnVec = _offsetx*SENSITIVITY*_x;
-
           break;
 
         case DIRECTION_Y:
@@ -148,8 +200,14 @@ int Manipulator::getClickedAxis()
       return m_arrows[i].axis;
     }
   }
+  for(size_t i = 0; i < m_circles.size(); i++)
+  {
+    if(m_circles[i].clicked)
+    {
+      return m_circles[i].axis;
+    }
+  }
   return -1;
-
 }
 
 void Manipulator::setClicked(QVector3D uColourIdentity, bool _state)
@@ -163,6 +221,18 @@ void Manipulator::setClicked(QVector3D uColourIdentity, bool _state)
     else if(uColourIdentity == m_arrows[i].uniqueColour)
     {
       m_arrows[i].clicked = true;
+    }
+  }
+
+  for(size_t i = 0; i < m_circles.size(); i++)
+  {
+    if(_state == false)
+    {
+      m_circles[i].clicked = false;
+    }
+    else if(uColourIdentity == m_circles[i].uniqueColour)
+    {
+      m_circles[i].clicked = true;
     }
   }
 }
@@ -180,22 +250,157 @@ void Manipulator::setHover(int axis)
       m_arrows[i].renderColour=QVector3D(.2, .2, .2);
     }
   }
+
+  for(size_t i = 0; i < m_circles.size(); i++)
+  {
+    if(axis == m_circles[i].axis)
+    {
+      m_circles[i].renderColour=QVector3D(.6, .6, .6);
+    }
+    else
+    {
+      m_circles[i].renderColour=QVector3D(.2, .2, .2);
+    }
+  }
 }
 
-void Manipulator::getArrows(std::vector<Arrow> &_arrows)
+void Manipulator::getArrows(std::vector<Geo> &_arrows)
 {
   _arrows = m_arrows;
+}
+
+void Manipulator::setupRotCircleVAO(Geo &_circle, QOpenGLVertexArrayObject *_vao)
+{
+  // Vertex Array Object
+  _vao->create();
+  _vao->bind();
+  m_manipshaderp->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
+  m_manipshaderp->enableAttributeArray("posAttr");
+  _vao->release();
+  _circle.vao=_vao;
+
+}
+
+void Manipulator::setupRotCircleVBO(
+    std::vector<QVector3D> _vertices,
+    Geo &_circle)
+{
+  // OpenGL wants a flat array of GLfloats
+  std::vector<GLfloat> m_pointPosArray;
+  GLint numberOfPoints = _vertices.size();
+  for (size_t i = 0; i < numberOfPoints; i++)
+  {
+    m_pointPosArray.push_back(_vertices[i].x());
+    m_pointPosArray.push_back(_vertices[i].y());
+    m_pointPosArray.push_back(_vertices[i].z());
+  }
+
+  QOpenGLBuffer* vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+
+  // Buffer
+  vbo->create();
+  vbo->bind();
+  vbo->setUsagePattern(QOpenGLBuffer::StaticDraw); //Previoulsy DynamicDraw
+  // Allocate enogh place for all data
+  vbo->allocate(&m_pointPosArray[0], 3 * numberOfPoints * sizeof(GLfloat));
+  _circle.vbo=vbo;
+
+}
+
+void Manipulator::createRotCircle(QOpenGLVertexArrayObject *_vao,
+                     QVector3D _uniqueColour,
+                     int _axis)
+{
+
+  std::vector<QVector3D> vertices;
+  int segments = 50;
+  float amt=(2*M_PI)/segments;
+
+  float thickness=0.14f  +1.0f;
+  float r=0.8f;
+
+  QVector3D op(0,0,0);
+
+  QVector3D lastPoint = QVector3D(op.x(),op.y(),op.z());
+  for(size_t i=0; i<=segments;i++)
+  {
+
+    float x=0;
+    float y=0;
+    float z=0;
+
+    float lx=1;
+    float ly=1;
+    float lz=1;
+    float angle = amt*i;
+    switch(_axis)
+    {
+      // Around Y axis
+      case ROTATION_Y:
+
+        x=r*cos(angle);
+        z=r*sin(angle);
+
+        lx=thickness;
+        lz=thickness;
+
+        break;
+
+
+      // Around Z axis
+      case ROTATION_Z:
+
+        x=r*cos(angle);
+        y=r*sin(angle);
+
+        lx=thickness;
+        ly=thickness;
+
+        break;
+    }
+
+    if(lastPoint==QVector3D(op.x(),op.y(),op.z()))
+    {
+      lastPoint=QVector3D(x,y,z);
+      continue;
+    }
+
+
+    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(lastPoint+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
+
+    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(x*lx, y*ly, z*lz)+QVector3D(op.x(),op.y(),op.z()));
+
+    lastPoint=QVector3D(x,y,z);
+
+
+  }
+
+  Geo circle = Geo();
+  circle.axis = _axis;
+  circle.numberOfPoints = vertices.size();
+  circle.uniqueColour=_uniqueColour;
+
+  setupRotCircleVBO(vertices, circle);
+  setupRotCircleVAO(circle, _vao);
+
+  m_circles.push_back(circle);
+
+
 }
 
 void Manipulator::setupVBO(
     std::vector<QVector3D> _vertices,
     std::vector<QVector3D> _normals,
-    Arrow &_arrow)
+    Geo &_arrow)
 {
   // OpenGL wants a flat array of GLfloats
   std::vector<GLfloat> m_pointPosArray;
-  GLint m_numberOfPoints = _vertices.size();
-  for (size_t i = 0; i < m_numberOfPoints; i++)
+  GLint numberOfPoints = _vertices.size();
+  for (size_t i = 0; i < numberOfPoints; i++)
   {
     m_pointPosArray.push_back(_vertices[i].x());
     m_pointPosArray.push_back(_vertices[i].y());
@@ -213,11 +418,11 @@ void Manipulator::setupVBO(
   vbo->bind();
   vbo->setUsagePattern(QOpenGLBuffer::StaticDraw); //Previoulsy DynamicDraw
   // Allocate enogh place for all data
-  vbo->allocate(&m_pointPosArray[0], 6 * m_numberOfPoints * sizeof(GLfloat));
+  vbo->allocate(&m_pointPosArray[0], 6 * numberOfPoints * sizeof(GLfloat));
   _arrow.vbo=vbo;
 }
 
-void Manipulator::setupVAO(Arrow &_arrow, QOpenGLVertexArrayObject *_vao)
+void Manipulator::setupVAO(Geo &_arrow, QOpenGLVertexArrayObject *_vao)
 {
   // Vertex Array Object
   _vao->create();
@@ -226,7 +431,7 @@ void Manipulator::setupVAO(Arrow &_arrow, QOpenGLVertexArrayObject *_vao)
   // Stride is 5* size of float because the vertex contains 6 values
   // First number states where to start (offset)
   // Second number states the size of the data to get (position = x,y,z = 3 values)
-  // Third number is stride. Must be multiplied with sizeof float for some reason
+  // Third number is stride. Must be multiplied with sizeof float.
   m_manipshaderp->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3, 6 * sizeof(GL_FLOAT));
   m_manipshaderp->enableAttributeArray("posAttr");
 
@@ -260,8 +465,6 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *_vao,
   unsigned int sectors = 20;
   float radius = 0.2f;
   float height = 0.8f;
-
-  _offsetPos+=m_position;
 
   QVector3D topPoint;
   for(unsigned int i = 0; i < sectors; i++) {
@@ -330,7 +533,7 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *_vao,
   }
 
 
-  Arrow arrow = Arrow();
+  Geo arrow = Geo();
   arrow.axis = _axis;
   arrow.numberOfPoints = vertices.size() + normals.size();
   arrow.uniqueColour=_uniqueColour;

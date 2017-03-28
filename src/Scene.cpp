@@ -51,6 +51,8 @@ void Scene::paint()
   inputManager.setupCamera();
   inputManager.doMovement();
 
+
+
   m_FBO->bind();
   drawParticles();
 
@@ -64,6 +66,8 @@ void Scene::paint()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, m_FBO->takeTexture(1));
     drawQuad();
+
+
 }
 
 void Scene::prepareQuad()
@@ -267,7 +271,8 @@ void Scene::keyReleaseEvent(QKeyEvent *key)
 
 void Scene::mouseMoveEvent(QMouseEvent* event)
 {
-    inputManager.mouseMoveEvent(event);
+  inputManager.getUniqueColour();
+  inputManager.mouseMoveEvent(event);
 }
 
 void Scene::mousePressEvent(QMouseEvent *event)

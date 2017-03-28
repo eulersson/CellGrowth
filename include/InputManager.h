@@ -15,6 +15,7 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 #include <QWindow>
+#include <QOpenGLFramebufferObject>
 
 // Project
 #include "ArcBallCamera.h"
@@ -34,6 +35,7 @@ class InputManager
 {
 
 public:
+  QOpenGLFramebufferObject* m_fbo;
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor taking a QWindow.
   /// @param[in] _window Window the InputManager is associated with.
@@ -58,10 +60,7 @@ public:
   /// @param[in] _manipulatorProgram Program to be used to draw geomtry to back
   /// buffer.
   //////////////////////////////////////////////////////////////////////////////
-  void getUniqueColour(
-      const int _x,
-      const int _y,
-      QOpenGLShaderProgram* _manipulatorProgram);
+  void getUniqueColour();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Runs getUniqueColour and compares them to the object unique
@@ -113,6 +112,12 @@ public:
   /// @returns The view matrix.
   //////////////////////////////////////////////////////////////////////////////
   QMatrix4x4 getViewMatrix();
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Get the current camera position for use with shading calculations.
+  /// @returns Camera position.
+  //////////////////////////////////////////////////////////////////////////////
+  QVector3D getCameraPosition();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculate mouse click release.
@@ -218,6 +223,9 @@ private:
   /// position is only gotten on mouse click, not mouse down (continous).
   //////////////////////////////////////////////////////////////////////////////
   GLfloat m_clickZ;
+
+
+
 
 };
 

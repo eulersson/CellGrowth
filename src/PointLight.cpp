@@ -21,7 +21,7 @@ void PointLight::createGeometry(QOpenGLContext *_context, QVector3D &_masterUniq
   // Setup light representation VBO VAO
   setupObject(_context);
   // Setup manipulator geometry
-  int amountOfColours=3;
+  int amountOfColours=5;
   m_manip.createGeometry(_context, getMultipleNewUniqueColour(amountOfColours, _masterUniqueColour));
 }
 

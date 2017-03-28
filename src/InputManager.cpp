@@ -12,10 +12,12 @@ InputManager::InputManager (QWindow *_window) :
   m_keys{0},
   m_mousePressed(false)
 {
+
     // Camera initialisation
     // Must be run on start for camera to calculate its position and orientation
     setupCamera();
     m_camera.processMouseMovement(0, 0);
+
 }
 
 void InputManager::onHover()
@@ -47,33 +49,53 @@ void InputManager::doMovement()
   m_view = m_camera.getViewMatrix();
 }
 
-void InputManager::getUniqueColour(const int _x, const int _y,
-                                   QOpenGLShaderProgram* _manipulatorProgram)
+void InputManager::getUniqueColour()
 {
+  // Move to initialise. Crashes in my program if not here.
+  m_fbo = new QOpenGLFramebufferObject(m_window->width(), m_window->height());
+
+  m_fbo->bind();
+  const int _x=m_lastX;
+  const int _y=m_lastY;
+
   // Clear colour buffer for temporary drawing
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // Draw all objects in a unique colour
   for(auto &s : m_objectList) { s->drawBackBuffer(); }
-  // Pixel storing colour information
-  std::array<unsigned char, 3> pixel;
+//  // Pixel storing colour information
+//  std::array<unsigned char, 3> pixel;
 
-  // Get viewport
-  std::array<GLint, 4> viewport;
-  glGetIntegerv(GL_VIEWPORT, &viewport[0]);
+//  // Get viewport
+//  std::array<GLint, 4> viewport;
+//  glGetIntegerv(GL_VIEWPORT, &viewport[0]);
 
-  // Read pixel at 1 by 1 pixels
-  glReadPixels(
-    _x* m_window->devicePixelRatio(),
-    viewport[3] - _y*m_window->devicePixelRatio(),
-    1,
-    1,
-    GL_RGB,
-    GL_UNSIGNED_BYTE,
-    &pixel[0]);
+//  // Read pixel at 1 by 1 pixels
+//  glReadPixels(
+//    _x* m_window->devicePixelRatio(),
+//    viewport[3] - _y*m_window->devicePixelRatio(),
+//    1,
+//    1,
+//    GL_RGB,
+//    GL_UNSIGNED_BYTE,
+//    &pixel[0]);
 
-  QVector3D pixelColour = QVector3D(pixel[0], pixel[1], pixel[2]);
+
+//  QVector3D pixelColour = QVector3D(pixel[0], pixel[1], pixel[2]);
+//  setCurrentUniqueColour(pixelColour);
+
+
+
+  QImage img = m_fbo->toImage();
+//  img.save("/home/i7243466/Desktop/koko.jpg");
+
+  QColor col = img.pixelColor(_x, _y);
+  //qDebug("%d %d %d", col.red(), col.green(), col.blue());
+
+  QVector3D pixelColour = QVector3D(col.red(), col.green(), col.blue());
   setCurrentUniqueColour(pixelColour);
+
+   m_fbo->release();
 }
 
 void InputManager::doSelection(const int _x, const int _y)
@@ -83,7 +105,6 @@ void InputManager::doSelection(const int _x, const int _y)
   {
     QOpenGLShaderProgram* m_manipulatorProgram;
     s->getMainProgram(&m_manipulatorProgram);
-    getUniqueColour(_x, _y, m_manipulatorProgram);
     s->setClicked(m_currentUniqueColour, true);
   }
 }
@@ -96,7 +117,7 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
 void InputManager::setupCamera()
 {
   int screenWidth = 720;
-  int screenHeight = 480;
+  int screenHeight = 720;
 
   m_projection.setToIdentity();
   m_projection.perspective(45, (float)screenWidth / (float)screenHeight,
@@ -144,6 +165,11 @@ QMatrix4x4 InputManager::getProjectionMatrix()
 QMatrix4x4 InputManager::getViewMatrix()
 {
   return m_view;
+}
+
+QVector3D InputManager::getCameraPosition()
+{
+  return m_camera.getPosition();
 }
 
 void InputManager::mouseReleaseEvent(QMouseEvent *_event)
@@ -215,7 +241,6 @@ void InputManager::mouseMoveEvent(QMouseEvent *_event)
     {
       QOpenGLShaderProgram* m_manipulatorProgram;
       s->getMainProgram(&m_manipulatorProgram);
-      getUniqueColour(xpos, ypos, m_manipulatorProgram);
 
       onHover();
     }
