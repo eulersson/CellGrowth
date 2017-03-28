@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @file Window.cpp
 /// @author Ramon Blanquer
@@ -20,17 +21,23 @@
 void subdivide(float*, float*, float*, long, std::vector<GLfloat>&);
 float lerp(float a, float b, float f);
 
-GLWindow::GLWindow(QWindow *parent)
-  : QOpenGLWindow(NoPartialUpdate, parent)
-  , m_input_manager(this)
-  , m_draw_links(true)
+GLWindow::GLWindow(QWidget*_parent)
+  : m_draw_links(true)
+//GLWindow::GLWindow(QMainWindow*_parent)
+//  : QOpenGLWidget(_parent)
+//  , m_draw_links(true)
+//  , m_input_manager(this)
 {
+  this->resize(_parent->size());
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
   fmt.setVersion(4,5);
   fmt.setSamples(16);
   fmt.setSwapInterval(1);
   setFormat(fmt);
+
+  setMouseTracking(true);
+  setFocus();
 
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
   if(format().swapInterval() == -1)
@@ -47,6 +54,7 @@ GLWindow::GLWindow(QWindow *parent)
   m_timer.start();
 }
 
+
 GLWindow::~GLWindow()
 {
   qDebug("Window::~Window - Do cleanup");
@@ -55,6 +63,8 @@ GLWindow::~GLWindow()
 void GLWindow::initializeGL()
 {
   initializeOpenGLFunctions();
+
+  m_input_manager = new InputManager(this);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_MULTISAMPLE);
@@ -78,19 +88,22 @@ void GLWindow::initializeGL()
   setupLights();
   sampleKernel();
 
-  glViewport(0, 0, 720, 720);
 }
 
 void GLWindow::paintGL()
 {
   updateModelMatrix();
-  m_input_manager.setupCamera();
-  m_input_manager.doMovement();
+
+  m_input_manager->setupCamera(width(), height());
+  m_input_manager->doMovement();
 
   m_fbo->bind();
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
     drawParticles();
     if (m_draw_links) { drawLinks(); }
     for(auto &s : m_object_list) { s->draw(); }
@@ -110,6 +123,24 @@ void GLWindow::paintGL()
 
 void GLWindow::resizeGL(int _w, int _h)
 {
+//  glViewport(0,0,_w,_h);
+  delete m_fbo;
+  setupFBO();
+
+  m_input_manager->resized(_w, _h);
+  //m_input_manager->setupCamera(_w, _h);
+
+
+  m_projection_matrix.setToIdentity();
+  m_projection_matrix.perspective(
+        45.0f,
+        (float)_w / (float)_h,
+        0.1f,
+        100.0f);
+
+  //m_mv = m_view_matrix * m_model_matrix;
+  //m_mvp = m_projection_matrix * m_mv;
+
   qDebug("Window resized to %d and %d", _w, _h);
   m_quad_program->bind();
   m_quad_program->setUniformValue("width", _w);
@@ -121,8 +152,8 @@ void GLWindow::initializeMatrix()
 {
   m_projection_matrix.setToIdentity();
   m_projection_matrix.perspective(
-        90.0f,
-        720.0f/720.0f,
+        45.0f,
+        (float)width() / (float)height(),
         0.1f,
         100.0f);
 
@@ -336,12 +367,12 @@ void GLWindow::drawQuad()
 void GLWindow::drawParticles()
 {
   m_part_program->bind();
-  m_part_program->setUniformValue("ProjectionMatrix", m_input_manager.getProjectionMatrix());
+  m_part_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
   m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_part_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
+  m_part_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
 
   m_part_vao->bind();
-    glDrawArraysInstanced(GL_TRIANGLES, 0, m_sphere_data.size() / 3, m_ps.getSize());
+  glDrawArraysInstanced(GL_TRIANGLES, 0, m_sphere_data.size() / 3, m_ps.getSize());
   m_part_vao->release();
 
   m_part_program->release();
@@ -351,9 +382,9 @@ void GLWindow::drawLinks()
 {
   m_links_program->bind();
 
-  m_links_program->setUniformValue("ProjectionMatrix", m_input_manager.getProjectionMatrix());
+  m_links_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
   m_links_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_links_program->setUniformValue("ViewMatrix", m_input_manager.getViewMatrix());
+  m_links_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
 
   m_links_vao->bind();
     glDrawElements(GL_LINES, m_links_data.size(), GL_UNSIGNED_INT, 0);
@@ -365,16 +396,16 @@ void GLWindow::drawLinks()
 void GLWindow::setupFBO()
 {
   m_fbo =new QOpenGLFramebufferObject(
-        720, 720,
+        width(), height(),
         QOpenGLFramebufferObject::Depth);         // GL_COLOR_ATTACHMENT0
 
   m_fbo->bind();
 
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT1
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT2
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT3
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT4
-  m_fbo->addColorAttachment(720, 720);            // GL_COLOR_ATTACHMENT4
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT1
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT2
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT3
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT4
+  m_fbo->addColorAttachment(width(), height());            // GL_COLOR_ATTACHMENT5
 
   const GLenum attachments[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
                                 GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5};
@@ -391,7 +422,7 @@ void GLWindow::setupFBO()
     glRenderbufferStorage(
           GL_RENDERBUFFER,     // Target
           GL_DEPTH_COMPONENT,  // Internal Format
-          720, 720);           // Size
+          width(), height());           // Size
     // Attach a renderbuffer object to a framebuffer object
     glFramebufferRenderbuffer(
           GL_FRAMEBUFFER,       // Target
@@ -402,7 +433,7 @@ void GLWindow::setupFBO()
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       qCritical("Framebuffer not complete!");
 
-  glViewport(0, 0, 720, 720);
+  glViewport(0, 0, width(), height());
   m_fbo->release();
 }
 
@@ -483,21 +514,21 @@ void GLWindow::setupLights()
 
   m_sun_program->link();
 
+
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
-  for(int x = -4; x < 4; x += 4) {
-      for(int y = -4; y < 4; y += 4) {
-          PointLight *pointlight;
-          pointlight = new PointLight(
-                QVector3D(x, y, 0),
-                m_manipulator_program,
-                m_sun_program);
-          pointlight->createGeometry(context(), masterUniqueColour);
-          m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
-      }
-  }
-  m_input_manager.addShaderProgram(m_manipulator_program);
-  m_input_manager.addShaderProgram(m_sun_program);
-  m_input_manager.setObjectList(m_object_list);
+
+  PointLight *pointlight;
+  pointlight = new PointLight(
+        QVector3D(0, 0, 0),
+        m_manipulator_program,
+        m_sun_program);
+  pointlight->createGeometry(context(), masterUniqueColour);
+  m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+
+
+  m_input_manager->addShaderProgram(m_manipulator_program);
+  m_input_manager->addShaderProgram(m_sun_program);
+  m_input_manager->setObjectList(m_object_list);
 }
 
 void GLWindow::generateSphereData(uint _num_subdivisions)
@@ -595,6 +626,7 @@ void GLWindow::updateModelMatrix()
 
 void GLWindow::keyPressEvent(QKeyEvent* ev)
 {
+    setFocus();
     switch(ev->key())
     {
         case Qt::Key_Space:
@@ -632,35 +664,44 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
         default:
             break;
     }
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_input_manager.keyPressEvent(ev);
+  m_input_manager->keyPressEvent(ev);
+
 }
 
 void GLWindow::keyReleaseEvent(QKeyEvent *key)
 {
-  m_input_manager.keyReleaseEvent(key);
+  setFocus();
+  m_input_manager->keyReleaseEvent(key);
 }
 
 void GLWindow::mouseMoveEvent(QMouseEvent* event)
 {
-  m_input_manager.mouseMoveEvent(event);
+  makeCurrent();
+  setFocus();
+  m_input_manager->mouseMoveEvent(event);
 }
 
 void GLWindow::mousePressEvent(QMouseEvent *event)
 {
-  m_input_manager.mousePressEvent(event);
+  makeCurrent();
+  setFocus();
+  m_input_manager->mousePressEvent(event);
 }
 
 void GLWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-  m_input_manager.mouseReleaseEvent(event);
+  makeCurrent();
+  setFocus();
+  m_input_manager->mouseReleaseEvent(event);
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
 {
-  m_input_manager.wheelEvent(event);
+  makeCurrent();
+  setFocus();
+  m_input_manager->wheelEvent(event);
 }
 
 // Helpers
@@ -707,4 +748,105 @@ void subdivide(float *v1, float *v2, float *v3, long depth,std::vector<GLfloat>&
   subdivide(v2, v23, v12,  depth-1, _data);
   subdivide(v3, v31, v23,  depth-1, _data);
   subdivide(v12, v23, v31, depth-1, _data);
+}
+
+// Slots
+
+void GLWindow::setParticleSize(double _size)
+{
+  m_ps.setParticleSize(_size);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setParticleType(int _type)
+{
+
+  char particleType;
+  if (_type==0)
+  {
+    particleType='L';
+  }
+  else
+  {
+    particleType='G';
+  }
+
+  m_ps.reset(particleType);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::cancle()
+{
+  //stop program running
+}
+
+void GLWindow::showConnections(bool _state)
+{
+  //Visualisation changes
+  //maybe there could be an attribute here that could be toggled and tested when rendering
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setShading(QString _type)
+{
+  //same here maybe have attribute that then gets passed to shader??
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::toggleForces(bool _state)
+{
+  //only for LinkedParticles
+  m_ps.toggleForces(_state);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setCohesion(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setCohesion(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::bulge()
+{
+  //only for LinkedParticles
+  m_ps.bulge();
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setSpring(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setSpring(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setBranchLength(double _amount)
+{
+
+  //only for GrowthParticles
+  m_ps.setBranchLength(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setGrowthRadius(int _amount)
+{
+  //only for GrowthParticles
+  m_ps.setGrowthRadius(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::restart()
+{
+  //restart program
+}
+
+void GLWindow::setSplitType(QString _type)
+{
+  //not sure where to put this really
+}
+
+void GLWindow::setChildThreshold(int _amount)
+{
+  m_ps.setChildThreshold(_amount);
 }

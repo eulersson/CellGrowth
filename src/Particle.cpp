@@ -40,9 +40,9 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
 
 
 Particle::Particle(qreal _x,
-      qreal _y,
-      qreal _z,
-      std::vector<unsigned int> _connectedParticles)
+    qreal _y,
+    qreal _z,
+    std::vector<unsigned int> _connectedParticles)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
     , m_size(2.0)
@@ -153,6 +153,7 @@ void Particle::getPosFromConnections(std::vector<QVector3D> &_linkPos,std::vecto
 
 int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
 {
+  //gets the position in the particle system
   for (unsigned int i = 0; i < _particleList.size(); i++)
   {
     if (_particleList[i]->getID() == m_ID)
@@ -160,3 +161,9 @@ int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
   }
   return -1; // Return negative one if none is found.
 }
+
+void Particle::resetIDCounter()
+{
+  m_ID_counter=0;
+}
+
