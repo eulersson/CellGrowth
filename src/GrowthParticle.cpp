@@ -6,6 +6,7 @@
 
 #include "GrowthParticle.h"
 
+
 GrowthParticle::GrowthParticle():Particle()
 {
   qDebug("Growth Particle default constructor.");
@@ -16,6 +17,7 @@ GrowthParticle::GrowthParticle(qreal _x,
                                qreal _z): Particle(_x,_y,_z)
 {
   m_childrenTreshold=3;
+  m_branchLength=3.0;
   qDebug("Growth Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
@@ -26,6 +28,7 @@ GrowthParticle::GrowthParticle(
     std::vector<unsigned int> _connectedParticles):Particle(_x,_y,_z,_connectedParticles)
 {
   m_childrenTreshold=3;
+  m_branchLength=3.0;
   qDebug("Growth Particle constructor passing in positions: %f,%f,%f and a list of"
          "particles", _x, _y, _z);
 }
@@ -89,9 +92,9 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
     //place new particle in direction of vector mutilplied by size of particle
     direction.normalize();
 
-    direction[0]*=m_size;
-    direction[1]*=m_size;
-    direction[2]*=m_size;
+    direction[0]*=(m_size*m_branchLength);
+    direction[1]*=(m_size*m_branchLength);
+    direction[2]*=(m_size*m_branchLength);
     x=m_pos[0]+direction[0];
     y=m_pos[1]+direction[1];
     z=m_pos[2]+direction[2];
@@ -207,5 +210,12 @@ bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::uni
 
 void GrowthParticle::setChildThreshold(int _amount)
 {
+
   m_childrenTreshold=_amount;
+}
+
+
+void GrowthParticle::setBranchLength(float _value)
+{
+  m_branchLength=_value;
 }

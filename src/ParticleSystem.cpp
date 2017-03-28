@@ -68,9 +68,12 @@ void ParticleSystem::advance()
   }
 
   //calcuting the forces
+  if (m_forces==true)
+  {
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     //m_particles[i]->calculate();
+  }
   }
 
   //moving all particles
@@ -265,11 +268,19 @@ void ParticleSystem::setSpring(int _amount)
   m_spring = _amount;
 }
 
-void ParticleSystem::setBranchLength(int _amount)
+void ParticleSystem::setBranchLength(float _amount)
 {
   for(unsigned int i=0;i< m_particles.size();i++)
   {
-    m_particles[i]->setChildThreshold(_amount);
+    m_particles[i]->setBranchLength(_amount);
+  }
+}
+
+void ParticleSystem::setChildThreshold(int _value)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setChildThreshold(_value);
   }
 }
 

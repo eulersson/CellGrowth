@@ -55,8 +55,10 @@ public:
     QGridLayout *gridLayout_3;
     QLabel *label_7;
     QSpinBox *m_GP_growRadius;
-    QSpinBox *m_GP_branches;
+    QSpinBox *m_GP_children;
     QLabel *label_6;
+    QLabel *label_5;
+    QDoubleSpinBox *m_GP_branchLenght;
     QGroupBox *groupBox_2;
     QGridLayout *gridLayout_2;
     QComboBox *m_splitType;
@@ -157,29 +159,43 @@ public:
         m_particleTab->addTab(m_linkedParticleTab, QString());
         m_growthParticleTab = new QWidget();
         m_growthParticleTab->setObjectName(QStringLiteral("m_growthParticleTab"));
+        m_growthParticleTab->setEnabled(true);
         gridLayout_3 = new QGridLayout(m_growthParticleTab);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
         label_7 = new QLabel(m_growthParticleTab);
         label_7->setObjectName(QStringLiteral("label_7"));
+        label_7->setEnabled(false);
 
         gridLayout_3->addWidget(label_7, 3, 0, 1, 1);
 
         m_GP_growRadius = new QSpinBox(m_growthParticleTab);
         m_GP_growRadius->setObjectName(QStringLiteral("m_GP_growRadius"));
+        m_GP_growRadius->setEnabled(false);
 
         gridLayout_3->addWidget(m_GP_growRadius, 3, 1, 1, 1);
 
-        m_GP_branches = new QSpinBox(m_growthParticleTab);
-        m_GP_branches->setObjectName(QStringLiteral("m_GP_branches"));
-        m_GP_branches->setMinimum(1);
-        m_GP_branches->setValue(3);
+        m_GP_children = new QSpinBox(m_growthParticleTab);
+        m_GP_children->setObjectName(QStringLiteral("m_GP_children"));
+        m_GP_children->setMinimum(1);
+        m_GP_children->setValue(3);
 
-        gridLayout_3->addWidget(m_GP_branches, 2, 1, 1, 1);
+        gridLayout_3->addWidget(m_GP_children, 2, 1, 1, 1);
 
         label_6 = new QLabel(m_growthParticleTab);
         label_6->setObjectName(QStringLiteral("label_6"));
 
         gridLayout_3->addWidget(label_6, 2, 0, 1, 1);
+
+        label_5 = new QLabel(m_growthParticleTab);
+        label_5->setObjectName(QStringLiteral("label_5"));
+
+        gridLayout_3->addWidget(label_5, 4, 0, 1, 1);
+
+        m_GP_branchLenght = new QDoubleSpinBox(m_growthParticleTab);
+        m_GP_branchLenght->setObjectName(QStringLiteral("m_GP_branchLenght"));
+        m_GP_branchLenght->setValue(3);
+
+        gridLayout_3->addWidget(m_GP_branchLenght, 4, 1, 1, 1);
 
         m_particleTab->addTab(m_growthParticleTab, QString());
 
@@ -187,6 +203,7 @@ public:
 
         groupBox_2 = new QGroupBox(groupBox_3);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
+        groupBox_2->setEnabled(false);
         QSizePolicy sizePolicy2(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
@@ -244,6 +261,7 @@ public:
 
         groupBox_4 = new QGroupBox(groupBox_3);
         groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
+        groupBox_4->setEnabled(false);
         sizePolicy1.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
         groupBox_4->setSizePolicy(sizePolicy1);
         groupBox_4->setFlat(false);
@@ -274,11 +292,13 @@ public:
         gridLayout_8->setObjectName(QStringLiteral("gridLayout_8"));
         m_restart = new QPushButton(groupBox_5);
         m_restart->setObjectName(QStringLiteral("m_restart"));
+        m_restart->setEnabled(false);
 
         gridLayout_8->addWidget(m_restart, 0, 0, 1, 1);
 
         m_cancle = new QPushButton(groupBox_5);
         m_cancle->setObjectName(QStringLiteral("m_cancle"));
+        m_cancle->setEnabled(false);
 
         gridLayout_8->addWidget(m_cancle, 0, 1, 1, 1);
 
@@ -320,6 +340,7 @@ public:
         m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", 0));
         label_7->setText(QApplication::translate("GUI", "Radius for Branch Growth", 0));
         label_6->setText(QApplication::translate("GUI", "Branches per particle", 0));
+        label_5->setText(QApplication::translate("GUI", "Branch Length", 0));
         m_particleTab->setTabText(m_particleTab->indexOf(m_growthParticleTab), QApplication::translate("GUI", "Growth Particles", 0));
         groupBox_2->setTitle(QApplication::translate("GUI", "Interaction", 0));
         m_splitType->clear();
@@ -346,7 +367,7 @@ public:
          << QApplication::translate("GUI", "X Ray", 0)
          << QApplication::translate("GUI", "ADS", 0)
         );
-        groupBox_5->setTitle(QApplication::translate("GUI", "GroupBox", 0));
+        groupBox_5->setTitle(QString());
         m_restart->setText(QApplication::translate("GUI", "Restart", 0));
         m_cancle->setText(QApplication::translate("GUI", "Cancle", 0));
         menuCells_ControlUI->setTitle(QApplication::translate("GUI", "Cells ControlUI", 0));

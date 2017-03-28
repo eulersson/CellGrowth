@@ -130,22 +130,32 @@
           </layout>
          </widget>
          <widget class="QWidget" name="m_growthParticleTab">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <attribute name="title">
            <string>Growth Particles</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="3" column="0">
             <widget class="QLabel" name="label_7">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Radius for Branch Growth</string>
              </property>
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QSpinBox" name="m_GP_growRadius"/>
+            <widget class="QSpinBox" name="m_GP_growRadius">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSpinBox" name="m_GP_branches">
+            <widget class="QSpinBox" name="m_GP_children">
              <property name="minimum">
               <number>1</number>
              </property>
@@ -161,12 +171,29 @@
              </property>
             </widget>
            </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Branch Length</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QDoubleSpinBox" name="m_GP_branchLenght">
+             <property name="value">
+              <double>3.000000000000000</double>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </widget>
        </item>
        <item row="2" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -282,6 +309,9 @@
        </item>
        <item row="3" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_4">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -337,11 +367,14 @@
        <item row="4" column="0">
         <widget class="QGroupBox" name="groupBox_5">
          <property name="title">
-          <string>GroupBox</string>
+          <string/>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="0">
            <widget class="QPushButton" name="m_restart">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Restart</string>
             </property>
@@ -349,6 +382,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="m_cancle">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Cancle</string>
             </property>

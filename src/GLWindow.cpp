@@ -11,7 +11,6 @@
 // Project
 #include "GLWindow.h"
 
-
 // Recursion subdivision algorithm from:
 // http://www.opengl.org.ru/docs/pg/0208.html
 
@@ -803,8 +802,9 @@ void GLWindow::setSpring(int _amount)
   sendParticleDataToOpenGL();
 }
 
-void GLWindow::setBranchLength(int _amount)
+void GLWindow::setBranchLength(double _amount)
 {
+
   //only for GrowthParticles
   m_ps.setBranchLength(_amount);
   sendParticleDataToOpenGL();
@@ -825,4 +825,9 @@ void GLWindow::restart()
 void GLWindow::setSplitType(QString _type)
 {
   //not sure where to put this really
+}
+
+void GLWindow::setChildThreshold(int _amount)
+{
+  m_ps.setChildThreshold(_amount);
 }
