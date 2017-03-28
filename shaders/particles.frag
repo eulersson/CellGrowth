@@ -2,14 +2,17 @@
 
 #define M_PI 3.1415926535897932384626433832795
 // Passes for the G-Buffer
-layout (location = 0) out vec3 gDepthPass;      // Color Attachment 0
-layout (location = 1) out vec3 gPositionPass;   // Color Attachment 1
-layout (location = 2) out vec3 gNormalPass;     // Color Attachment 2
-layout (location = 3) out vec3 gDiffusePass;    // Color Attachment 3
-layout (location = 4) out vec3 gSSAONoisePass;  // Color Attachment 4
+layout (location = 0) out vec3 gDepthPass;              // Color Attachment 0
+layout (location = 1) out vec3 gPositionPass;           // Color Attachment 1
+layout (location = 2) out vec3 gNormalPass;             // Color Attachment 2
+layout (location = 3) out vec3 gDiffusePass;            // Color Attachment 3
+layout (location = 4) out vec3 gSSAONoisePass;          // Color Attachment 4
+layout (location = 5) out vec3 gScreenNormalPass;       // Color Attachment 5
+
 
 in vec3 vNormal;
 in vec3 vViewPosition;
+in vec3 vScreenSpaceNormals;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 ///                          LINEARIZED DEPTH
@@ -32,4 +35,5 @@ void main(void)
     gNormalPass = vNormal;
     gDiffusePass = vec3(0.95);
     gSSAONoisePass = gSSAONoisePass;
+    gScreenNormalPass = vScreenSpaceNormals; //World Space Normal Pass.
 }
