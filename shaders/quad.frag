@@ -1,11 +1,15 @@
 #version 410 core
 
-uniform sampler2D depth;         // Color Attachment 0
-uniform sampler2D positionTex;   // Color Attachment 1
-uniform sampler2D normal;        // Color Attachment 2
-uniform sampler2D diffuse;       // Color Attachment 3
-uniform sampler2D ssaoNoiseTex;  // Color Attachment 4
-uniform sampler2D ScreenNormals; //Colour Attachment 5
+
+
+
+uniform sampler2D depth;          // Color Attachment 0
+uniform sampler2D positionTex;    // Color Attachment 1
+uniform sampler2D normal;         // Color Attachment 2
+uniform sampler2D diffuse;        // Color Attachment 3
+uniform sampler2D ssaoNoiseTex;   // Color Attachment 4
+uniform sampler2D ScreenNormals;  // Color Attachment 5
+uniform sampler2D Links;          // Color Attachment 6
 
 uniform vec3 samples[64];
 
@@ -40,6 +44,7 @@ struct Light {
 };
 
 uniform Light light;
+uniform bool drawLinks;
 
 in vec2 TexCoord;
 in vec3 FragPos;
@@ -163,6 +168,12 @@ vec4 AORender()
 
 void main(void)
 {
+    vec3 linksCol = texture(Links, TexCoord).rgb;
     vec4 color = ShaderPassSelection();
+
+    if (drawLinks) {
+        color = vec4(max(linksCol, color.rgb), color.a);
+    }
+
     FragColor = color;
 }
