@@ -6,7 +6,7 @@
 
 #include "AbstractScene.h"
 
-AbstractScene::AbstractScene(QOpenGLWindow *_window)
+AbstractScene::AbstractScene(QOpenGLWidget *_window)
 {
   m_window = _window;
 }
@@ -15,7 +15,7 @@ AbstractScene::~AbstractScene()
 {
 }
 
-QOpenGLWindow *AbstractScene::window() const
+QOpenGLWidget *AbstractScene::window() const
 {
   return m_window;
 }

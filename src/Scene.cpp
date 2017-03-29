@@ -7,6 +7,7 @@
 // Project
 #include "Scene.h"
 
+<<<<<<< HEAD
 // Recursion subdivision algorithm from:
 // http://www.opengl.org.ru/docs/pg/0208.html
 
@@ -19,7 +20,30 @@ Scene::Scene(Window *_window)
   : AbstractScene(_window)
   , m_input_manager(_window)
   , m_draw_links(true)
+=======
+Scene::Scene(QWidget *_parent) : AbstractScene(_parent)
+>>>>>>> master
 {
+  setFocus();
+
+  // we might not need this
+  //this->resize(_parent->size());
+
+
+  //original code
+  connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+  if(format().swapInterval() == -1)
+  {
+      // V_blank synchronization not available (tearing likely to happen)
+      qDebug("Swap Buffers at v_blank not available: refresh at approx 60fps.");
+      m_timer.setInterval(17);
+  }
+  else
+  {
+      // V_blank synchronization available
+      m_timer.setInterval(0);
+  }
+  m_timer.start();
 }
 
 Scene::~Scene()
@@ -507,4 +531,87 @@ void subdivide(float *v1, float *v2, float *v3, long depth,std::vector<GLfloat>&
   subdivide(v2, v23, v12,  depth-1, _data);
   subdivide(v3, v31, v23,  depth-1, _data);
   subdivide(v12, v23, v31, depth-1, _data);
+}
+
+
+void Scene::setParticleSize(double _size)
+{
+  m_ps.setParticleSize(_size);
+}
+
+void Scene::setParticleType(int _type)
+{
+  char particleType;
+  if (_type==0)
+  {
+    particleType='L';
+  }
+  else
+  {
+    particleType='G';
+  }
+
+  m_ps.reset(particleType);
+}
+
+void Scene::cancle()
+{
+  //stop program running
+}
+
+void Scene::showConnections(bool _state)
+{
+  //Visualisation changes
+  //maybe there could be an attribute here that could be toggled and tested when rendering
+}
+
+void Scene::setShading(QString _type)
+{
+  //same here maybe have attribute that then gets passed to shader??
+}
+
+void Scene::toggleForces(bool _state)
+{
+  //only for LinkedParticles
+  m_ps.toggleForces(_state);
+}
+
+void Scene::setCohesion(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setCohesion(_amount);
+}
+
+void Scene::setBulge(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setBulge(_amount);
+}
+
+void Scene::setSpring(int _amount)
+{
+  //only for LinkedParticles
+  m_ps.setSpring(_amount);
+}
+
+void Scene::setBranchLength(int _amount)
+{
+  //only for GrowthParticles
+  m_ps.setBranchLength(_amount);
+}
+
+void Scene::setGrowthRadius(int _amount)
+{
+  //only for GrowthParticles
+  m_ps.setGrowthRadius(_amount);
+}
+
+void Scene::restart()
+{
+  //restart program
+}
+
+void Scene::setSplitType(QString _type)
+{
+  //not sure where to put this really
 }

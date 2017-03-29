@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file LinkedParticle.cpp
+/// @author Carola Gille
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
+#include <random>
 #include "LinkedParticle.h"
 #include <iostream>
 LinkedParticle::LinkedParticle():Particle()
@@ -342,6 +349,7 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
 
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
 {
+  //sorts point depending on the position relative to a plane
   int d=_normal.x()*_planePoint.x()+_normal.y()*_planePoint.y()+_normal.z()*_planePoint.z();
   int r=_normal.x()*_testPoint.x()+_normal.y()*_testPoint.y()+_normal.z()*_testPoint.z()-d;
   return r;
@@ -349,11 +357,12 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
 
 void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList)
 {
+
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<int> distribution(1, m_connectedParticles.size() - 1);
 
-  //holds all ID's of the partciles that are keept by the current particle
+  //holds all ID's of the particles that are keept by the current particle
   std::vector<unsigned int> keepList;
 
   //holds all the ID's of the particles that are linked to the new particle
@@ -366,7 +375,8 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
 
   //pick two random particles out of the particle list
-  //saving index number of it in list not Id or Pos
+  //saving index number of it in list not Id or Pos to
+  //avoid searching th particle list for the particle again
 
   unsigned int a=0;
 
@@ -440,7 +450,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   //link both, parent and child, to each other
   m_connectedParticles=keepList;
 
-  //delete links from to old particles
+  //delete links from old particles
 
   for(unsigned int i=0;i<relinkList.size();i++)
   {

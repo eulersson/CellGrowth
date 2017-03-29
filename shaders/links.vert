@@ -1,4 +1,5 @@
-#version 450 core
+
+#version 410 core
 
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;

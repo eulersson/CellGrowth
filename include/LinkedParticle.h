@@ -51,7 +51,7 @@ public:
 
   // Lydia and Esmes function
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Needs description.
+  /// @brief Calculates the particle new position based on Forces.
   //////////////////////////////////////////////////////////////////////////////
   void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
 

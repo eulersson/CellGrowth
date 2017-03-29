@@ -18,12 +18,24 @@
 // Project
 #include "AbstractScene.h"
 #include "ParticleSystem.h"
+<<<<<<< HEAD
 #include "Window.h"
 #include "InputManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+=======
+#include "GLWindow.h"
+////////////////////////////////////////////////////////////////////////////////
+/// @file Scene.h
+/// @author Ramon Blanquer
+/// @author Carola Gille
+/// @version 0.0.1
+>>>>>>> master
 /// @class Scene
-/// @brief This is an example on how to subclass the AbstractScene and use your
+/// @brief This//////////////////////////////////////////////////////////////////////////////
+/// @brief QTimer clocks schedule updates for repainting the scene
+//////////////////////////////////////////////////////////////////////////////
+
 /// OpenGL commands
 ///
 /// In order to create your scene you need to subclass the AbstractScene through
@@ -43,8 +55,8 @@ public:
   /// @brief Constructor
   /// @param[in] _window The OpenGL window to associate the scene with.
   //////////////////////////////////////////////////////////////////////////////
-  Scene(Window *_window);
-
+  Scene(QWidget *_parent);
+ // do we need the window???
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Destructor, do all the OpenGL cleanup here.
   //////////////////////////////////////////////////////////////////////////////
@@ -113,6 +125,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void sendParticleDataToOpenGL();
 
+<<<<<<< HEAD
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Updates particle system model matrix.
   //////////////////////////////////////////////////////////////////////////////
@@ -154,6 +167,23 @@ public:
   /// @brief Update matrices according to the new Window size.
   //////////////////////////////////////////////////////////////////////////////
   virtual void windowResized(int _w, int _h);
+=======
+public slots:
+  void setParticleSize(double _size);
+  void setParticleType(int _type);
+  void cancle();
+  void showConnections(bool _state);
+  void setShading(QString _type);
+  void toggleForces(bool _state);
+  void setCohesion(int _amount);
+  void setBulge(int _amount);
+  void setSpring(int _amount);
+  void setBranchLength(int _amount);
+  void setGrowthRadius(int _amount);
+  void restart();
+  void setSplitType(QString _type);
+
+>>>>>>> master
 
 private:
   //////////////////////////////////////////////////////////////////////////////
@@ -265,6 +295,7 @@ private:
   /// @brief Index for RenderPass subroutine that draws world-space positions.
   //////////////////////////////////////////////////////////////////////////////
   GLuint m_positionShadingIndex;
+<<<<<<< HEAD
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief All the particle positions and radius ready for OpenGL to be drawn
@@ -289,6 +320,12 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   bool m_draw_links;
 
+=======
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief QTimer clocks schedule updates for repainting the scene
+  //////////////////////////////////////////////////////////////////////////////
+  QTimer m_timer;
+>>>>>>> master
 };
 
 #endif // SCENE_H

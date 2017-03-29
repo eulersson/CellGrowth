@@ -29,14 +29,12 @@ cells
 *.out
 *.app
 
-# Qt
-.qmake.stash
-
-# Build files
-*.pro.user
+# Custom
 build/*
-Makefile
-
-# Other files
+*.debug
+*.pro.autosave
+*.pro.user
 .DS_Store
-
+.qmake.stash
+Makefile
+cells
