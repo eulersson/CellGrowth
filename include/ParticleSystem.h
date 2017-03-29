@@ -13,6 +13,7 @@
 // Custom
 #include "LinkedParticle.h"
 #include "GrowthParticle.h"
+#include "PointLight.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class ParticleSystem

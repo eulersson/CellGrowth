@@ -83,8 +83,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   std::vector<QVector3D> linkPosition;
   getPosFromConnections(linkPosition, _particleList);
 
-  //spring(_particleList);
-
 //  PLANAR
 //  Moves a particle to the average position of it's linked neighbours
   for(unsigned int i=0; i<connectionCount; i++)
@@ -351,7 +349,6 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
 
 void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList)
 {
-
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<int> distribution(1, m_connectedParticles.size() - 1);

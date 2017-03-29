@@ -1,4 +1,3 @@
-
 // Native
 #include <math.h>
 #include <iostream>
