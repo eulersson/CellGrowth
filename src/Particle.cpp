@@ -20,37 +20,40 @@ unsigned int Particle::m_ID_counter(0);
 Particle::Particle()
     : m_pos(QVector3D(0,0,0))
     , m_ID(m_ID_counter++)
-    , m_size(2.0)
+    , m_size(0.5)
     , m_foodLevel(0)
-    , m_foodTreshold(0)
+    , m_foodThreshold(0)
 {
-  qDebug("Particle default constructor.");
+  //qDebug("Particle default constructor.");
+  m_hit = true;
 }
 
 
 Particle::Particle(qreal _x, qreal _y, qreal _z)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_size(2.0)
+    , m_size(0.5)
     , m_foodLevel(0)
-    , m_foodTreshold(100)
+    , m_foodThreshold(100)
 {
-  qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+  //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+  m_hit = true;
 }
 
 
 Particle::Particle(qreal _x,
-    qreal _y,
-    qreal _z,
-    std::vector<unsigned int> _connectedParticles)
+      qreal _y,
+      qreal _z,
+      std::vector<unsigned int> _connectedParticles)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_size(2.0)
+    , m_size(0.5)
     , m_foodLevel(0)
-    , m_foodTreshold(100)
+    , m_foodThreshold(100)
 {
-  qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
-         "particles", _x, _y, _z);
+ // qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
+         //"particles", _x, _y, _z);
+  m_hit = true;
   m_connectedParticles = _connectedParticles;
 }
 
@@ -61,12 +64,11 @@ void Particle::advance()
 
 void Particle::testForSplit()
 {
-  if (m_foodLevel >= m_foodTreshold)
+  if (m_foodLevel >= m_foodThreshold)
     m_split=true;
   else
     m_split=false;
 }
-
 
 void Particle::getPos(QVector3D &_pos)
 {
@@ -129,6 +131,18 @@ int Particle::getConnectionCount()
   return m_connectedParticles.size();
 }
 
+std::vector<unsigned int> Particle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList)
+{
+  for(unsigned int i=0; i<=_particleList.size(); i++)
+  {
+    if(m_hit == true)
+    {
+      m_hitParticles.push_back(_particleList[i]->getID());
+      break;
+    }
+  }
+  return m_hitParticles;
+}
 
 void Particle::getPosFromConnections(std::vector<QVector3D> &_linkPos,std::vector<std::unique_ptr<Particle>> &_particleList)
 {

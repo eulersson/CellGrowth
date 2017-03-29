@@ -142,6 +142,8 @@ void GLWindow::paintGL()
     }
 
     drawQuad();
+
+    updateParticleSystem();
 }
 
 void GLWindow::resizeGL(int _w, int _h)
@@ -589,7 +591,7 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
 
 void GLWindow::updateParticleSystem()
 {
-  m_ps.splitRandomParticle();
+  //m_ps.splitRandomParticle();
   m_ps.advance();
   sendParticleDataToOpenGL();
 }
@@ -655,7 +657,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
     switch(ev->key())
     {
         case Qt::Key_Space:
-            updateParticleSystem();
+               m_ps.splitRandomParticle();
             qDebug("%d particles in the system", m_ps.getSize());
             break;
 
@@ -771,7 +773,7 @@ void GLWindow::setParticleSize(double _size)
 }
 
 void GLWindow::setParticleType(int _type)
-{
+{m_ps.splitRandomParticle();
 
 
   emit resetForces(true);

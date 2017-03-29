@@ -4,6 +4,9 @@
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifndef POINTLIGHT_H
+#define POINTLIGHT_H
+
 // Project
 #include "Manipulator.h"
 #include "SelectObject.h"
@@ -156,3 +159,5 @@ private:
   QMatrix4x4 m_model;
 
 };
+
+#endif

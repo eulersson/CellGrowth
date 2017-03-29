@@ -6,7 +6,6 @@ uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
 uniform mat4 MV;
 
-
 // Ins
 in vec3 position;
 in vec4 instances; // Each instance will have x,y,z and w (radius)
@@ -26,6 +25,4 @@ void main(void)
     vScreenSpaceNormals = normalMatrix * vNormal;
 
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(instances.w * position + instances.xyz, 1.0);
-
-
 }
