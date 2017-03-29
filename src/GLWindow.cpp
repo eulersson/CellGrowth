@@ -99,6 +99,7 @@ void GLWindow::paintGL()
     if (m_draw_links) { drawLinks(); }
     for(auto &s : m_object_list) { s->draw(); }
 
+
   m_fbo->release();
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -121,6 +122,14 @@ void GLWindow::paintGL()
       glDisable(GL_BLEND);
     }
     drawQuad();
+
+
+
+
+
+
+
+
 
     updateParticleSystem();
 }
@@ -241,6 +250,7 @@ void GLWindow::prepareQuad()
   m_quad_program->setUniformValue("diffuse", 3);
   m_quad_program->setUniformValue("ssaoNoiseTex", 4);
   m_quad_program->setUniformValue("ScreenNormals", 5);
+  m_quad_program->setUniformValue("Links", 6);
 
 
   // Subroutine ShadingPass Index.
@@ -316,9 +326,12 @@ void GLWindow::drawQuad()
   glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(4));
   glActiveTexture(GL_TEXTURE5);
   glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(5));
+  glActiveTexture(GL_TEXTURE6);
+  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(6));
 
   m_quad_program->bind();
   m_quad_vao->bind();
+    m_quad_program->setUniformValue("drawLinks", m_draw_links);
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
     glDrawArrays(GL_TRIANGLES, 0, 6);
   m_quad_vao->release();
@@ -365,6 +378,7 @@ void GLWindow::setupFBO()
   m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT3
   m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT4
   m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT5
+  m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT6
 
   const GLenum attachments[] = {
     GL_COLOR_ATTACHMENT0,
@@ -372,11 +386,12 @@ void GLWindow::setupFBO()
     GL_COLOR_ATTACHMENT2,
     GL_COLOR_ATTACHMENT3,
     GL_COLOR_ATTACHMENT4,
-    GL_COLOR_ATTACHMENT5
+    GL_COLOR_ATTACHMENT5,
+    GL_COLOR_ATTACHMENT6
   };
 
   // Drawing multiple buffers.
-  glDrawBuffers(6, attachments);
+  glDrawBuffers(7, attachments);
 
   // Create and attach depth buffer (renderbuffer) ===========================
   GLuint rbo_depth;
