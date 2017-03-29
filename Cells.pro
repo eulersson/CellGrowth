@@ -61,11 +61,5 @@ DISTFILES += \
 FORMS += \
     ui/GUI.ui
 
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
-release {
-  DEFINES += QT_NO_DEBUG_OUTPUT
-}
-
-debug {
-  DEFINES -= QT_NO_DEBUG_OUTPUT
-}
