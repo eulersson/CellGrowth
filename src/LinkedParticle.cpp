@@ -4,7 +4,7 @@
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
-
+#include <random>
 #include "LinkedParticle.h"
 #include <iostream>
 LinkedParticle::LinkedParticle():Particle()

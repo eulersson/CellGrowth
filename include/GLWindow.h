@@ -13,9 +13,13 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+// Standard
+#include <array>
+#include <random>
+
 // Qt
 #include <QOpenGLBuffer>
-#include <QOpenGLFunctions_4_5_Core>
+#include <QOpenGLFunctions_4_1_Core>
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
@@ -43,7 +47,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-class GLWindow : public QOpenGLWidget, protected QOpenGLFunctions_4_5_Core
+class GLWindow : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core
 {
   Q_OBJECT
 

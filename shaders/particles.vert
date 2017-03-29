@@ -1,4 +1,4 @@
-#version 450 core
+#version 410 core
 
 // Uniforms
 uniform mat4 ProjectionMatrix;
