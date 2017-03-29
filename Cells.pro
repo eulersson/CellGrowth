@@ -60,3 +60,12 @@ DISTFILES += \
 
 FORMS += \
     ui/GUI.ui
+
+
+release {
+  DEFINES += QT_NO_DEBUG_OUTPUT
+}
+
+debug {
+  DEFINES -= QT_NO_DEBUG_OUTPUT
+}

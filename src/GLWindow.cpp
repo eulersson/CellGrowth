@@ -98,6 +98,7 @@ void GLWindow::paintGL()
   m_input_manager->doMovement();
 
   m_fbo->bind();
+    glViewport(0, 0, width(), height());
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -115,9 +116,29 @@ void GLWindow::paintGL()
     loadMatrixToShader();
 
   m_fbo->release();
+    glViewport(0, 0, width(), height());
     glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    if (m_activeRenderPassIndex == m_xRayIndex)
+    {
+      glEnable(GL_BLEND);
+      glEnable(GL_CULL_FACE);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glBlendEquation(GL_MAX);
+    }
+    else if (m_activeRenderPassIndex == m_ADSIndex)
+    {
+      glDisable(GL_CULL_FACE);
+      glDisable(GL_BLEND);
+    }
+    else if (m_activeRenderPassIndex == m_AOIndex)
+    {
+      glDisable(GL_CULL_FACE);
+      glDisable(GL_BLEND);
+    }
+
     drawQuad();
 }
 
@@ -636,35 +657,22 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
 
         case Qt::Key_1:
             m_activeRenderPassIndex = m_ADSIndex;
-            qDebug("ADS Render.\n");
-            glDisable(GL_CULL_FACE);
-            glDisable(GL_BLEND);
+            qDebug("ADS Render.");
             break;
 
         case Qt::Key_2:
             m_activeRenderPassIndex = m_xRayIndex;
-            qDebug("X-Ray visualisation. Key 2 pressed.\n");
-            glEnable(GL_BLEND);
-            glEnable(GL_CULL_FACE);
-
-            /* For checking what blendfunc I wanted, this visualisation
-            was useful: http://www.andersriggelsen.dk/glblendfunc.php */
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glBlendEquation(GL_MAX);
-
+            qDebug("X-Ray visualisation.");
             break;
 
         case Qt::Key_3:
             m_activeRenderPassIndex = m_AOIndex;
-            qDebug("Ambient Occlusion.\n");
-            glDisable(GL_CULL_FACE);
-            glDisable(GL_BLEND);
+            qDebug("Ambient Occlusion.");
             break;
 
         default:
             break;
     }
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   m_input_manager->keyPressEvent(ev);
 
