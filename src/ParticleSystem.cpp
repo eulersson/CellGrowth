@@ -221,7 +221,8 @@ void ParticleSystem::splitRandomParticle()
   {
     m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
-  std::cout<<"particles: "<<m_particleCount<<std::endl;
+
+  qDebug("Particles: %d", m_particleCount);
 }
 
 
