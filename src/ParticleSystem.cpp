@@ -16,7 +16,7 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-  qDebug("Default constructor called");
+  //qDebug("Default constructor called");
   m_particleCount=0;
   m_particleType= 'L';
   fill(3);
@@ -29,7 +29,7 @@ ParticleSystem::ParticleSystem()
 // For custom number of particlesm_packagedParticleData
 ParticleSystem::ParticleSystem(char _particleType)
 {
-  qDebug("Custom constructor called");
+  //qDebug("Custom constructor called");
   m_particleCount=0;
 
 
@@ -72,16 +72,28 @@ void ParticleSystem::advance()
   {
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    //m_particles[i]->calculate();
-  }
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
 
-  //moving all particles
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     m_particles[i]->advance();
   }
+  }
 }
+
+void ParticleSystem::bulge()
+{
+  m_particleCount=m_particles.size();
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->bulge(m_particleCentre);
+    m_particles[i]->advance();
+  }
+  calculateParticleCentre();
+}
+
+
 
 
 void ParticleSystem::fill(unsigned int _amount)
@@ -89,6 +101,10 @@ void ParticleSystem::fill(unsigned int _amount)
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
+  std::vector<QVector3D> pos;
+  pos.push_back(QVector3D(0.5,0.5,0));
+  pos.push_back(QVector3D(0.5,-0.5,0));
+  pos.push_back(QVector3D(-0.5,-0.5,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
@@ -104,7 +120,6 @@ void ParticleSystem::fill(unsigned int _amount)
     {
       m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     }
-    //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     m_particleCount++;
   }
 
@@ -202,6 +217,32 @@ void ParticleSystem::splitRandomParticle()
 
   m_particleCount++;
 
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+  }
+
+  qDebug("Particles: %d", m_particleCount);
+}
+
+
+
+
+
+void ParticleSystem::splitHitParticle()
+{
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->getHitParticles(m_particles);
+  }
+
+  m_particles[0]->split(m_particles);
+  m_particleCount++;
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+  }
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)
@@ -240,6 +281,45 @@ void ParticleSystem::packageDataForDrawing(std::vector<float> &_packagedData)
   });
 }
 
+QVector3D ParticleSystem::calculateParticleCentre()
+{
+  m_particleCentre.setX(0);
+  m_particleCentre.setY(0);
+  m_particleCentre.setZ(0);
+
+  for (auto &particle : m_particles)
+  {
+    QVector3D particlePosition = particle->getPosition();
+    m_particleCentre += particlePosition;
+
+  }
+
+  m_particleCentre = m_particleCentre/(m_particles.size());
+  return m_particleCentre;
+}
+
+QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
+{
+  QVector3D averageDistance;
+
+  for (auto&particle : m_particles)
+  {
+    QVector3D particlePosition = particle->getPosition();
+    QVector3D particleCentre = calculateParticleCentre();
+    QVector3D distance = particleCentre - particlePosition;
+    QVector3D fabsDistance;
+    fabsDistance.setX(fabs (distance.x()));
+    fabsDistance.setY(fabs (distance.y()));
+    fabsDistance.setZ(fabs(distance.z()));
+
+    averageDistance += fabsDistance;
+  }
+
+  averageDistance = averageDistance/(m_particles.size());
+  //std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
+  return averageDistance;
+}
+
 void ParticleSystem::setParticleSize(double _size)
 {
   for(unsigned int i=0;i< m_particles.size();i++)
@@ -256,11 +336,6 @@ void ParticleSystem::toggleForces(bool _state)
 void ParticleSystem::setCohesion(int _amount)
 {
   m_cohesion = _amount;
-}
-
-void ParticleSystem::bulge()
-{
-  //for lydia and esme
 }
 
 void ParticleSystem::setSpring(int _amount)

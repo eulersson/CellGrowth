@@ -1,4 +1,6 @@
+
 #version 410 core
+
 in vec3 posAttr;
 in vec3 normAttr;
 

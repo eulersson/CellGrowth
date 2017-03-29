@@ -11,7 +11,7 @@
 
 GrowthParticle::GrowthParticle():Particle()
 {
-  qDebug("Growth Particle default constructor.");
+  //qDebug("Growth Particle default constructor.");
 }
 
 GrowthParticle::GrowthParticle(qreal _x,
@@ -35,7 +35,12 @@ GrowthParticle::GrowthParticle(
          "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate()
+void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount)
+{
+
+}
+
+void GrowthParticle::bulge(QVector3D _particleCentre)
 {
 
 }
