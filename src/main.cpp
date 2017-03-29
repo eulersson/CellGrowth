@@ -17,15 +17,14 @@
 int main(int argc, char *argv[])
 {
 
-  //double check if need that
-  QSurfaceFormat fmt;
-  fmt.setProfile(QSurfaceFormat::CoreProfile);
-  fmt.setVersion(4,5);
-  fmt.setSamples(16);
-  fmt.setSwapInterval(1);
 
-  QSurfaceFormat::setDefaultFormat(fmt);
-  //window.setFormat(fmt);
+    QSurfaceFormat format;
+    format.setDepthBufferSize(32);
+    format.setMajorVersion(4);
+    format.setMinorVersion(1);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+
+    QSurfaceFormat::setDefaultFormat(format);
 
 
   QApplication app(argc, argv);

@@ -6,6 +6,7 @@
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
+
 // Qt
 #include <QKeyEvent>
 
@@ -31,7 +32,8 @@ GLWindow::GLWindow(QWidget*_parent)
   this->resize(_parent->size());
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
-  fmt.setVersion(4,5);
+  fmt.setMajorVersion(4);
+  fmt.setMinorVersion(1);
   fmt.setSamples(16);
   fmt.setSwapInterval(1);
   setFormat(fmt);
@@ -393,6 +395,7 @@ void GLWindow::drawLinks()
   m_links_program->release();
 }
 
+
 void GLWindow::setupFBO()
 {
   m_fbo =new QOpenGLFramebufferObject(
@@ -437,6 +440,7 @@ void GLWindow::setupFBO()
   m_fbo->release();
 }
 
+
 void GLWindow::sampleKernel()
 {
   std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
@@ -458,7 +462,7 @@ void GLWindow::sampleKernel()
 
        m_quad_program->bind();
        char buffer [12];
-       int n = sprintf (buffer, "ssamples[%d]", i);
+       int n = sprintf (buffer, "samples[%d]", i);
        m_quad_program->setUniformValue(buffer, sample);
        m_quad_program->release();
   }
@@ -761,6 +765,7 @@ void GLWindow::setParticleSize(double _size)
 void GLWindow::setParticleType(int _type)
 {
 
+
   emit resetForces(true);
   emit resetCohesion(30);
   emit resetSpring(30);
@@ -771,14 +776,18 @@ void GLWindow::setParticleType(int _type)
   if (_type==0)
   {
     particleType='L';
+
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
+
   }
   else
   {
     particleType='G';
+
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
+
   }
 
   m_ps.reset(particleType);
@@ -850,6 +859,7 @@ void GLWindow::restart()
 {
   //restart program
 
+
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetParticleTap(0);
@@ -860,6 +870,7 @@ void GLWindow::restart()
   emit resetBranchLength(3.0);
 
   //add reset functions here
+
 }
 
 void GLWindow::setSplitType(QString _type)

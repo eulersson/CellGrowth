@@ -1,4 +1,4 @@
-#version 450 core
+#version 410 core
 
 uniform sampler2D depth;         // Color Attachment 0
 uniform sampler2D positionTex;   // Color Attachment 1
@@ -55,7 +55,7 @@ int kernelSize = 64;
 float radius = 0.5;
 /*SSAOnoise texture will not tile, finding how
 much it needs to be scaled with.*/
-const vec2 noiseScale = vec2(width/4.0, height/4.0);
+vec2 noiseScale = vec2(width/4.0, height/4.0);
 
 
 out vec4 FragColor;
@@ -75,17 +75,17 @@ subroutine (ShadingPass)
 vec4 ADSRender()
 {
     //Particle positions in greyscale.
-    //float Grey = dot(texture2D(positionTex, TexCoord).rgb, vec3(texture2D(positionTex, TexCoord).r, texture2D(positionTex, TexCoord).g,texture2D(positionTex, TexCoord).b));
+    //float Grey = dot(texture(positionTex, TexCoord).rgb, vec3(texture(positionTex, TexCoord).r, texture(positionTex, TexCoord).g,texture(positionTex, TexCoord).b));
 
 
-    vec3 depth = texture2D(depth, TexCoord).rgb;
+    vec3 depth = texture(depth, TexCoord).rgb;
 
 
     //Ambient
     vec3 ambient = light.ambient * material.ambient;
 
     //Diffuse
-    vec3 sampledNormal = texture2D(ScreenNormals, TexCoord).rgb;
+    vec3 sampledNormal = texture(ScreenNormals, TexCoord).rgb;
 
     vec3 norm = sampledNormal;
     vec3 lightDir = normalize(LightPos - FragPos);
@@ -113,10 +113,10 @@ subroutine (ShadingPass)
 vec4 xRayRender()
 {
     // Translucent Opacity
-    float Grey = dot(texture2D(ScreenNormals, TexCoord).rgb, vec3(texture2D(ScreenNormals, TexCoord).r, texture2D(ScreenNormals, TexCoord).g,texture2D(ScreenNormals, TexCoord).b));
+    float Grey = dot(texture(ScreenNormals, TexCoord).rgb, vec3(texture(ScreenNormals, TexCoord).r, texture(ScreenNormals, TexCoord).g,texture(ScreenNormals, TexCoord).b));
 
     //Transparent Opacity
-    // float Grey = dot(texture2D(depth, TexCoord).rgb, vec3(texture2D(depth, TexCoord).r, texture2D(depth, TexCoord).g,texture2D(depth, TexCoord).b));
+    // float Grey = dot(texture(depth, TexCoord).rgb, vec3(texture(depth, TexCoord).r, texture(depth, TexCoord).g,texture(depth, TexCoord).b));
 
     vec3 XRay = vec3(Grey, Grey, Grey);
 

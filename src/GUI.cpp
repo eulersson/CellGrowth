@@ -26,6 +26,7 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_splitType,SIGNAL(currentIndexChanged(QString)),m_gl,SLOT(setSplitType(QString)));
   connect(m_ui->m_GP_branchLenght,SIGNAL(valueChanged(double)),m_gl,SLOT(setBranchLength(double)));
 
+
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_ui->m_particleTab,SLOT(setCurrentIndex(int)));
 
   connect(m_gl,SIGNAL(resetBranchLength(double)),m_ui->m_GP_branchLenght,SLOT(setValue(double)));
