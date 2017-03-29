@@ -131,7 +131,7 @@
          </widget>
          <widget class="QWidget" name="m_growthParticleTab">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <attribute name="title">
            <string>Growth Particles</string>
@@ -373,7 +373,7 @@
           <item row="0" column="0">
            <widget class="QPushButton" name="m_restart">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Restart</string>

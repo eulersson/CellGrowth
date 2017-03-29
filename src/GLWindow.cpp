@@ -765,14 +765,29 @@ void GLWindow::setParticleSize(double _size)
 void GLWindow::setParticleType(int _type)
 {
 
+
+  emit resetForces(true);
+  emit resetCohesion(30);
+  emit resetSpring(30);
+  emit resetChildrenThreshold(3);
+  emit resetBranchLength(3.0);
+
   char particleType;
   if (_type==0)
   {
     particleType='L';
+
+    emit enableGrowthParticle(false);
+    emit enableLinkedParticle(true);
+
   }
   else
   {
     particleType='G';
+
+    emit enableGrowthParticle(true);
+    emit enableLinkedParticle(false);
+
   }
 
   m_ps.reset(particleType);
@@ -843,6 +858,19 @@ void GLWindow::setGrowthRadius(int _amount)
 void GLWindow::restart()
 {
   //restart program
+
+
+  emit resetParticleSize(2);
+  emit resetParticleType(0);
+  emit resetParticleTap(0);
+  emit resetForces(true);
+  emit resetCohesion(30);
+  emit resetSpring(30);
+  emit resetChildrenThreshold(3);
+  emit resetBranchLength(3.0);
+
+  //add reset functions here
+
 }
 
 void GLWindow::setSplitType(QString _type)

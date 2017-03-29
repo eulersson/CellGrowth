@@ -2,6 +2,7 @@ TARGET = cells
 TEMPLATE = app
 
 QT += core gui opengl
+
 CONFIG += c++11
 CONFIG -= app_bundle
 
