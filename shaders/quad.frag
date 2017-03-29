@@ -43,7 +43,6 @@ uniform Light light;
 
 in vec2 TexCoord;
 in vec3 FragPos;
-in vec3 LightPos;
 in vec3 ViewPos;
 
 uniform int width;
@@ -64,8 +63,6 @@ out vec4 FragColor;
 subroutine vec4 ShadingPass();
 subroutine uniform ShadingPass ShaderPassSelection;
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 ///                         ADS SHADING
 /// Source: https://learnopengl.com/#!Lighting/Basic-Lighting
@@ -77,9 +74,7 @@ vec4 ADSRender()
     //Particle positions in greyscale.
     //float Grey = dot(texture(positionTex, TexCoord).rgb, vec3(texture(positionTex, TexCoord).r, texture(positionTex, TexCoord).g,texture(positionTex, TexCoord).b));
 
-
     vec3 depth = texture(depth, TexCoord).rgb;
-
 
     //Ambient
     vec3 ambient = light.ambient * material.ambient;
@@ -88,7 +83,7 @@ vec4 ADSRender()
     vec3 sampledNormal = texture(ScreenNormals, TexCoord).rgb;
 
     vec3 norm = sampledNormal;
-    vec3 lightDir = normalize(LightPos - FragPos);
+    vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 ddiffuse = light.diffuse * (diff * material.diffuse);
 
@@ -99,7 +94,6 @@ vec4 ADSRender()
     vec3 specular = light.specular * (spec * material.specular);
 
     return vec4((ambient + ddiffuse + specular) * depth * light.colour, 1.0f);
-
 }
 
 

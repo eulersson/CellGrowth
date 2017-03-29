@@ -11,6 +11,7 @@ SOURCES += \
     src/ArcBallCamera.cpp \
     src/GLWindow.cpp \
     src/GrowthParticle.cpp \
+    src/Helpers.cpp \
     src/InputManager.cpp \
     src/LinkedParticle.cpp \
     src/Manipulator.cpp \
