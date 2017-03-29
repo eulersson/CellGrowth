@@ -159,7 +159,7 @@ public:
         m_particleTab->addTab(m_linkedParticleTab, QString());
         m_growthParticleTab = new QWidget();
         m_growthParticleTab->setObjectName(QStringLiteral("m_growthParticleTab"));
-        m_growthParticleTab->setEnabled(true);
+        m_growthParticleTab->setEnabled(false);
         gridLayout_3 = new QGridLayout(m_growthParticleTab);
         gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
         label_7 = new QLabel(m_growthParticleTab);
@@ -292,7 +292,7 @@ public:
         gridLayout_8->setObjectName(QStringLiteral("gridLayout_8"));
         m_restart = new QPushButton(groupBox_5);
         m_restart->setObjectName(QStringLiteral("m_restart"));
-        m_restart->setEnabled(false);
+        m_restart->setEnabled(true);
 
         gridLayout_8->addWidget(m_restart, 0, 0, 1, 1);
 

@@ -1,5 +1,9 @@
 #include "Manipulator.h"
 
+#include <cmath>
+//#define M_PI 3.14159
+
+
 const int DIRECTION_X = 0;
 const int DIRECTION_Y = 1;
 const int DIRECTION_Z = 2;

@@ -1,5 +1,4 @@
-
-#version 450 core
+#version 410 core
 in vec4 vColour;
 in vec3 vNorm;
 in vec3 vPos;
