@@ -1,6 +1,8 @@
+
 #version 410 core
 
 //attribute highp vec3 posAttr;
+
 in vec3 posAttr;
 in vec3 normAttr;
 

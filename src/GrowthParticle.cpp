@@ -12,7 +12,7 @@
 
 GrowthParticle::GrowthParticle():Particle()
 {
-  qDebug("Growth Particle default constructor.");
+  //qDebug("Growth Particle default constructor.");
 }
 
 GrowthParticle::GrowthParticle(qreal _x,
@@ -36,7 +36,12 @@ GrowthParticle::GrowthParticle(
          "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate()
+void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount)
+{
+
+}
+
+void GrowthParticle::bulge(QVector3D _particleCentre)
 {
 
 }
@@ -129,7 +134,7 @@ bool GrowthParticle::collision(int _levels,QVector3D _testPosition,std::vector<s
   //finding parent of particles until level of generation is reached
 
   //original parent is current particle
-  int parent=getPosInPS(_particleList);
+  int parent=m_ID;
 
   std::vector<unsigned int> links;
 

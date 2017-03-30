@@ -1,12 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file GrowthParticle.h
+/// @author Carola Gille
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef GROWTHPARTICLE_H
 #define GROWTHPARTICLE_H
 
 #include"Particle.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @file GrowthParticle.h
-/// @author Carola Gille
-/// @version 0.0.1
 /// @class GrowthParticle
 
 /// @brief Growth Particle Inheriting from  Particle class, imitates plant like
@@ -52,7 +55,9 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate() override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
+
+  void bulge(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch from that Particle.

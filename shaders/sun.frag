@@ -1,3 +1,4 @@
+
 #version 410 core
 
 // Read docs on gl_PointCoord https://www.opengl.org/sdk/docs/man/html/gl_PointCoord.xhtml

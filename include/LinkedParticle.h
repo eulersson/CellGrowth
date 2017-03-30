@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file LinkedParticle.h
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef LINKEDPARTICLE_H
 #define LINKEDPARTICLE_H
 
@@ -5,10 +12,6 @@
 #include "Particle.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @file LinkedParticle.h
-/// @author Carola Gille
-/// @author Ramon Blanquer
-/// @version 0.0.1
 /// @class LinkedParticle
 /// @brief Inherits from Particle class, Linked particles Cell growth based on
 /// surfaces.
@@ -53,7 +56,13 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the particle new position based on Forces.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate() override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
+
+  void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList);
+
+  void spring(std::vector<std::unique_ptr<Particle>> &_particleList);
+
+  void bulge(QVector3D _particleCentre) override;
 
   // Computes all the relinking and creates a new particle
   //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +71,7 @@ public:
   /// @param[in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
 
-  void split(std::vector<std::unique_ptr<Particle> > &_particleList) override;
+  void split(std::vector<std::unique_ptr<Particle> > &_particleList, std::mt19937_64 _gen) override;
 
 private:
   //////////////////////////////////////////////////////////////////////////////

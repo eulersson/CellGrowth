@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file Particle.h
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
@@ -8,10 +15,6 @@
 #include<QVector3D>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @file Particle.h
-/// @author Carola Gille
-/// @author Ramon Blanquer
-/// @version 0.0.1
 /// @class Particle
 /// @brief Base particle class providing common methods and attributes that will
 /// be common to subclasses. The advance() method will need to be reimplemented.
@@ -66,8 +69,9 @@ public:
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate() {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount) {}
 
+  virtual void bulge(QVector3D _particleCentre) {}
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold.
   /// only applicable for Growth particle
@@ -94,7 +98,7 @@ public:
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
 
-  virtual void split(std::vector<std::unique_ptr<Particle>>&) {}
+  virtual void split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
@@ -103,10 +107,10 @@ public:
 
   virtual bool recursiveCollision(
       QVector3D,
-      std::vector<std::unique_ptr<Particle>>&) {}
+      std::vector<std::unique_ptr<Particle>>&) { return false; }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief checks if the particle has reached its food treshold and therefore
+  /// @brief checks if the particle has reached its food threshold and therefore
   /// needs to be split.
   //////////////////////////////////////////////////////////////////////////////
   void testForSplit();
@@ -116,6 +120,8 @@ public:
   /// @param[out] _pos Will hold the particles position
   //////////////////////////////////////////////////////////////////////////////
   void getPos(QVector3D &_pos);
+
+  QVector3D getPosition(){return m_pos;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the Particles position
@@ -162,11 +168,13 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   int getConnectionCount();
 
+  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle> > &_particleList);
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns the particles ID.
   /// @return ID of the particle.
   //////////////////////////////////////////////////////////////////////////////
-  unsigned int getID();
+  uint getID();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Writes a list including all ID that are connected to the particle.
@@ -184,13 +192,6 @@ public:
       std::vector<QVector3D> &_linkPos,
       std::vector<std::unique_ptr<Particle>> &_particleList);
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns the index of the particle in the particle system.
-  /// @param[in] _particleList List from the particle system holding all
-  /// existing particles.
-  /// @return Index number of the the particle in the particle system.
-  //////////////////////////////////////////////////////////////////////////////
-  int getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief static function that resets the m_ID_counter to 0.
@@ -216,6 +217,7 @@ protected:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Unique ID of particle used for storing connections.
+  /// represents the index in the particle list
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_ID;
 
@@ -228,6 +230,8 @@ protected:
   /// @brief Flag that is set when the particle needs to be split.
   //////////////////////////////////////////////////////////////////////////////
   bool m_split;
+
+  bool m_hit;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief holds IDs of all particles connected to this particle.
@@ -242,7 +246,9 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Food threshold, when reached particle is split.
   //////////////////////////////////////////////////////////////////////////////
-  unsigned int m_foodTreshold;
+  unsigned int m_foodThreshold;
+
+  std::vector<unsigned int> m_hitParticles;
 
 };
 

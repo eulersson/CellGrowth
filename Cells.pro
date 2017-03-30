@@ -11,6 +11,7 @@ SOURCES += \
     src/ArcBallCamera.cpp \
     src/GLWindow.cpp \
     src/GrowthParticle.cpp \
+    src/Helpers.cpp \
     src/InputManager.cpp \
     src/LinkedParticle.cpp \
     src/Manipulator.cpp \
@@ -60,3 +61,6 @@ DISTFILES += \
 
 FORMS += \
     ui/GUI.ui
+
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+

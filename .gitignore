@@ -32,7 +32,6 @@ cells
 
 # Custom
 build/*
-
 *.debug
 *.pro.autosave
 *.pro.user
@@ -40,13 +39,3 @@ build/*
 .qmake.stash
 Makefile
 cells
-
-.qmake.stash
-build/*
-boilerplate
-boilerplate.pro.user
-Makefile
-Users/
-boilerplate.app/
-.DS_Store
-boilerplate.debug

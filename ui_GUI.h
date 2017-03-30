@@ -77,7 +77,7 @@ public:
     QGroupBox *groupBox_5;
     QGridLayout *gridLayout_8;
     QPushButton *m_restart;
-    QPushButton *m_cancle;
+    QPushButton *m_cancel;
     QMenuBar *menubar;
     QMenu *menuCells_ControlUI;
     QStatusBar *statusbar;
@@ -296,11 +296,11 @@ public:
 
         gridLayout_8->addWidget(m_restart, 0, 0, 1, 1);
 
-        m_cancle = new QPushButton(groupBox_5);
-        m_cancle->setObjectName(QStringLiteral("m_cancle"));
-        m_cancle->setEnabled(false);
+        m_cancel = new QPushButton(groupBox_5);
+        m_cancel->setObjectName(QStringLiteral("m_cancel"));
+        m_cancel->setEnabled(false);
 
-        gridLayout_8->addWidget(m_cancle, 0, 1, 1, 1);
+        gridLayout_8->addWidget(m_cancel, 0, 1, 1, 1);
 
 
         gridLayout_6->addWidget(groupBox_5, 4, 0, 1, 1);
@@ -369,7 +369,7 @@ public:
         );
         groupBox_5->setTitle(QString());
         m_restart->setText(QApplication::translate("GUI", "Restart", 0));
-        m_cancle->setText(QApplication::translate("GUI", "Cancle", 0));
+        m_cancel->setText(QApplication::translate("GUI", "Cancel", 0));
         menuCells_ControlUI->setTitle(QApplication::translate("GUI", "Cells ControlUI", 0));
     } // retranslateUi
 
