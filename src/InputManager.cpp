@@ -134,7 +134,7 @@ void InputManager::setupCamera()
     GLint viewLoc = prgrm->uniformLocation("view");
     GLint projLoc = prgrm->uniformLocation("projection");
 
-    // Pass the matrices to the shader
+    // Pass the matrices to the shaders
     prgrm->setUniformValue(viewLoc, m_view);
     prgrm->setUniformValue(projLoc, m_projection);
     prgrm->release();

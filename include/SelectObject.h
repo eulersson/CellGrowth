@@ -45,7 +45,7 @@ public:
   /// @param[in] context Scene context
   /// @param[out] masterUniqueColour The updated unique colour to be used as object identifier.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void createGeometry(QOpenGLContext *context, QVector3D &masterUniqueColour) = 0;
+  virtual void createGeometry(QVector3D &masterUniqueColour) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draw the object to the main buffer.

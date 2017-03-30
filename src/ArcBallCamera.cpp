@@ -66,83 +66,69 @@ void ArcBallCamera::processKeyboard(ARCCamera_Movement _direction, GLfloat _delt
   this->m_position=QVector3D(m_view(0,3), m_view(1,3), m_view(2,3));
 }
 
+
+
+QQuaternion ArcBallCamera::create_from_angle(const double &xx, const double &yy, const double &zz, const double &a)
+{
+    // Here we calculate the sin( theta / 2) once for optimization
+    double factor = sin( a / 2.0 );
+
+    // Calculate the x, y and z of the quaternion
+    double x = xx * factor;
+    double y = yy * factor;
+    double z = zz * factor;
+
+    // Calcualte the w value by cos( theta / 2 )
+    double w = cos( a / 2.0 );
+
+    QQuaternion ret = QQuaternion(w, x, y, z);
+    ret.normalize();
+    return ret;
+}
+
+
 void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset, GLboolean _constrainPitch)
 {
-  _xoffset *= this->m_mouseSensitivity;
-  _yoffset *= this->m_mouseSensitivity;
+  _xoffset =  _xoffset*this->m_mouseSensitivity;
+  _yoffset =  _yoffset*this->m_mouseSensitivity;
 
-  // Make sure that when pitch is out of bounds, screen doesn't get flipped
-  //    if (constrainPitch)
-  //    {
-  //        if (this->Pitch+yoffset > 89.8f)
-  //            yoffset=0;//this->Pitch = 89.0f;
-  //        if (this->Pitch+yoffset < -89.8f)
-  //            yoffset=0;//this->Pitch = -89.0f;
-  //    }
+  QQuaternion rotq;
+  rotq=create_from_angle(0,1,0,qDegreesToRadians(_xoffset));
+  m_quat=m_quat*rotq;
 
-  this->m_yaw   += _xoffset;
-  this->m_pitch += _yoffset;
-
-  //    QVector3D tmppos=Position;
-  //    Position = QVector3D (
-  //          cos(qDegreesToRadians(this->Yaw))* cos(qDegreesToRadians(this->Pitch)),
-  //         -sin(qDegreesToRadians(this->Pitch)),
-  //          sin(qDegreesToRadians(this->Yaw))* cos(qDegreesToRadians(this->Pitch))
-  //    );
-
-  //      Position = QVector3D (
-  //            (cos((this->Yaw))    *tmppos.x()) - (sin((this->Yaw))  *tmppos.z()),// + (sin((this->Pitch))*tmppos.y()),
-  //            (-sin((this->Pitch)) *tmppos.y() - cos((this->Pitch)) *tmppos.z()),
-  //            (sin((this->Yaw))    *tmppos.x()) + (cos((this->Yaw))  *tmppos.z())// + (sin((this->Pitch))*tmppos.y())
-  //                          );
-
-  //      Position = QVector3D (
-  //            Position.x()*tmppos.x(),
-  //            Position.y(),
-  //            Position.z()*tmppos.z()
-  //                          );
-
-  //      //Position+=tmppos;
-
-  //    // Also re-calculate the Right and Up vector
-  //    QVector3D right   = QVector3D::crossProduct(this->Front,this->WorldUp);
-  //    QVector3D up      = QVector3D::crossProduct(this->Right,this->Front);
-  //    this->Right       = right.normalized();
-  //    this->Up          = up.normalized();
-
-  //    view.lookAt(this->Position, rotationPoint , this->Up);
+  rotq=create_from_angle(m_right.x(), m_right.y(), m_right.z(),qDegreesToRadians(_yoffset));
+  m_quat=m_quat*rotq;
 
 
-  // Also re-calculate the Right and Up vector
-  //    QVector3D right   = QVector3D::crossProduct(this->Front,this->WorldUp);
-  //    QVector3D up      = QVector3D::crossProduct(this->Right,this->Front);
-  //    this->Right       = right.normalized();
-  //    this->Up          = up.normalized();
+  QMatrix3x3 rotmat=m_quat.toRotationMatrix();
+  m_view(0,0)=rotmat(0,0);
+  m_view(0,1)=rotmat(0,1);
+  m_view(0,2)=rotmat(0,2);
 
-  this->m_position=QVector3D(m_view(0,3), m_view(1,3), m_view(2,3));
+  m_view(1,0)=rotmat(1,0);
+  m_view(1,1)=rotmat(1,1);
+  m_view(1,2)=rotmat(1,2);
 
-  //Position=QVector3D(1,1,1);
+  m_view(2,0)=rotmat(2,0);
+  m_view(2,1)=rotmat(2,1);
+  m_view(2,2)=rotmat(2,2);
 
-  // Do x rotation.
-  m_view.rotate(_xoffset, 0,1,0);
-  // Get updated position by multiplying with the view matrix.
+  m_position=QVector3D(m_view(0,3), m_view(1,3), m_view(2,3));
   m_position=m_position*m_view;
-  QVector3D dir=(QVector3D(m_position.x(), m_position.y(), m_position.z())-m_rotationPoint);
-  // Calculate new camera right.
-  this->m_right=-QVector3D::crossProduct(dir,this->m_worldUp);
-  this->m_right.normalize();
-  // Do y rotation.
-  m_view.rotate(_yoffset, this->m_right);
-  //Position=Position*view;
-  dir=(QVector3D(m_position.x(), m_position.y(), m_position.z())-m_rotationPoint);
-  // Calculate camera up.
-  this->m_up=-QVector3D::crossProduct(dir,this->m_right);
-  this->m_up.normalize();
 
-  //qDebug()<<QString::number(Position.z());
-  //qDebug()<<QString::number(view(2,3));
-  //qDebug()<<QString::number(Position.y());
-  //qDebug()<<QString::number(Position.z());
+  // Update camera orientation vectors
+  m_right.setX(-rotmat(0,0));
+  m_right.setY(-rotmat(0,1));
+  m_right.setZ(-rotmat(0,2));
+
+  m_up.setX(-rotmat(1,0));
+  m_up.setY(-rotmat(1,1));
+  m_up.setZ(-rotmat(1,2));
+
+  m_front.setX(-rotmat(2,0));
+  m_front.setY(-rotmat(2,1));
+  m_front.setZ(-rotmat(2,2));
+
 
 }
 
@@ -188,7 +174,7 @@ void ArcBallCamera::move(QVector3D velocity)
   tm=m_view;
   tm.translate(velocity);
 
-  this->m_position=QVector3D(tm(0,3), tm(1,3), tm(2,3));
+  m_position=QVector3D(tm(0,3), tm(1,3), tm(2,3));
   m_position=m_position*m_view;
 
 

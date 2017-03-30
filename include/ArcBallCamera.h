@@ -13,6 +13,7 @@
 // QT
 #include <QOpenGLFunctions_4_5_Core>
 #include <QMatrix4x4>
+#include <QQuaternion>
 #include <QVector3D>
 #include <QtMath>
 #include <QtMath>
@@ -116,6 +117,7 @@ public:
   void processMouseMovement(GLfloat _xoffset, GLfloat _yoffset,
                             GLboolean _constrainPitch = true);
 
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
@@ -134,6 +136,11 @@ private:
   /// input.
   //////////////////////////////////////////////////////////////////////////////
   void move(QVector3D _velocity);
+
+  QQuaternion create_from_angle(const double &xx,
+                                const double &yy,
+                                const double &zz,
+                                const double &a);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Camera position.
@@ -195,6 +202,13 @@ private:
   /// @brief View matrix.
   //////////////////////////////////////////////////////////////////////////////
   QMatrix4x4 m_view;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Quaternion for camera rotation.
+  /// Set to identity quaternion (1,0,0,0).
+  //////////////////////////////////////////////////////////////////////////////
+  QQuaternion m_quat= QQuaternion();
+
 
 };
 

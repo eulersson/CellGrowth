@@ -53,8 +53,7 @@ public:
   /// @param[out] _masterUniqueColour Object unique colour. Used to draw
   /// geometry to back buffer.
   //////////////////////////////////////////////////////////////////////////////
-  void createGeometry(QOpenGLContext *_context,
-                      QVector3D &_masterUniqueColour) override;
+  void createGeometry(QVector3D &_masterUniqueColour) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draw light object to main buffer.
@@ -121,7 +120,7 @@ public:
   /// @brief Initialises VBO/VAO of light object.
   /// @param[in] _context QOpenGL scene context.
   //////////////////////////////////////////////////////////////////////////////
-  void setupObject(QOpenGLContext *_context);
+  void setupObject();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Updates the light model matrix for use with the camera.
@@ -157,6 +156,8 @@ private:
   /// indicating the light).
   //////////////////////////////////////////////////////////////////////////////
   GLfloat m_points[3];
+
+  GLint m_numberOfPoints;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Light representation shader program.
@@ -207,7 +208,7 @@ private:
   /// @brief Quaternion for object rotation.
   /// Set to identity quaternion (1,0,0,0).
   //////////////////////////////////////////////////////////////////////////////
-  QQuaternion quat= QQuaternion();
+  QQuaternion m_quat= QQuaternion();
 
 
 

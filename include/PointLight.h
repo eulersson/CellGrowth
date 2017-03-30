@@ -52,8 +52,7 @@ public:
   /// @param[out] _masterUniqueColour Object unique colour. Used to draw
   /// geometry to back buffer.
   //////////////////////////////////////////////////////////////////////////////
-  void createGeometry(QOpenGLContext *_context,
-                      QVector3D &_masterUniqueColour) override;
+  void createGeometry(QVector3D &_masterUniqueColour) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draw light object to main buffer.
@@ -112,7 +111,7 @@ public:
   /// @brief Initialises VBO/VAO of light object.
   /// @param[in] _context QOpenGL scene context.
   //////////////////////////////////////////////////////////////////////////////
-  void setupObject(QOpenGLContext *_context);
+  void setupObject();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Updates the light model matrix for use with the camera.
@@ -120,7 +119,7 @@ public:
   /// @param[in] _offsety Movement in y direction since last update.
   /// @param[in] _offsetz Movement in z direction since last update.
   //////////////////////////////////////////////////////////////////////////////
-  void updateModelMatrix(float _offsetx, float _offsety, float _offsetz);
+  void updateModelMatrix();
 
 private:
   //////////////////////////////////////////////////////////////////////////////

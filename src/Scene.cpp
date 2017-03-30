@@ -24,7 +24,7 @@ void Scene::initialize()
   // Projection matrix for the particles
     glViewport(0, 0, window()->width(), window()->height());
   m_projectionMatrix.setToIdentity();
-  m_projectionMatrix.perspective(89.0f, (float)window()->width()/(float)window()->height(), 0.01f, 100.0f);
+  m_projectionMatrix.perspective(89.0f, (float)window()->width()/(float)window()->height(), 0.01f, 1000.0f);
 
   // Prepare for deferred rendering
   prepareQuad();
@@ -186,14 +186,23 @@ void Scene::setupLights()
   m_sunProgram->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
-  for(int x=-4;x<4;x+=4) {
-      for(int y=-4;y<4;y+=4) {
-          SpotLight *spotlight;
-          spotlight = new SpotLight(QVector3D(x,y,0), m_manipulatorProgram, m_sunProgram);
-          spotlight->createGeometry(context(), masterUniqueColour);
-          objectList.push_back(std::move(std::unique_ptr<SpotLight>(spotlight)));
-      }
-  }
+//  for(int x=-4;x<4;x+=4) {
+//      for(int y=-4;y<4;y+=4) {
+//          SpotLight *spotlight;
+//          spotlight = new SpotLight(QVector3D(x,y,0), m_manipulatorProgram, m_sunProgram);
+//          spotlight->createGeometry(context(), masterUniqueColour);
+//          objectList.push_back(std::move(std::unique_ptr<SpotLight>(spotlight)));
+//      }
+//  }
+
+  SpotLight *spotlight = new SpotLight(QVector3D(-4,0,0), m_manipulatorProgram, m_sunProgram);
+  spotlight->createGeometry(masterUniqueColour);
+  objectList.push_back(std::move(std::unique_ptr<SpotLight>(spotlight)));
+
+  PointLight *pointlight = new PointLight(QVector3D(4,0,0), m_manipulatorProgram, m_sunProgram);
+  pointlight->createGeometry(masterUniqueColour);
+  objectList.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
+
   inputManager.addShaderProgram(m_manipulatorProgram);
   inputManager.addShaderProgram(m_sunProgram);
   inputManager.setObjectList(objectList);

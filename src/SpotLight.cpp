@@ -7,8 +7,10 @@ const int DIRECTION_Z = 2;
 const int ROTATION_Y = 3;
 const int ROTATION_Z = 4;
 
-// Manipulator move sensitivity
+// Manipulator move sensitivity.
 const GLfloat SENSITIVITY = 0.04f;
+// Must be between 1 and 179.
+const GLfloat CONE_ANGLE = 80.0f;
 
 SpotLight::SpotLight(QVector3D _position, QOpenGLShaderProgram *_manipshaderp, QOpenGLShaderProgram *_sunshaderp) :
     m_manip(_position, _manipshaderp),
@@ -35,60 +37,55 @@ int SpotLight::compareUniqueColour(QVector3D _colour)
   return m_manip.compareUniqueColour(_colour);
 }
 
-void SpotLight::createGeometry(QOpenGLContext *_context, QVector3D &_masterUniqueColour)
+void SpotLight::createGeometry(QVector3D &_masterUniqueColour)
 {
   // Setup light representation VBO VAO
-  setupObject(_context);
+  setupObject();
   // Setup manipulator geometry
   int amountOfColours=5;
-  m_manip.createGeometry(_context, getMultipleNewUniqueColour(amountOfColours, _masterUniqueColour));
+  m_manip.createGeometry(getMultipleNewUniqueColour(amountOfColours, _masterUniqueColour), true);
 }
 
 void SpotLight::draw()
 {
   // LIGHT
   m_vao->bind();
-  m_sunshaderp->bind();
-  GLint modelLoc = m_sunshaderp->uniformLocation("model");
-  m_sunshaderp->setUniformValue(modelLoc, m_model);
+  m_manipshaderp->bind();
+  m_manipshaderp->setUniformValue("model", m_model);
+  m_manipshaderp->setUniformValue("flatRender", true);
+  m_manipshaderp->setUniformValue("backRender", false);
   // Setup/Draw
-  glEnable(GL_POINT_SPRITE);
-  glPointSize(22.0f);
-  glDrawArrays(GL_POINTS, 0, 1);
+  glDrawArrays(GL_TRIANGLES, 0, m_numberOfPoints);
   // Release and reset everything
-  m_sunshaderp->release();
+  m_manipshaderp->release();
   m_vao->release();
-  glDisable(GL_POINT_SPRITE);
-  glPointSize(0.0f);
 
   // MANIPULATOR
   m_manipshaderp->bind();
-  modelLoc = m_manipshaderp->uniformLocation("model");
-  m_manipshaderp->setUniformValue(modelLoc, m_model);
+  m_manipshaderp->setUniformValue("model", m_model);
+  m_manipshaderp->setUniformValue("flatRender", false);
   // Draw manipulator
   m_manip.draw();
+  m_manipshaderp->release();
 }
 
 void SpotLight::drawBackBuffer()
 {
+
   m_manipshaderp->bind();
+  m_manipshaderp->setUniformValue("backRender", true);
   GLint modelLoc = m_manipshaderp->uniformLocation("model");
   m_manipshaderp->setUniformValue(modelLoc, m_model);
   m_manip.drawBackBuffer();
+  m_manipshaderp->setUniformValue("backRender", false);
+  m_manipshaderp->release();
 }
 
 void SpotLight::processMouseMovement(float _offsetx, float _offsety, float _offsetz, QVector3D _campos, QMatrix4x4 _view)
 {
-//  updateModelMatrix();
-//  m_position+=m_manip.processMouseMovement(_offsetx, _offsety, _offsetz,
-//                                           m_x, m_y, m_z);
 
   QVector3D camRight=QVector3D(_view(0,0), _view(0,1), _view(0,2));
-  QVector3D camUp=QVector3D(_view(1,0), _view(1,1), _view(1,2));
-  QVector3D camFront=QVector3D(_view(2,0), _view(2,1), _view(2,2));
-
   float offset;
-
   QVector3D movement;
   switch(m_manip.getClickedAxis())
   {
@@ -178,16 +175,7 @@ void SpotLight::rotate(float _offsetx, float _offsety, float _offsetz)
 
       QQuaternion rotq=create_from_angle(0,1,0,qDegreesToRadians(_offsetx*rotSensitivity));
 
-      quat=quat*rotq;
-
-//      // Normalize
-//      QQuaternion tmpquat=QQuaternion();
-//      float qw=quat.scalar(); float qx=quat.x(); float qy=quat.y(); float qz=quat.z();
-//      const float n = 1.0f/sqrt(qx*qx+qy*qy+qz*qz+qw*qw);
-//      tmpquat.setScalar (qw*n);
-//      tmpquat.setX      (qx*n);
-//      tmpquat.setY      (qy*n);
-//      tmpquat.setZ      (qz*n);
+      m_quat=m_quat*rotq;
 
       break;
       }
@@ -196,14 +184,14 @@ void SpotLight::rotate(float _offsetx, float _offsety, float _offsetz)
       {
       QQuaternion rotq=create_from_angle(0,0,1,qDegreesToRadians(_offsety*rotSensitivity));
 
-      quat=quat*rotq;
+      m_quat=m_quat*rotq;
       break;
       }
 
   }
 
 
-  QMatrix3x3 rotmat=quat.toRotationMatrix();
+  QMatrix3x3 rotmat=m_quat.toRotationMatrix();
   m_model(0,0)=rotmat(0,0);
   m_model(0,1)=rotmat(0,1);
   m_model(0,2)=rotmat(0,2);
@@ -221,27 +209,14 @@ void SpotLight::rotate(float _offsetx, float _offsety, float _offsetz)
   m_x.setX(rotmat(0,0));
   m_x.setY(rotmat(0,1));
   m_x.setZ(rotmat(0,2));
-//  // Vector must be reflected along the main x axis to be correct.
-  //m_x=m_x-2*(m_x*QVector3D(1,0,0))*QVector3D(1,0,0);
 
   m_y.setX(rotmat(1,0));
   m_y.setY(rotmat(1,1));
   m_y.setZ(rotmat(1,2));
-  // Vector must be reflected along the main y axis to be correct.
-  //m_y=m_y-2*(m_y*QVector3D(0,1,0))*QVector3D(0,1,0);
 
   m_z.setX(rotmat(2,0));
   m_z.setY(rotmat(2,1));
   m_z.setZ(rotmat(2,2));
-  // Vector must be reflected along the main x axis to be correct.
-  //m_z=m_z-2*(m_z*QVector3D(0,0,1))*QVector3D(0,0,1);
-
-  qDebug("%f, %f, %f", m_z.x(), m_z.y(), m_z.z());
-
-
-
-
-
 
 
 }
@@ -277,8 +252,57 @@ void SpotLight::getMainProgram(QOpenGLShaderProgram **retshader)
   *retshader=m_manipshaderp;
 }
 
-void SpotLight::setupObject(QOpenGLContext *_context)
+
+
+
+
+
+void SpotLight::setupObject()
 {
+
+  float coneangle=90-CONE_ANGLE/2.0f;
+
+  // Create geomtry
+  std::vector<QVector3D> vertices;
+  unsigned int sectors = 20;
+  float radius = CONE_ANGLE/90.0f;
+  float length = 3.0f*sin(qDegreesToRadians(coneangle));
+  QVector3D topPoint = QVector3D(m_points[0], m_points[1], m_points[2]);
+  for(unsigned int i = 0; i < sectors; i++) {
+
+    float angle = (2 * M_PI) * ((float)i / (float)sectors);
+    float s = radius * sin(angle);
+    float c = radius * cos(angle);
+
+    float angleNext = (2 * M_PI) * ((float)(i + 1) / (float)sectors);
+    float s2 = radius * sin(angleNext);
+    float c2 = radius * cos(angleNext);
+
+    float x = length;
+    float y = s;
+    float z = c;
+
+    float x2 = length;
+    float y2 = s2;
+    float z2 = c2;
+
+    vertices.push_back(QVector3D(x, y, z));
+    vertices.push_back(QVector3D(x2, y2, z2));
+    vertices.push_back(topPoint);
+  }
+
+  // Make geometry OpenGL readable
+  std::vector<GLfloat> m_pointPosArray;
+  m_numberOfPoints = vertices.size();
+  for (size_t i = 0; i < m_numberOfPoints; i++)
+  {
+    m_pointPosArray.push_back(vertices[i].x());
+    m_pointPosArray.push_back(vertices[i].y());
+    m_pointPosArray.push_back(vertices[i].z());
+  }
+
+
+
   // VAO / VBO
   m_vao = new QOpenGLVertexArrayObject();
   m_vao->create();
@@ -287,11 +311,10 @@ void SpotLight::setupObject(QOpenGLContext *_context)
   m_vbo->create();
   m_vbo->bind();
   m_vbo->setUsagePattern(QOpenGLBuffer::StaticDraw); //Previoulsy DynamicDraw
-  m_vbo->allocate(&m_points[0], 3* sizeof(GLfloat)); // Allocate enogh place for all data
+  m_vbo->allocate(&m_pointPosArray[0], 3*m_numberOfPoints* sizeof(GLfloat)); // Allocate enogh place for all data
   // Set shader attributes
-  m_sunshaderp->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
-  m_sunshaderp->enableAttributeArray("posAttr");
-
+  m_manipshaderp->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
+  m_manipshaderp->enableAttributeArray("posAttr");
   m_vao->release();
 }
 

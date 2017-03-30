@@ -46,7 +46,7 @@ int Manipulator::compareUniqueColour(QVector3D _colour)
   return -1;
 }
 
-void Manipulator::createGeometry(QOpenGLContext *_context, std::vector<QVector3D> _uColourVec)
+void Manipulator::createGeometry(std::vector<QVector3D> _uColourVec, bool _rotatable)
 {
   // X ARROW
   QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject();
@@ -60,6 +60,7 @@ void Manipulator::createGeometry(QOpenGLContext *_context, std::vector<QVector3D
   QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject();
   createArrow(vao_z, QVector3D(0, 0, 1.2), _uColourVec[2], DIRECTION_Z);
 
+  if(!_rotatable) {return;}
   // ROT AROUND Y
   QOpenGLVertexArrayObject *vao_rot_y = new QOpenGLVertexArrayObject();
   createRotCircle(vao_rot_y, _uColourVec[3], ROTATION_Y);
@@ -71,13 +72,14 @@ void Manipulator::createGeometry(QOpenGLContext *_context, std::vector<QVector3D
 
 void Manipulator::draw()
 {
-  QVector3D baseColour(0.0f, 0.0f, 1.0f);
+  QVector3D baseColour(1.0f, 1.0f, 1.0f);
   m_manipshaderp->bind();
   m_manipshaderp->setUniformValue("backRender", false);
 
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
     Geo arrow= m_arrows[i];
+    if(arrow.numberOfPoints<1) {continue;}
     m_manipshaderp->setUniformValue("renderColour", {arrow.renderColour.x(),
                                                      arrow.renderColour.y(),
                                                      arrow.renderColour.z()});
@@ -99,7 +101,8 @@ void Manipulator::draw()
     m_manipshaderp->setUniformValue("baseColour", baseColour);
 
     arrow.vao->bind();
-    glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints); // Previously GL_POINTS
+    arrow.vbo->bind();
+    glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints);
     arrow.vao->release();
   }
 
@@ -108,6 +111,7 @@ void Manipulator::draw()
   for(size_t i = 0; i < m_circles.size(); i++)
   {
       Geo circle= m_circles[i];
+      if(circle.numberOfPoints<1) {continue;}
       m_manipshaderp->setUniformValue("renderColour", {circle.renderColour.x(),
                                                        circle.renderColour.y(),
                                                        circle.renderColour.z()});
