@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @file GrowthParticle.cpp
 /// @author Carola Gille
@@ -66,10 +67,6 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
     std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightDirection[2]);
 
 
-
-
-
-
     //place new particle on side in  direction of light
 
     float x;
@@ -109,15 +106,18 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
 
     }
     //check for collision
+
     while(collision(2,pos,_particleList));
 
 
 
     // create new particle and add to particle list
 
+
     _particleList.push_back(std::unique_ptr<GrowthParticle> (new GrowthParticle(x,y,z,newConnectedParticles)));
 
     // add particle to links in mother particle
+
     int new_ID = _particleList[_particleList.size()-1 ]->getID();
     m_connectedParticles.push_back(new_ID);
 
@@ -125,15 +125,16 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
 
 bool GrowthParticle::collision(int _levels,QVector3D _testPosition,std::vector<std::unique_ptr<Particle> > &_particleList)
 {
+
   //finding parent of particles until level of generation is reached
 
   //original parent is current particle
   int parent=getPosInPS(_particleList);
+
   std::vector<unsigned int> links;
 
   for(int j=0;j<=_levels;j++)
   {
-
     //finds parent
     _particleList[parent]->getConnectionsID(links);
 
@@ -145,6 +146,7 @@ bool GrowthParticle::collision(int _levels,QVector3D _testPosition,std::vector<s
 
      //find parent position in particle system
     for(size_t i = 0; i < _particleList.size(); i++)
+
     {
 
       if(_particleList[i]->getID()==links[0])
@@ -170,6 +172,7 @@ bool GrowthParticle::testCollision(QVector3D _particlePos)
 
   if (distance<=m_size/2)
   {
+
     return true;
   }
   else
@@ -181,7 +184,9 @@ bool GrowthParticle::testCollision(QVector3D _particlePos)
 bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::unique_ptr<Particle>> &_particleList)
 {
   //tests for collision of the current particle
+
   if(testCollision(_particle))
+
   {
      return true;
   }
@@ -190,10 +195,12 @@ bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::uni
   if(m_connectedParticles.size()<=1){return false;}
 
   //starting from 1 as first particle is mother particle
+
   for(size_t i=1;i<m_connectedParticles.size();i++)
   {
     //find particle in particle list
     for(size_t j=0;j<_particleList.size();j++)
+
     {
       if(_particleList[j]->getID()==m_connectedParticles[i])
       {
@@ -208,6 +215,7 @@ bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::uni
   return false;
 
 }
+
 
 
 void GrowthParticle::setChildThreshold(int _amount)

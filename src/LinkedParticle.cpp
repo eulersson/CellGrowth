@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @file LinkedParticle.cpp
 /// @author Carola Gille
@@ -44,6 +45,7 @@ void LinkedParticle::calculate()
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
 {
   //sorts point depending on the position relative to a plane
+
   int d=_normal.x()*_planePoint.x()+_normal.y()*_planePoint.y()+_normal.z()*_planePoint.z();
   int r=_normal.x()*_testPoint.x()+_normal.y()*_testPoint.y()+_normal.z()*_testPoint.z()-d;
   return r;
@@ -72,6 +74,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   //pick two random particles out of the particle list
   //saving index number of it in list not Id or Pos to
   //avoid searching th particle list for the particle again
+
 
   unsigned int a=0;
 
@@ -146,6 +149,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   m_connectedParticles=keepList;
 
   //delete links from old particles
+
 
   for(unsigned int i=0;i<relinkList.size();i++)
   {

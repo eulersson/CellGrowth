@@ -8,6 +8,7 @@
 /// @author Carola Gille
 /// @version 0.0.1
 /// @class GrowthParticle
+
 /// @brief Growth Particle Inheriting from  Particle class, imitates plant like
 /// growth.
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,6 +27,7 @@ public:
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
   //////////////////////////////////////////////////////////////////////////////
+
   GrowthParticle(
       qreal _x,
       qreal _y,
@@ -40,6 +42,7 @@ public:
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
   //////////////////////////////////////////////////////////////////////////////
+
   GrowthParticle(
       qreal _x,
       qreal _y,
@@ -124,5 +127,6 @@ private:
   float m_branchLength;
 
 };
+
 
 #endif // GROWTHPARTICLE_H

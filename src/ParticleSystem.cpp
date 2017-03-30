@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @file ParticleSystem.cpp
 /// @author Carola Gille
@@ -61,6 +62,7 @@ void ParticleSystem::advance()
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     //split only if triggered by light
+
 //    if(m_particles[i]->testForSplit())
 //    {
 //      m_particles[i]->split(m_particles);
@@ -77,18 +79,19 @@ void ParticleSystem::advance()
   }
 
   //moving all particles
+
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     m_particles[i]->advance();
   }
 }
 
-
 void ParticleSystem::fill(unsigned int _amount)
 {
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
+
 
   for (unsigned int i = 0; i < _amount; i++)
   {
@@ -105,6 +108,7 @@ void ParticleSystem::fill(unsigned int _amount)
       m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     }
     //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+
     m_particleCount++;
   }
 
@@ -125,19 +129,23 @@ void ParticleSystem::fill(unsigned int _amount)
   else
   {
     qDebug("To many particles to link");
+
   }
 }
 
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
 // the copy constructor triggered by the = (assignment) operator would trigger
 // a change of ownership. We do not want that. Read on unique_ptr and shared_ptr.
+
 Particle* ParticleSystem::getParticle(unsigned int _idx)
+
 {
   return m_particles[_idx].get();
 }
 
 // Gets the total number of particles
 unsigned int ParticleSystem::getSize()
+
 {
   // Changed this to query the size
   return m_particles.size();

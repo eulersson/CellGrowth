@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Compiled Object files
 *.slo
 *.lo
@@ -31,11 +32,7 @@ cells
 
 # Custom
 build/*
-<<<<<<< HEAD
-Makefile`
 
-# i am a comment
-=======
 *.debug
 *.pro.autosave
 *.pro.user
@@ -43,4 +40,13 @@ Makefile`
 .qmake.stash
 Makefile
 cells
->>>>>>> master
+
+.qmake.stash
+build/*
+boilerplate
+boilerplate.pro.user
+Makefile
+Users/
+boilerplate.app/
+.DS_Store
+boilerplate.debug

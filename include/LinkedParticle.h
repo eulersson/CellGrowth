@@ -17,6 +17,7 @@ class LinkedParticle : public Particle
 {
 
 public:
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Default constructor placing particle at the origin.
   //////////////////////////////////////////////////////////////////////////////
@@ -39,12 +40,14 @@ public:
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
   /// @param[in] _linkedParticles List of particle IDs to be connected to
+
   /// the newly generated particle.
   //////////////////////////////////////////////////////////////////////////////
   LinkedParticle(qreal _x,
                  qreal _y,
                  qreal _z,
                  std::vector<unsigned int> _linkedParticles);
+
 
   // Lydia and Esmes function
   //////////////////////////////////////////////////////////////////////////////
@@ -58,6 +61,7 @@ public:
   /// are linked to the new and which to the old particle.
   /// @param[in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
+
   void split(std::vector<std::unique_ptr<Particle> > &_particleList) override;
 
 private:
