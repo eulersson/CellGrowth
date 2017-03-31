@@ -85,41 +85,32 @@ void SpotLight::processMouseMovement(float _offsetx, float _offsety, float _offs
 {
 
   QVector3D camRight=QVector3D(_view(0,0), _view(0,1), _view(0,2));
-  float offset;
+  QVector3D camUp=QVector3D(_view(1,0), _view(1,1), _view(1,2));
+  QVector3D camFront=QVector3D(_view(2,0), _view(2,1), _view(2,2));
   QVector3D movement;
   switch(m_manip.getClickedAxis())
   {
     case DIRECTION_X:
       {
-        if(_campos.x()<m_position.z()){
-            _offsety=-_offsety;
-        }
+        // Caluculate how much of each offset should be used to move the light.
+        // Dot product will be negative if vectors are moving towards each other,
+        // so flipping the vectors is not necessary.
+        float dotprodx = QVector3D::dotProduct(m_x, camRight);
+        float dotprody = QVector3D::dotProduct(m_x, camUp);
+        float dotprodz = QVector3D::dotProduct(m_x, camFront);
+        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
 
-//        float dotprod=QVector3D::dotProduct(camRight, m_x);
-//        offset = _offsetx*dotprod + (1-dotprod)*_offsety;
-
-        movement = _offsetx*SENSITIVITY*m_x;
+        movement = offset*SENSITIVITY*m_x;
         break;
       }
 
 
     case DIRECTION_Y:
       {
-
-
-
-        float dotprod;
-        float dotprodz=QVector3D::dotProduct(camRight, m_z);
-        float dotprodx=QVector3D::dotProduct(camRight, m_x);
-        if(dotprodx>dotprodz){dotprod=dotprodx;} else {dotprod=dotprodz;}
-        if(dotprod>.5)
-          {
-            offset=_offsety*dotprod;
-          }
-        else{
-
-            offset=-_offsety;
-          }
+        float dotprodx = QVector3D::dotProduct(m_y, camRight);
+        float dotprody = QVector3D::dotProduct(m_y, camUp);
+        float dotprodz = QVector3D::dotProduct(m_y, camFront);
+        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
 
         movement = offset*SENSITIVITY*m_y;
         break;
@@ -129,11 +120,10 @@ void SpotLight::processMouseMovement(float _offsetx, float _offsety, float _offs
     case DIRECTION_Z:
       {
 
-        if(_campos.x()<m_position.z()){
-            _offsety=-_offsety;
-        }
-        float dotprod=QVector3D::dotProduct(camRight, m_z);
-        offset = _offsetz*dotprod + (1-dotprod)*_offsety;
+        float dotprodx = QVector3D::dotProduct(m_z, camRight);
+        float dotprody = QVector3D::dotProduct(m_z, camUp);
+        float dotprodz = QVector3D::dotProduct(m_z, camFront);
+        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
 
         movement = offset*SENSITIVITY*m_z;
         break;

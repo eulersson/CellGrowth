@@ -216,18 +216,7 @@ void InputManager::mouseMoveEvent(QMouseEvent *_event)
 
       m_clickZ=mp.z();
       GLfloat localXoffset=xoffset; // This variable should not be needed, but the program acts up without it
-
       float zoffset=xoffset;
-
-      // Reverse x and z offset if the camera is on the other side of the corresponding axis'
-//      if(cp.x()>mp.x())
-//      {
-//        zoffset=-zoffset;
-//      }
-
-//      if(cp.z()>mp.z()){
-//        localXoffset=-localXoffset;
-//      }
 
       // Process mouse movement in light class
       s->processMouseMovement(localXoffset, yoffset, zoffset, cp, m_view);

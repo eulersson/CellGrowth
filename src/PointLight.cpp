@@ -72,33 +72,50 @@ void PointLight::drawBackBuffer()
 void PointLight::processMouseMovement(float _offsetx, float _offsety, float _offsetz, QVector3D _campos, QMatrix4x4 _view)
 {
 
+  QVector3D camRight=QVector3D(_view(0,0), _view(0,1), _view(0,2));
+  QVector3D camUp=QVector3D(_view(1,0), _view(1,1), _view(1,2));
+  QVector3D camFront=QVector3D(_view(2,0), _view(2,1), _view(2,2));
   QVector3D movement;
   switch(m_manip.getClickedAxis())
   {
     case DIRECTION_X:
       {
-        if(_campos.x()<m_position.z()){
-            _offsety=-_offsety;
-        }
-        movement = _offsetx*SENSITIVITY*QVector3D(1,0,0);
+        // Caluculate how much of each offset should be used to move the light.
+        // Dot product will be negative if vectors are moving towards each other,
+        // so flipping the vectors is not necessary.
+        QVector3D right = QVector3D(1,0,0);
+        float dotprodx = QVector3D::dotProduct(right, camRight);
+        float dotprody = QVector3D::dotProduct(right, camUp);
+        float dotprodz = QVector3D::dotProduct(right, camFront);
+        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+
+        movement = offset*SENSITIVITY*right;
         break;
       }
 
 
     case DIRECTION_Y:
       {
-        movement = _offsety*SENSITIVITY*QVector3D(0,1,0);
+        QVector3D up = QVector3D(0,1,0);
+        float dotprodx = QVector3D::dotProduct(up, camRight);
+        float dotprody = QVector3D::dotProduct(up, camUp);
+        float dotprodz = QVector3D::dotProduct(up, camFront);
+        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+
+        movement = offset*SENSITIVITY*up;
         break;
       }
 
     case DIRECTION_Z:
       {
 
-        if(_campos.x()<m_position.z()){
-            _offsety=-_offsety;
-        }
+        QVector3D front = QVector3D(0,0,1);
+        float dotprodx = QVector3D::dotProduct(front, camRight);
+        float dotprody = QVector3D::dotProduct(front, camUp);
+        float dotprodz = QVector3D::dotProduct(front, camFront);
+        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
 
-        movement = _offsetz*SENSITIVITY*QVector3D(0,0,1);
+        movement = offset*SENSITIVITY*front;
         break;
       }
   }

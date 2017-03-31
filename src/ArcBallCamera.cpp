@@ -135,6 +135,7 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset, GLb
 
 void ArcBallCamera::refocus()
 {
+  // DOESNT WORK.
   m_view.translate(-QVector3D(m_position.x(), m_position.y(), m_position.z()));
 
   QVector3D dir=(QVector3D(m_position.x(), m_position.y(), m_position.z())-m_rotationPoint);
