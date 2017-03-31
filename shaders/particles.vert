@@ -1,4 +1,4 @@
-#version 450 core
+#version 410 core
 
 // Uniforms
 uniform mat4 ProjectionMatrix;
@@ -7,23 +7,21 @@ uniform mat4 ModelMatrix;
 
 // Ins
 in vec3 position;
-in float radius;
+in vec4 instances; // Each instance will have x,y,z and w (radius)
 
 // Outs
-out vec3 worldPosition;
-out float partRadius;
-
-// The bitmap that is drawn it has dimensions (pixels): radius_multiplier * radius
-const float radius_multiplier = 40.0;
-
-// The further the particle is the smaller the bitmap is drawn
-const float radius_distance_decay = 0.2;
+out vec3 vNormal;
+out vec3 vViewPosition;
+out vec3 vScreenSpaceNormals;
 
 void main(void)
-{    
-    worldPosition = position;
-    partRadius = radius;
+{
+    vNormal = normalize(position);
+    vViewPosition = position;
+    //vViewPosition = vec4(ViewMatrix * ModelMatrix * vec4(instances.w * position + instances.xyz, 1.0)).xyz;
 
-    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(position, 1.0);
-    gl_PointSize = radius_multiplier * radius / (radius_distance_decay * abs(position.z));
+    mat3 normalMatrix = transpose(inverse(mat3(ViewMatrix * ModelMatrix)));
+    vScreenSpaceNormals = normalMatrix * vNormal;
+
+    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(instances.w * position + instances.xyz, 1.0);
 }
