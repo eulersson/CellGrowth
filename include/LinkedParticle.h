@@ -51,9 +51,15 @@ public:
 
   // Lydia and Esmes function
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Needs description.
+  /// @brief Calculates the particle new position based on Forces.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate() override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
+
+  void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList);
+
+  void spring(std::vector<std::unique_ptr<Particle>> &_particleList);
+
+  void bulge(QVector3D _particleCentre) override;
 
   // Computes all the relinking and creates a new particle
   //////////////////////////////////////////////////////////////////////////////

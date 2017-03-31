@@ -67,19 +67,18 @@ void ArcBallCamera::processKeyboard(ARCCamera_Movement _direction, GLfloat _delt
 }
 
 
-
-QQuaternion ArcBallCamera::create_from_angle(const double &xx, const double &yy, const double &zz, const double &a)
+QQuaternion ArcBallCamera::create_from_angle(const double &_xx, const double &_yy, const double &_zz, const double &_a)
 {
     // Here we calculate the sin( theta / 2) once for optimization
-    double factor = sin( a / 2.0 );
+    double factor = sin( _a / 2.0 );
 
     // Calculate the x, y and z of the quaternion
-    double x = xx * factor;
-    double y = yy * factor;
-    double z = zz * factor;
+    double x = _xx * factor;
+    double y = _yy * factor;
+    double z = _zz * factor;
 
     // Calcualte the w value by cos( theta / 2 )
-    double w = cos( a / 2.0 );
+    double w = cos( _a / 2.0 );
 
     QQuaternion ret = QQuaternion(w, x, y, z);
     ret.normalize();
@@ -87,7 +86,7 @@ QQuaternion ArcBallCamera::create_from_angle(const double &xx, const double &yy,
 }
 
 
-void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset, GLboolean _constrainPitch)
+void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
 {
   _xoffset =  _xoffset*this->m_mouseSensitivity;
   _yoffset =  _yoffset*this->m_mouseSensitivity;
@@ -129,7 +128,6 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset, GLb
   m_front.setY(-rotmat(2,1));
   m_front.setZ(-rotmat(2,2));
 
-
 }
 
 
@@ -144,20 +142,12 @@ void ArcBallCamera::refocus()
   m_view(2,1)=-dir.y();
   m_view(2,2)=-dir.z();
 
-//    view(1,0)=Up.x();
-//    view(1,1)=Up.y();
-//    view(1,2)=Up.z();
-
   this->m_right=QVector3D::crossProduct(this->m_up,dir);
   m_view(0,0)=this->m_right.x();
   m_view(0,1)=this->m_right.y();
   m_view(0,2)=this->m_right.z();
 
   m_view.translate(QVector3D(m_position.x(), m_position.y(), m_position.z()));
-
-//    view.setToIdentity();
-//    view.lookAt(QVector3D(Position.x(), Position.y(), Position.z()), rotationPoint , this->WorldUp);
-  //    qDebug()<<QString::number(view(2,3));
 }
 
 void ArcBallCamera::processMouseScroll(int steps)

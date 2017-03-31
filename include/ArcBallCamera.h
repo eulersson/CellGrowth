@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// @file ArcBallCamera.h
 /// @author Glenn Nygard
-/// @version 0.0.1
+/// @version 0.1.0
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef ARCBALLCAMERA_H
@@ -15,7 +15,6 @@
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector3D>
-#include <QtMath>
 #include <QtMath>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,10 +54,7 @@ const GLfloat ARCSENSITIVTY = 0.25f;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class ArcBallCamera
-/// @brief Camera rotating around a given point.
-///
-/// ArcBall camera. Rotates around a central point.
-///
+/// @brief Camera rotating around origin.
 /// Movement:
 /// - alt + left mouse button to rotate around the rotation point
 /// - scroll wheel or w/s to zoom
@@ -114,12 +110,11 @@ public:
   /// @brief Processes input received from a mouse input system.
   /// Expects the offset value in both the x and y direction.
   //////////////////////////////////////////////////////////////////////////////
-  void processMouseMovement(GLfloat _xoffset, GLfloat _yoffset,
-                            GLboolean _constrainPitch = true);
-
+  void processMouseMovement(GLfloat _xoffset, GLfloat _yoffset);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Refocuses the camera to the focus point. This is to reset the
+  /// camera if rotations/position gets out of hand.
   //////////////////////////////////////////////////////////////////////////////
   void refocus();
 
@@ -137,10 +132,10 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   void move(QVector3D _velocity);
 
-  QQuaternion create_from_angle(const double &xx,
-                                const double &yy,
-                                const double &zz,
-                                const double &a);
+  QQuaternion create_from_angle(const double &_xx,
+                                const double &_yy,
+                                const double &_zz,
+                                const double &_a);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Camera position.
@@ -208,7 +203,6 @@ private:
   /// Set to identity quaternion (1,0,0,0).
   //////////////////////////////////////////////////////////////////////////////
   QQuaternion m_quat= QQuaternion();
-
 
 };
 

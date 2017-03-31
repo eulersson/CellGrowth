@@ -1,4 +1,6 @@
 #include "Manipulator.h"
+#include <cmath>
+//#define M_PI 3.14159
 
 const int DIRECTION_X = 0;
 const int DIRECTION_Y = 1;
@@ -68,6 +70,7 @@ void Manipulator::createGeometry(std::vector<QVector3D> _uColourVec, bool _rotat
   // ROT AROUND Z
   QOpenGLVertexArrayObject *vao_rot_z = new QOpenGLVertexArrayObject();
   createRotCircle(vao_rot_z, _uColourVec[4], ROTATION_Z);
+
 }
 
 void Manipulator::draw()
@@ -131,9 +134,6 @@ void Manipulator::draw()
       glDrawArrays(GL_TRIANGLES, 0, circle.numberOfPoints); // Previously GL_POINTS
       circle.vao->release();
   }
-
-
-
   m_manipshaderp->release();
 }
 
@@ -272,6 +272,7 @@ void Manipulator::getArrows(std::vector<Geo> &_arrows)
 {
   _arrows = m_arrows;
 }
+
 
 void Manipulator::setupRotCircleVAO(Geo &_circle, QOpenGLVertexArrayObject *_vao)
 {
@@ -443,7 +444,6 @@ void Manipulator::setupVAO(Geo &_arrow, QOpenGLVertexArrayObject *_vao)
   m_manipshaderp->enableAttributeArray("normAttr");
 
   _vao->release();
-
   _arrow.vao=_vao;
 }
 
@@ -535,7 +535,6 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *_vao,
     vertices.push_back(topPoint);
     normals.push_back(normal);
   }
-
 
   Geo arrow = Geo();
   arrow.axis = _axis;

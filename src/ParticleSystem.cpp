@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file ParticleSystem.cpp
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 // Native
 #include <math.h>
 #include <iostream>
@@ -9,60 +16,110 @@
 // Default constructor creates a 2500 (50*50) distribution of particles
 ParticleSystem::ParticleSystem()
 {
-  qDebug("Default constructor called");
+  //qDebug("Default constructor called");
   m_particleCount=0;
+  m_particleType= 'L';
   fill(3);
+  m_forces = true;
+  m_cohesion = 30; //percent
+  m_spring = 30;
+
 }
 
 // For custom number of particlesm_packagedParticleData
-ParticleSystem::ParticleSystem(int _amount)
+ParticleSystem::ParticleSystem(char _particleType)
 {
-  qDebug("Custom constructor called");
+  //qDebug("Custom constructor called");
   m_particleCount=0;
-  fill(_amount);
+
+
+  m_particleType = _particleType;
+
+  //if it's a linked particle we need 3 particle
+  if (m_particleType=='L')
+  {
+    fill(3);
+  }
+  //if it's a Growth particle we need 1 particle to start with
+  else if (m_particleType== 'G')
+  {
+    fill(1);
+    m_forces = true;
+    m_cohesion = 30; //percent
+    m_spring = 30;
+  }
 
 }
 
-// Calculates new forces on each particles and advects them
+
 void ParticleSystem::advance()
 {
+  //reseting the particle count to the size of the particle list
   m_particleCount=m_particles.size();
+
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
+    //split only if triggered by light
 //    if(m_particles[i]->testForSplit())
 //    {
 //      m_particles[i]->split(m_particles);
 //    }
   }
 
-  // Then moving
+  //calcuting the forces
+  if (m_forces==true)
+  {
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    //m_particles[i]->calculate();
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     m_particles[i]->advance();
   }
+  }
 }
 
-// Starting with 4 particles that are all linked together
+void ParticleSystem::bulge()
+{
+  m_particleCount=m_particles.size();
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->bulge(m_particleCentre);
+    m_particles[i]->advance();
+  }
+  calculateParticleCentre();
+}
+
+
+
+
 void ParticleSystem::fill(unsigned int _amount)
 {
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
+  std::vector<QVector3D> pos;
+  pos.push_back(QVector3D(0.5,0.5,0));
+  pos.push_back(QVector3D(0.5,-0.5,0));
+  pos.push_back(QVector3D(-0.5,-0.5,0));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
     qreal x=distribution(gen);
     qreal y=distribution(gen);
-    //qreal z=distribution(gen);
-    qreal z = -25.0f;
+    qreal z=distribution(gen);
 
-    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    if(m_particleType=='G')
+    {
+      m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(x, y, z)));
+    }
+    else if(m_particleType=='L')
+    {
+      m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    }
     m_particleCount++;
   }
 
@@ -82,8 +139,7 @@ void ParticleSystem::fill(unsigned int _amount)
 
   else
   {
-    //run a triangulation algorithm
-    //This will need to be added later
+    qDebug("To many particles to link");
   }
 }
 
@@ -102,7 +158,7 @@ unsigned int ParticleSystem::getSize()
   return m_particles.size();
 }
 
-void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
+void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
 {
   _returnList.clear();
   // There is a lot of iterating here maybe there can be find a better way to
@@ -125,15 +181,11 @@ void ParticleSystem::getLinksForDraw(std::vector<QVector3D> &_returnList)
       {
         if (m_particles[k]->getID() == tempList[j])
         {
-          QVector3D vec;
+          // Pushes back the ID of linked Particle
+          _returnList.push_back(m_particles[k]->getID());
 
-          // Pushes back the pos of Linked Particle
-          m_particles[k]->getPos(vec);
-          _returnList.push_back(vec);
-
-          // Pushes back the pos of current Particle
-          m_particles[i]->getPos(vec);
-          _returnList.push_back(vec);
+          // Pushes back the ID of current Particle
+          _returnList.push_back(m_particles[i]->getID());
           break;
         }
       }
@@ -148,15 +200,49 @@ void ParticleSystem::splitRandomParticle()
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
+
+  //needs to be replaced by the actual light direction
   QVector3D light(-100*sin(m_particleCount*10),- 100,100+sin(m_particleCount*10));
 
-  // !!!!!!  ATTENTION SPLIT FUNCTION SHOULD BE BASED ON PARTICLE TYPE
+  // calling diffrent split function based on the particle type
 
-  m_particles[distribution(gen)]->split(m_particles);
+  if(m_particleType=='G')
+  {
+  m_particles[distribution(gen)]->split(light,m_particles);
+  }
+  else if(m_particleType=='L')
+  {
+    m_particles[distribution(gen)]->split(m_particles);
+  }
+
   m_particleCount++;
-//  QVector3D vec;
-//  m_particles[m_particles.size() - 1]->getPos(vec);
 
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+  }
+
+  qDebug("Particles: %d", m_particleCount);
+}
+
+
+
+
+
+void ParticleSystem::splitHitParticle()
+{
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->getHitParticles(m_particles);
+  }
+
+  m_particles[0]->split(m_particles);
+  m_particleCount++;
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+  }
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)
@@ -195,3 +281,105 @@ void ParticleSystem::packageDataForDrawing(std::vector<float> &_packagedData)
   });
 }
 
+QVector3D ParticleSystem::calculateParticleCentre()
+{
+  m_particleCentre.setX(0);
+  m_particleCentre.setY(0);
+  m_particleCentre.setZ(0);
+
+  for (auto &particle : m_particles)
+  {
+    QVector3D particlePosition = particle->getPosition();
+    m_particleCentre += particlePosition;
+
+  }
+
+  m_particleCentre = m_particleCentre/(m_particles.size());
+  return m_particleCentre;
+}
+
+QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
+{
+  QVector3D averageDistance;
+
+  for (auto&particle : m_particles)
+  {
+    QVector3D particlePosition = particle->getPosition();
+    QVector3D particleCentre = calculateParticleCentre();
+    QVector3D distance = particleCentre - particlePosition;
+    QVector3D fabsDistance;
+    fabsDistance.setX(fabs (distance.x()));
+    fabsDistance.setY(fabs (distance.y()));
+    fabsDistance.setZ(fabs(distance.z()));
+
+    averageDistance += fabsDistance;
+  }
+
+  averageDistance = averageDistance/(m_particles.size());
+  //std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
+  return averageDistance;
+}
+
+void ParticleSystem::setParticleSize(double _size)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setRadius(_size);
+  }
+}
+
+void ParticleSystem::toggleForces(bool _state)
+{
+  m_forces=_state;
+}
+
+void ParticleSystem::setCohesion(int _amount)
+{
+  m_cohesion = _amount;
+}
+
+void ParticleSystem::setSpring(int _amount)
+{
+  m_spring = _amount;
+}
+
+void ParticleSystem::setBranchLength(float _amount)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setBranchLength(_amount);
+  }
+}
+
+void ParticleSystem::setChildThreshold(int _value)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setChildThreshold(_value);
+  }
+}
+
+void ParticleSystem::setGrowthRadius(int _amount)
+{
+  //not sure where to put either
+}
+
+void ParticleSystem::reset(char _particleType)
+{
+  m_particles.clear();
+  m_particleCount=0;
+  Particle::resetIDCounter();
+  m_particleType=_particleType;
+  if (m_particleType=='L')
+  {
+    fill(3);
+
+    m_forces = true;
+    m_cohesion = 30; //percent
+    m_spring = 30;
+  }
+  else if (m_particleType== 'G')
+  {
+    fill(1);
+  }
+}

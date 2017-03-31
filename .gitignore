@@ -38,4 +38,7 @@ build/*
 .qmake.stash
 Makefile
 cells
+<<<<<<< HEAD
 
+=======
+>>>>>>> 96945cde9abcddace8af0d888b73fda122765b3d

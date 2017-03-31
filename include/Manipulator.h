@@ -55,7 +55,6 @@ struct Geo {
   QOpenGLVertexArrayObject *vao;
 };
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @class Manipulator
 /// @brief The handles used for moving objects around in the scene. Can be
@@ -168,7 +167,6 @@ private:
                        QVector3D _uniqueColour,
                        int _axis);
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates and sets up the vbo for the provided arrow object
   /// @param[in] vertices Vertices being set to the VBO
@@ -200,7 +198,6 @@ private:
       QVector3D _offsetPos,
       QVector3D _uniqueColour,
       int _axis);
-
 
 
   //////////////////////////////////////////////////////////////////////////////

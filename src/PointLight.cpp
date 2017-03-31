@@ -18,12 +18,14 @@ PointLight::PointLight(QVector3D _position, QOpenGLShaderProgram *_manipshaderp,
     // Set light representation position (single point)
     m_points[0]=0; m_points[1]=0; m_points[2]=0;
     updateModelMatrix();
+
 }
 
 int PointLight::compareUniqueColour(QVector3D _colour)
 {
   return m_manip.compareUniqueColour(_colour);
 }
+
 
 void PointLight::createGeometry(QVector3D &_masterUniqueColour)
 {
@@ -123,9 +125,10 @@ void PointLight::processMouseMovement(float _offsetx, float _offsety, float _off
   updateModelMatrix();
 }
 
-void PointLight::setClicked(QVector3D uColour, bool _state)
+
+void PointLight::setClicked(QVector3D _uColour, bool _state)
 {
-  m_manip.setClicked(uColour, _state);
+  m_manip.setClicked(_uColour, _state);
 }
 
 void PointLight::setHover(int id)
@@ -147,6 +150,7 @@ void PointLight::getMainProgram(QOpenGLShaderProgram **retshader)
 {
   *retshader=m_manipshaderp;
 }
+
 
 void PointLight::setupObject()
 {
@@ -171,4 +175,5 @@ void PointLight::updateModelMatrix()
   m_model(0,3)=m_position.x();
   m_model(1,3)=m_position.y();
   m_model(2,3)=m_position.z();
+
 }
