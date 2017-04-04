@@ -73,7 +73,7 @@ public:
     QGridLayout *gridLayout_4;
     QCheckBox *m_showConnections;
     QLabel *label_9;
-    QComboBox *m_shadineType;
+    QComboBox *m_shadingType;
     QGroupBox *groupBox_5;
     QGridLayout *gridLayout_8;
     QPushButton *m_restart;
@@ -261,7 +261,7 @@ public:
 
         groupBox_4 = new QGroupBox(groupBox_3);
         groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
-        groupBox_4->setEnabled(false);
+        groupBox_4->setEnabled(true);
         sizePolicy1.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
         groupBox_4->setSizePolicy(sizePolicy1);
         groupBox_4->setFlat(false);
@@ -270,6 +270,7 @@ public:
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
         m_showConnections = new QCheckBox(groupBox_4);
         m_showConnections->setObjectName(QStringLiteral("m_showConnections"));
+        m_showConnections->setChecked(true);
 
         gridLayout_4->addWidget(m_showConnections, 0, 0, 1, 1);
 
@@ -278,10 +279,10 @@ public:
 
         gridLayout_4->addWidget(label_9, 1, 0, 1, 1);
 
-        m_shadineType = new QComboBox(groupBox_4);
-        m_shadineType->setObjectName(QStringLiteral("m_shadineType"));
+        m_shadingType = new QComboBox(groupBox_4);
+        m_shadingType->setObjectName(QStringLiteral("m_shadingType"));
 
-        gridLayout_4->addWidget(m_shadineType, 1, 1, 1, 1);
+        gridLayout_4->addWidget(m_shadingType, 1, 1, 1, 1);
 
 
         gridLayout_6->addWidget(groupBox_4, 3, 0, 1, 2);
@@ -361,12 +362,13 @@ public:
         groupBox_4->setTitle(QApplication::translate("GUI", "Display Options", 0));
         m_showConnections->setText(QApplication::translate("GUI", "Show connections", 0));
         label_9->setText(QApplication::translate("GUI", "Type of Shading", 0));
-        m_shadineType->clear();
-        m_shadineType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "Ambient Occlusion", 0)
-         << QApplication::translate("GUI", "X Ray", 0)
+        m_shadingType->clear();
+        m_shadingType->insertItems(0, QStringList()
          << QApplication::translate("GUI", "ADS", 0)
+         << QApplication::translate("GUI", "X Ray", 0)
+         << QApplication::translate("GUI", "Ambient Occlusion", 0)
         );
+        m_shadingType->setCurrentText(QApplication::translate("GUI", "ADS", 0));
         groupBox_5->setTitle(QString());
         m_restart->setText(QApplication::translate("GUI", "Restart", 0));
         m_cancel->setText(QApplication::translate("GUI", "Cancel", 0));
