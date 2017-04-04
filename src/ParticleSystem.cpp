@@ -74,16 +74,17 @@ void ParticleSystem::advance()
   //calcuting the forces
   if (m_forces==true)
   {
-  for (unsigned int i = 0; i < m_particleCount; ++i)
-  {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+    for (unsigned int i = 0; i < m_particleCount; ++i)
+    {
+      m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_spring);
+    }
+
+    for (unsigned int i = 0; i < m_particleCount; ++i)
+    {
+      m_particles[i]->advance();
+    }
   }
 
-  for (unsigned int i = 0; i < m_particleCount; ++i)
-  {
-    m_particles[i]->advance();
-  }
-  }
 }
 
 void ParticleSystem::bulge()
@@ -247,6 +248,10 @@ void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
   }
 }
 
+void ParticleSystem::setLightPos(QVector3D _lightPos)
+{
+  m_lightPos = _lightPos;
+}
 
 void ParticleSystem::splitRandomParticle()
 {
@@ -266,33 +271,39 @@ void ParticleSystem::splitRandomParticle()
 
   m_particleCount=m_particles.size();
 
-//  for (unsigned int i = 0; i < m_particleCount; ++i)
-//  {
-//    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
-//  }
-
-  qDebug("Particles: %d", m_particleCount);
-}
-
-
-
-
-
-void ParticleSystem::splitHitParticle()
-{
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->getHitParticles(m_particles);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_spring);
   }
 
-  m_particles[0]->split(m_particles,m_gen  );
-  m_particleCount++;
+  qDebug("Particles: %d", m_particleCount);
+
+}
+
+//void ParticleSystem::splitHitParticle()
+//{
+//  std::vector<unsigned int> hitParticleList;
+//  for (unsigned int i = 0; i < m_particleCount; ++i)
+//  {
+//    hitParticleList = m_particles[i]->getHitParticles(m_particles, m_lightPos);
+//    for(unsigned int j=0; hitParticleList.size(); j++)
+//    {
+//      std::random_shuffle(hitParticleList.begin(), hitParticleList.end());
+//      if(i==j)
+//      {
+//        float splitPosition = float(((m_lightPos.x() + m_lightPos.y() + m_lightPos.z()) / 3.0f ));
+//        m_particles[splitPosition]->split(m_particles);
+//      }
+//    }
+//  }
+
+//  m_particleCount++;
 
 //  for (unsigned int i = 0; i < m_particleCount; ++i)
 //  {
 //    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
 //  }
-}
+//}
 
 void ParticleSystem::deleteParticle(unsigned int _index)
 {
@@ -431,9 +442,4 @@ void ParticleSystem::reset(char _particleType)
   {
     fill(1);
   }
-}
-
-void ParticleSystem::setLightPos(QVector3D _pos)
-{
-  m_lightPos=_pos;
 }

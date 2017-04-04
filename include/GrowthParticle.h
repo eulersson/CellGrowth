@@ -55,9 +55,17 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) override;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Does not do anything for this class.
+  //////////////////////////////////////////////////////////////////////////////
   void bulge(QVector3D _particleCentre) override;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Does not do anything for this class.
+  //////////////////////////////////////////////////////////////////////////////
+  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch from that Particle.

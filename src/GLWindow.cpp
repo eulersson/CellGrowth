@@ -8,6 +8,7 @@
 #include <iostream>
 // Qt
 #include <QKeyEvent>
+#include <iostream>
 
 // Project
 #include "GLWindow.h"
@@ -123,14 +124,6 @@ void GLWindow::paintGL()
       glDisable(GL_BLEND);
     }
     drawQuad();
-
-
-
-
-
-
-
-
 
     updateParticleSystem();
 }
@@ -551,6 +544,9 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
 
 void GLWindow::updateParticleSystem()
 {
+  m_ps.setLightPos(m_lightPos);
+  //std::cout<<"light pos: "<<m_lightPos.x()<<" "<<m_lightPos.y()<<" "<<m_lightPos.z()<<std::endl;
+
   //m_ps.splitRandomParticle();
   m_ps.advance();
   sendParticleDataToOpenGL();
@@ -617,6 +613,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
   {
     case Qt::Key_Space:
       m_ps.splitRandomParticle();
+      //m_ps.splitHitParticle();
       qInfo("%d", m_ps.getSize());
       qDebug("%d particles in the system", m_ps.getSize());
       break;
