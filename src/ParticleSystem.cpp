@@ -253,14 +253,11 @@ void ParticleSystem::splitRandomParticle()
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
 
-  //needs to be replaced by the actual light direction
-  QVector3D light(-100*sin(m_particleCount*10),- 100,100+sin(m_particleCount*10));
-
   // calling diffrent split function based on the particle type
 
   if(m_particleType=='G')
   {
-  m_particles[distribution(m_gen)]->split(light,m_particles);
+  m_particles[distribution(m_gen)]->split(m_lightPos,m_particles);
   }
   else if(m_particleType=='L')
   {
@@ -434,4 +431,9 @@ void ParticleSystem::reset(char _particleType)
   {
     fill(1);
   }
+}
+
+void ParticleSystem::setLightPos(QVector3D _pos)
+{
+  m_lightPos=_pos;
 }

@@ -41,6 +41,8 @@ HEADERS += \
     include/SelectObject.h \
     include/SpotLight.h \
 
+win32:LIBS += opengl32.lib
+
 OTHER_FILES += \
     .gitignore \
     Doxyfile \
@@ -63,4 +65,5 @@ FORMS += \
     ui/GUI.ui
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+
 

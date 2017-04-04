@@ -89,9 +89,9 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
 
     //calculate vector
     QVector3D direction;
-    direction[0]=m_pos[0]-x;
-    direction[1]=m_pos[1]-y;
-    direction[2]=m_pos[2]-z;
+    direction[0]=x-m_pos[0];
+    direction[1]=y-m_pos[1];
+    direction[2]=z-m_pos[2];
 
     //place new particle in direction of vector mutilplied by size of particle
     direction.normalize();

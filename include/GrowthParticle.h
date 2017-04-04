@@ -7,7 +7,7 @@
 #ifndef GROWTHPARTICLE_H
 #define GROWTHPARTICLE_H
 
-#include"Particle.h"
+#include "Particle.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class GrowthParticle

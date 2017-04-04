@@ -199,6 +199,8 @@ void GLWindow::loadLightToShader()
 
     m_lightPos = m_object_list[0]->getPosition();
 
+    m_ps.setLightPos(m_lightPos);
+
     m_quad_program->setUniformValue("light.position", m_lightPos);
     m_quad_program->setUniformValue("light.ambient", QVector3D(1.0f, 1.0f, 1.0f));
     m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
