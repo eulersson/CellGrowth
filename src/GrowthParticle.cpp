@@ -35,12 +35,17 @@ GrowthParticle::GrowthParticle(
          "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount)
+void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor)
 {
 
 }
 
 void GrowthParticle::bulge(QVector3D _particleCentre)
+{
+
+}
+
+std::vector<unsigned int> GrowthParticle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
 {
 
 }

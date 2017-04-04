@@ -25,7 +25,6 @@ Particle::Particle()
     , m_foodThreshold(0)
 {
   //qDebug("Particle default constructor.");
-  m_hit = true;
 }
 
 
@@ -37,7 +36,6 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
     , m_foodThreshold(100)
 {
   //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
-  m_hit = true;
 }
 
 
@@ -53,7 +51,6 @@ Particle::Particle(qreal _x,
 {
  // qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
          //"particles", _x, _y, _z);
-  m_hit = true;
   m_connectedParticles = _connectedParticles;
 }
 
@@ -129,19 +126,6 @@ void Particle::getConnectionsID(std::vector<unsigned int> &_returnList)
 int Particle::getConnectionCount()
 {
   return m_connectedParticles.size();
-}
-
-std::vector<unsigned int> Particle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList)
-{
-  for(unsigned int i=0; i<=_particleList.size(); i++)
-  {
-    if(m_hit == true)
-    {
-      m_hitParticles.push_back(_particleList[i]->getID());
-      break;
-    }
-  }
-  return m_hitParticles;
 }
 
 void Particle::getPosFromConnections(std::vector<QVector3D> &_linkPos,std::vector<std::unique_ptr<Particle>> &_particleList)

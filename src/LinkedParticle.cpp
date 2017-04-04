@@ -36,7 +36,7 @@ LinkedParticle::LinkedParticle(qreal _x,
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount)
+void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor)
 {
   //  EQUIDISTANCE
   //  have found average distance away from centre
@@ -78,7 +78,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   }
 
   cohesion.normalize();
-  cohesion*=(cohesionDist/100);
+  cohesion*=(cohesionDist/_cohesionFactor);
   m_vel+=cohesion;
   //end of cohere
 
@@ -107,6 +107,8 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   //end of planar
 
   calculateUnlinked(_particleList);
+
+  lightAttract(_particleList, _lightPos);
 }
 
 void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleList)
@@ -347,6 +349,47 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
   }
 }
 
+std::vector<unsigned int> LinkedParticle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
+{
+  //Finds the particles within the point light radius so that they may be split
+  QVector3D lightDist;
+
+  for(unsigned int i=0; i<=_particleList.size(); i++)
+  {
+    lightDist = m_pos - _lightPos;
+
+    if((lightDist.x()<=1)
+            && (lightDist.y()<=1)
+            && (lightDist.z()<=1))
+    {
+      m_hitParticles.push_back(_particleList[i]->getID());
+      break;
+    }
+  }
+//  std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
+  return m_hitParticles;
+}
+
+void LinkedParticle::lightAttract(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
+{
+  getHitParticles(_particleList, _lightPos);
+
+  QVector3D lightDist;
+
+  for(unsigned int i=0; i<=_particleList.size(); i++)
+  {
+    for(unsigned int j=0; j<m_hitParticles.size(); j++)
+    {
+      if(i==j)
+      {
+        lightDist = _lightPos - m_pos;
+        lightDist /= 1500;
+        m_vel += lightDist;
+      }
+    }
+  }
+}
+
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
 {
   //sorts point depending on the position relative to a plane
@@ -362,7 +405,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<int> distribution(1, m_connectedParticles.size() - 1);
 
-  //holds all ID's of the particles that are keept by the current particle
+  //holds all ID's of the particles that are kept by the current particle
   std::vector<unsigned int> keepList;
 
   //holds all the ID's of the particles that are linked to the new particle
@@ -373,10 +416,9 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
   getPosFromConnections(linkPosition, _particleList);
 
-
   //pick two random particles out of the particle list
   //saving index number of it in list not Id or Pos to
-  //avoid searching th particle list for the particle again
+  //avoid searching the particle list for the particle again
 
   unsigned int a=0;
 
@@ -413,20 +455,14 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
     }
   }
 
-  //
-
-
   normal.normalize();
   //create new particle
   qreal x=m_pos.x()+normal.x();
   qreal y=m_pos.y()+normal.y();
   qreal z=m_pos.z()+normal.z();
 
-
-
   relinkList.push_back(m_ID);
   //creating new particle
-
 
   _particleList.push_back(std::unique_ptr<Particle>(new LinkedParticle(x,y,z,relinkList)));
 
