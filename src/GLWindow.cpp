@@ -31,6 +31,7 @@ GLWindow::GLWindow(QWidget*_parent)
   setMouseTracking(true);
   setFocus();
 
+
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
   if(format().swapInterval() == -1)
   {
@@ -261,7 +262,7 @@ void GLWindow::prepareQuad()
   m_xRayIndex   = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "xRayRender");
 
   // Setting the active renderpass.
-  m_activeRenderPassIndex = m_normalIndex;
+  m_activeRenderPassIndex = m_ADSIndex;
   m_quad_program->release();
 
   m_quad_vao = new QOpenGLVertexArrayObject(this);
