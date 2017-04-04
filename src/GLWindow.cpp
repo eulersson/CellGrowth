@@ -79,8 +79,10 @@ void GLWindow::initializeGL()
   setupFBO();
   setupLights();
   sampleKernel();
+  m_activeRenderPassIndex = m_ADSIndex;
 
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+  glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
 }
 
@@ -247,6 +249,7 @@ void GLWindow::prepareQuad()
   m_quad_program->setUniformValue("ssaoNoiseTex", 4);
   m_quad_program->setUniformValue("ScreenNormals", 5);
   m_quad_program->setUniformValue("Links", 6);
+  m_quad_program->setUniformValue("SSAOInputBlur", 7);
 
 
   // Subroutine ShadingPass Index.
@@ -332,6 +335,8 @@ void GLWindow::drawQuad()
   glActiveTexture(GL_TEXTURE5);
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE6);
+  glBindTexture(GL_TEXTURE_2D, textureID);textureID += 1;
+  glActiveTexture(GL_TEXTURE7);
   glBindTexture(GL_TEXTURE_2D, textureID);
 
   m_quad_program->bind();
@@ -384,6 +389,7 @@ void GLWindow::setupFBO()
   m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT4
   m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT5
   m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT6
+  m_fbo->addColorAttachment(width(), height()); // GL_COLOR_ATTACHMENT7
 
   const GLenum attachments[] = {
     GL_COLOR_ATTACHMENT0,
@@ -392,11 +398,12 @@ void GLWindow::setupFBO()
     GL_COLOR_ATTACHMENT3,
     GL_COLOR_ATTACHMENT4,
     GL_COLOR_ATTACHMENT5,
-    GL_COLOR_ATTACHMENT6
+    GL_COLOR_ATTACHMENT6,
+    GL_COLOR_ATTACHMENT7
   };
 
   // Drawing multiple buffers.
-  glDrawBuffers(7, attachments);
+  glDrawBuffers(8, attachments);
 
   // Create and attach depth buffer (renderbuffer) ===========================
   GLuint rbo_depth;
@@ -602,8 +609,7 @@ void GLWindow::sendParticleDataToOpenGL()
 void GLWindow::updateModelMatrix()
 {
   // Insert particle system position here
-  QVector3D pointPos = QVector3D(0, 0, 0);
-  m_model_matrix.translate(pointPos);
+  m_model_matrix.translate(m_pointpos);
 }
 
 void GLWindow::keyPressEvent(QKeyEvent* ev)
