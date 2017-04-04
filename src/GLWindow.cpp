@@ -126,13 +126,6 @@ void GLWindow::paintGL()
     drawQuad();
 
 
-
-
-
-
-
-
-
     updateParticleSystem();
 }
 
