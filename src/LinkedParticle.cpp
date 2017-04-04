@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @file LinkedParticle.cpp
 /// @author Carola Gille
@@ -93,18 +94,18 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 //  PLANAR
 //  Moves a particle to the average position of it's linked neighbours
-//  for(unsigned int i=0; i<connectionCount; i++)
-//  {
-//    connectionCentre += linkPosition[i];
-//  }
-//  connectionCentre = connectionCentre/connectionCount;
-//  planar = connectionCentre - m_pos;
+  for(unsigned int i=0; i<connectionCount; i++)
+  {
+    connectionCentre += linkPosition[i];
+  }
+  connectionCentre = connectionCentre/connectionCount;
+  planar = connectionCentre - m_pos;
 
-//  float planarLength = planar.length();
-//  float planarDist = m_size+(planarLength/2);
-//  planar.normalize();
-//  planar*=(planarDist/40);
-//  m_vel+=planar;
+  float planarLength = planar.length();
+  float planarDist = m_size+(planarLength/2);
+  planar.normalize();
+  planar*=(planarDist/40);
+  m_vel+=planar;
   //end of planar
 
   calculateUnlinked(_particleList);
@@ -343,7 +344,8 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
                 || distance.y() <= m_size*2
                 || distance.z() <= m_size*2)
   {
-    distance/=10;
+    //distance/=10;
+
     m_vel += distance;
   }
 }
@@ -351,145 +353,15 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
 {
   //sorts point depending on the position relative to a plane
+
   int d=_normal.x()*_planePoint.x()+_normal.y()*_planePoint.y()+_normal.z()*_planePoint.z();
   int r=_normal.x()*_testPoint.x()+_normal.y()*_testPoint.y()+_normal.z()*_testPoint.z()-d;
   return r;
 }
 
-void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList)
+void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
 {
-  //ESME SECTION
 
-  std::vector<unsigned int> connectedParticles; //IDs of all the linked particles
-
-  QVector3D position = getPosition();
-  std::cout<<"position:"<<position.x()<<std::endl;
-//  getConnectionsID(connectedParticles);
-//  for(unsigned int i=0; i<connectedParticles.size(); i++)
-//  {
-//    std::cout<<"connectedParticles:"<<connectedParticles[i]<<std::endl;
-//  }
-
-
-
-//  std::random_device rd;
-//  std::mt19937_64 gen(rd());
-//  std::uniform_int_distribution<int> distribution(1, m_connectedParticles.size() - 1);
-
-//  //holds all ID's of the particles that are keept by the current particle
-//  std::vector<unsigned int> keepList;
-
-//  //holds all the ID's of the particles that are linked to the new particle
-//  std::vector<unsigned int> relinkList;
-
-//  // holds the positions of the linked particles
-//  std::vector<QVector3D> linkPosition;
-
-//  getPosFromConnections(linkPosition, _particleList);
-
-
-//  //pick two random particles out of the particle list
-//  //saving index number of it in list not Id or Pos to
-//  //avoid searching th particle list for the particle again
-
-//  unsigned int a=0;
-
-//  unsigned int b=distribution(gen);
-
-//  if (a == b)
-//  {
-//    std::cout << "WARNING you can't split between a particle and itself" << std::endl;
-//  }
-
-//  QVector3D normal = QVector3D::normal(linkPosition[a], linkPosition[b]);
-
-//  //filling two arrays with links based on there position relative to the plane created by the two first particles
-//  for(unsigned int i=0;i<m_connectedParticles.size();i++)
-//  {
-//    if(i == a || i == b)
-//    {
-//      //the two plane particles are linked too both old and new particle
-//      keepList.push_back(m_connectedParticles[i]);
-//      relinkList.push_back(m_connectedParticles[i]);
-
-//    }
-//    else
-//    {
-//      int r=planeSorting(normal,linkPosition[a],linkPosition[i]);
-//      if(r<=0)
-//      {
-//        keepList.push_back(m_connectedParticles[i]);
-//      }
-//      else
-//      {
-//        relinkList.push_back(m_connectedParticles[i]);
-//      }
-//    }
-//  }
-
-//  //
-
-
-//  normal.normalize();
-//  //create new particle
-//  qreal x=m_pos.x()+normal.x();
-//  qreal y=m_pos.y()+normal.y();
-//  qreal z=m_pos.z()+normal.z();
-
-
-
-//  relinkList.push_back(m_ID);
-//  //creating new particle
-
-
-//  _particleList.push_back(std::unique_ptr<Particle>(new LinkedParticle(x,y,z,relinkList)));
-
-//  //get the new particles ID
-
-//  int newPartID=_particleList[_particleList.size()-1]->getID();
-
-//  //link all the particles to the new particle
-//  for(unsigned int i=0;i<relinkList.size();i++)
-//  {
-//    for(unsigned int j=0;j<_particleList.size();j++)
-//    {
-//      if(_particleList[j]->getID()==relinkList[i])
-//      {
-//        _particleList[j]->connect(newPartID);
-//        break;
-//      }
-//    }
-//  }
-
-//  //link both, parent and child, to each other
-//  m_connectedParticles=keepList;
-
-//  //delete links from old particles
-
-//  for(unsigned int i=0;i<relinkList.size();i++)
-//  {
-//    //find correct linked particle in particle list
-//    for(unsigned int j=0;j<_particleList.size();j++)
-//    {
-//      if(_particleList[j]->getID()==relinkList[i])
-//      {
-//        _particleList[j]->deleteConnection(m_ID);
-//        break;
-//      }
-//    }
-//  }
-//  connect(newPartID);
-
-//  m_foodLevel=0;
-
-//  QVector3D particleCentre;
-//  QVector3D averageDistance;
-//  std::vector<unsigned int> returnList;
-//  calculate(particleCentre, _particleList, averageDistance, returnList);
-}
-
-/*void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList)
-{
   // Sanity check
   if(m_connectedParticles.size() < 2)
     return;
@@ -544,10 +416,11 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   //
 
 
+  normal.normalize();
   //create new particle
-  qreal x=m_pos.x()+normal.x();
-  qreal y=m_pos.y()+normal.y();
-  qreal z=m_pos.z()+normal.z();
+  qreal x=m_pos.x()+normal.x()*m_size;
+  qreal y=m_pos.y()+normal.y()*m_size;
+  qreal z=m_pos.z()+normal.z()*m_size;
 
 
 
@@ -594,7 +467,8 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 //  QVector3D averageDistance;
 //  std::vector<unsigned int> returnList;
 //  calculate(particleCentre, _particleList, averageDistance, returnList);
-}*/
+
+}
 
 
 
