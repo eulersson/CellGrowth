@@ -789,7 +789,7 @@ void GLWindow::setGrowthRadius(int _amount)
 
 void GLWindow::restart()
 {
-  m_ps.reset('L');
+
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetParticleTap(0);
@@ -798,9 +798,9 @@ void GLWindow::restart()
   emit resetSpring(30);
   emit resetChildrenThreshold(3);
   emit resetBranchLength(3.0);
-  m_activeRenderPassIndex=m_ADSIndex;
-  emit setShading(0);
+  emit changedShadingType(0);
   emit setConnectionState(true);
+  m_ps.reset('L');
   // Add reset functions here
 
 }
