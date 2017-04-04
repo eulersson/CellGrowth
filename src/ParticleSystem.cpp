@@ -77,7 +77,7 @@ void ParticleSystem::advance()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->advance();
+   //m_particles[i]->advance();
   }
   }
 }
