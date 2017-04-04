@@ -7,10 +7,11 @@
 #ifndef GROWTHPARTICLE_H
 #define GROWTHPARTICLE_H
 
-#include"Particle.h"
+#include "Particle.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class GrowthParticle
+
 /// @brief Growth Particle Inheriting from  Particle class, imitates plant like
 /// growth.
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +30,7 @@ public:
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
   //////////////////////////////////////////////////////////////////////////////
+
   GrowthParticle(
       qreal _x,
       qreal _y,
@@ -43,6 +45,7 @@ public:
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
   //////////////////////////////////////////////////////////////////////////////
+
   GrowthParticle(
       qreal _x,
       qreal _y,
@@ -52,9 +55,17 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) override;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Does not do anything for this class.
+  //////////////////////////////////////////////////////////////////////////////
   void bulge(QVector3D _particleCentre) override;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Does not do anything for this class.
+  //////////////////////////////////////////////////////////////////////////////
+  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch from that Particle.
@@ -129,5 +140,6 @@ private:
   float m_branchLength;
 
 };
+
 
 #endif // GROWTHPARTICLE_H

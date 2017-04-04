@@ -14,6 +14,9 @@
 // Qt
 #include<QVector3D>
 
+// Custom
+#include "PointLight.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @class Particle
 /// @brief Base particle class providing common methods and attributes that will
@@ -68,10 +71,27 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
+  /// @param _particleCentre Position of the average centre of all particles
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _averageDistance Average distance between particles
+  /// @param [in] _particleCount Total number of particles in the system
+  /// @param [in] _lightPos Holds the position of the point light
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount) {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) {}
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Moves the particles closest to the centre to create a bulge effect.
+  /// @param [in] _particleCentre Position of the average centre of all particles
+  //////////////////////////////////////////////////////////////////////////////
   virtual void bulge(QVector3D _particleCentre) {}
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Returns a list containing all particles closest to the light.
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _lightPos Holds the position of the point light
+  /////////////////////////////////////////////////////////////////////////////
+  virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold.
   /// only applicable for Growth particle
@@ -92,16 +112,19 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   virtual void split(QVector3D, std::vector<std::unique_ptr<Particle>>&) {}
 
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(std::vector<std::unique_ptr<Particle>>&) {}
+
+  virtual void split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
   /// they collide with anything.
   //////////////////////////////////////////////////////////////////////////////
+
   virtual bool recursiveCollision(
       QVector3D,
       std::vector<std::unique_ptr<Particle>>&) { return false; }
@@ -118,6 +141,9 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void getPos(QVector3D &_pos);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Returns the position of the particle.
+  //////////////////////////////////////////////////////////////////////////////
   QVector3D getPosition(){return m_pos;}
 
   //////////////////////////////////////////////////////////////////////////////
@@ -165,8 +191,6 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   int getConnectionCount();
 
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle> > &_particleList);
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns the particles ID.
   /// @return ID of the particle.
@@ -189,19 +213,11 @@ public:
       std::vector<QVector3D> &_linkPos,
       std::vector<std::unique_ptr<Particle>> &_particleList);
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns the index of the particle in the particle system.
-  /// @param[in] _particleList List from the particle system holding all
-  /// existing particles.
-  /// @return Index number of the the particle in the particle system.
-  //////////////////////////////////////////////////////////////////////////////
-  int getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief static function that resets the m_ID_counter to 0.
   //////////////////////////////////////////////////////////////////////////////
   static void resetIDCounter();
-
 
 protected:
   //////////////////////////////////////////////////////////////////////////////
@@ -221,6 +237,7 @@ protected:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Unique ID of particle used for storing connections.
+  /// represents the index in the particle list
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_ID;
 
@@ -233,8 +250,6 @@ protected:
   /// @brief Flag that is set when the particle needs to be split.
   //////////////////////////////////////////////////////////////////////////////
   bool m_split;
-
-  bool m_hit;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief holds IDs of all particles connected to this particle.
@@ -251,6 +266,9 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_foodThreshold;
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Vector holding the IDs of all the particles being hit by light.
+  //////////////////////////////////////////////////////////////////////////////
   std::vector<unsigned int> m_hitParticles;
 
 };

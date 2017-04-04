@@ -20,6 +20,7 @@ class LinkedParticle : public Particle
 {
 
 public:
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Default constructor placing particle at the origin.
   //////////////////////////////////////////////////////////////////////////////
@@ -42,6 +43,7 @@ public:
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
   /// @param[in] _linkedParticles List of particle IDs to be connected to
+
   /// the newly generated particle.
   //////////////////////////////////////////////////////////////////////////////
   LinkedParticle(qreal _x,
@@ -49,17 +51,50 @@ public:
                  qreal _z,
                  std::vector<unsigned int> _linkedParticles);
 
+
   // Lydia and Esmes function
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the particle new position based on Forces.
+  /// @param _particleCentre Position of the average centre of all particles
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _averageDistance Average distance between particles
+  /// @param [in] _particleCount Total number of particles in the system
+  /// @param [in] _lightPos Holds the position of the point light
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) override;
 
-  void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList);
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Repulses the particles which aren't connected by links to
+  /// avoid collisions.
+  /// @param [in] _particleList List of all particles
+  //////////////////////////////////////////////////////////////////////////////
+  void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList, int _cohesionFactor);
 
-  void spring(std::vector<std::unique_ptr<Particle>> &_particleList);
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Calculates the spring and hold functions between linked particles.
+  /// @param [in] _particleList List of all particles
+  //////////////////////////////////////////////////////////////////////////////
+  void spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Moves the particles closest to the centre to create a bulge effect.
+  /// @param [in] _particleCentre Position of the average centre of all particles
+  //////////////////////////////////////////////////////////////////////////////
   void bulge(QVector3D _particleCentre) override;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Moves the particles being hit by light towards the point light.
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _lightPos Holds the position of the point light
+  //////////////////////////////////////////////////////////////////////////////
+  void lightAttract(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Returns a list containing all particles closest to the light.
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _lightPos Holds the position of the point light
+  /////////////////////////////////////////////////////////////////////////////
+  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
 
   // Computes all the relinking and creates a new particle
   //////////////////////////////////////////////////////////////////////////////
@@ -67,7 +102,8 @@ public:
   /// are linked to the new and which to the old particle.
   /// @param[in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
-  void split(std::vector<std::unique_ptr<Particle> > &_particleList) override;
+
+  void split(std::vector<std::unique_ptr<Particle> > &_particleList, std::mt19937_64 _gen) override;
 
 private:
   //////////////////////////////////////////////////////////////////////////////
