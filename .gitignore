@@ -37,5 +37,5 @@ build/*
 *.pro.user
 .DS_Store
 .qmake.stash
-Makefile
+Makefile*
 cells
