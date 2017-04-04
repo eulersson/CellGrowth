@@ -92,18 +92,18 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 //  PLANAR
 //  Moves a particle to the average position of it's linked neighbours
-  for(unsigned int i=0; i<connectionCount; i++)
-  {
-    connectionCentre += linkPosition[i];
-  }
-  connectionCentre = connectionCentre/connectionCount;
-  planar = connectionCentre - m_pos;
+//  for(unsigned int i=0; i<connectionCount; i++)
+//  {
+//    connectionCentre += linkPosition[i];
+//  }
+//  connectionCentre = connectionCentre/connectionCount;
+//  planar = connectionCentre - m_pos;
 
-  float planarLength = planar.length();
-  float planarDist = m_size+(planarLength/2);
-  planar.normalize();
-  planar*=(planarDist/40);
-  m_vel+=planar;
+//  float planarLength = planar.length();
+//  float planarDist = m_size+(planarLength/2);
+//  planar.normalize();
+//  planar*=(planarDist/40);
+//  m_vel+=planar;
   //end of planar
 
   calculateUnlinked(_particleList);
@@ -473,6 +473,115 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 //  std::vector<unsigned int> returnList;
 //  calculate(particleCentre, _particleList, averageDistance, returnList);
 }
+
+/*void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList)
+{
+  // Sanity check
+  if(m_connectedParticles.size() < 2)
+    return;
+
+  std::uniform_int_distribution<int> distribution(1, m_connectedParticles.size());
+
+  //holds all ID's of the particles that are keept by the current particle
+  std::vector<unsigned int> keepList;
+
+  //holds all the ID's of the particles that are linked to the new particle
+  std::vector<unsigned int> relinkList;
+
+  // holds the positions of the linked particles
+  std::vector<QVector3D> linkPosition;
+
+  getPosFromConnections(linkPosition, _particleList);
+
+
+  //pick two random particles out of the particle list
+  //saving index number of it in list not Id or Pos to
+  //avoid searching th particle list for the particle again
+
+
+  unsigned int a=0;
+
+  unsigned int b=distribution(_gen) - 1;
+  if(b == a)
+  {
+    while(b == a)
+      b = distribution(_gen) - 1;
+  }
+
+  QVector3D normal = QVector3D::normal(linkPosition[a], linkPosition[b]);
+
+  //filling two arrays with links based on there position relative to the plane created by the two first particles
+  for(unsigned int i=0;i<m_connectedParticles.size();i++)
+  {
+    if(i != a && i != b)
+    {
+      int r=planeSorting(normal,linkPosition[a],linkPosition[i]);
+      if(r<=0)
+      {
+        keepList.push_back(m_connectedParticles[i]);
+      }
+      else
+      {
+        relinkList.push_back(m_connectedParticles[i]);
+      }
+    }
+  }
+
+  //
+
+
+  //create new particle
+  qreal x=m_pos.x()+normal.x();
+  qreal y=m_pos.y()+normal.y();
+  qreal z=m_pos.z()+normal.z();
+
+
+
+  relinkList.push_back(m_ID);
+  //creating new particle
+
+
+  _particleList.push_back(std::unique_ptr<Particle>(new LinkedParticle(x,y,z,relinkList)));
+
+  //get the new particles ID
+
+  int newPartID=_particleList[_particleList.size()-1]->getID();
+
+  //delete links from old particles
+
+
+  for(unsigned int i=0;i<relinkList.size();i++)
+  {
+     _particleList[relinkList[i]]->deleteConnection(m_ID);
+  }
+
+
+  keepList.push_back(m_connectedParticles[a]);
+  keepList.push_back(m_connectedParticles[b]);
+  relinkList.push_back(m_connectedParticles[a]);
+  relinkList.push_back(m_connectedParticles[b]);
+
+  //link all the particles to the new particle
+  for(unsigned int i=0;i<relinkList.size();i++)
+  {
+    _particleList[relinkList[i]]->connect(newPartID);
+
+  }
+
+  //link both, parent and child, to each other
+  m_connectedParticles=keepList;
+
+
+  connect(newPartID);
+
+  m_foodLevel=0;
+
+//  QVector3D particleCentre;
+//  QVector3D averageDistance;
+//  std::vector<unsigned int> returnList;
+//  calculate(particleCentre, _particleList, averageDistance, returnList);
+}*/
+
 
 
 

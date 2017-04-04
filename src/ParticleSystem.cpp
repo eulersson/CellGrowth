@@ -19,7 +19,7 @@ ParticleSystem::ParticleSystem()
   //qDebug("Default constructor called");
   m_particleCount=0;
   m_particleType= 'L';
-  fill(3);
+  fill(12);
   m_forces = true;
   m_cohesion = 30; //percent
   m_spring = 30;
@@ -102,9 +102,23 @@ void ParticleSystem::fill(unsigned int _amount)
   std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
   std::vector<QVector3D> pos;
-  pos.push_back(QVector3D(0.5,0.5,0));
-  pos.push_back(QVector3D(0.5,-0.5,0));
-  pos.push_back(QVector3D(-0.5,-0.5,0));
+
+  const float X = 0.525731112119133606;
+  const float Z = 0.850650808352039932;
+  const float N= 0.0f;
+
+  pos.push_back(QVector3D(-X,N,Z));
+  pos.push_back(QVector3D(X,N,Z));
+  pos.push_back(QVector3D(-X,N,-Z));
+  pos.push_back(QVector3D(X,N,-Z));
+  pos.push_back(QVector3D(N,Z,X));
+  pos.push_back(QVector3D(N,Z,-X));
+  pos.push_back(QVector3D(N,-Z,X));
+  pos.push_back(QVector3D(N,-Z,-X));
+  pos.push_back(QVector3D(Z,X,N));
+  pos.push_back(QVector3D(-Z,X,N));
+  pos.push_back(QVector3D(Z,-X,N));
+  pos.push_back(QVector3D(-Z,-X,N));
 
   for (unsigned int i = 0; i < _amount; i++)
   {
@@ -118,29 +132,64 @@ void ParticleSystem::fill(unsigned int _amount)
     }
     else if(m_particleType=='L')
     {
-      m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+      m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z())));
+      //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     }
     m_particleCount++;
   }
 
-  if (_amount <= 4)
+//  if (_amount <= 12)
+//  {
+//    // We start with a small amount of particles so they can all be linked to each other
+//    for (unsigned int i=0; i < m_particles.size(); i++)
+//    {
+//      // Linking all other particles to the i particle
+//      for (unsigned int j = 0; j < m_particles.size(); j++)
+//      {
+//        if (j == i) { continue; }
+//        m_particles[i]->connect(m_particles[j]->getID());
+//      }
+//    }
+//  }
+
+  if (_amount <= 12)
   {
-    // We start with a small amount of particles so they can all be linked to each other
-    for (unsigned int i=0; i < m_particles.size(); i++)
-    {
-      // Linking all other particles to the i particle
-      for (unsigned int j = 0; j < m_particles.size(); j++)
-      {
-        if (j == i) { continue; }
-        m_particles[i]->connect(m_particles[j]->getID());
-      }
-    }
+    m_particles[0]->connect(1);
+    m_particles[0]->connect(4);
+    m_particles[0]->connect(6);
+    m_particles[0]->connect(9);
+    m_particles[0]->connect(11);
+    m_particles[1]->connect(4);
+    m_particles[1]->connect(6);
+    m_particles[1]->connect(8);
+    m_particles[1]->connect(10);
+    m_particles[2]->connect(3);
+    m_particles[2]->connect(5);
+    m_particles[2]->connect(7);
+    m_particles[2]->connect(9);
+    m_particles[2]->connect(11);
+    m_particles[3]->connect(5);
+    m_particles[3]->connect(7);
+    m_particles[3]->connect(8);
+    m_particles[3]->connect(10);
+    m_particles[4]->connect(5);
+    m_particles[4]->connect(8);
+    m_particles[4]->connect(9);
+    m_particles[5]->connect(8);
+    m_particles[5]->connect(9);
+    m_particles[6]->connect(7);
+    m_particles[6]->connect(10);
+    m_particles[6]->connect(11);
+    m_particles[7]->connect(10);
+    m_particles[7]->connect(11);
+    m_particles[8]->connect(10);
+    m_particles[9]->connect(11);
   }
 
-  else
-  {
-    qDebug("To many particles to link");
-  }
+//  else
+//  {
+//    qDebug("To many particles to link");
+//  }
 }
 
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
