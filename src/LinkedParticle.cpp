@@ -39,6 +39,7 @@ LinkedParticle::LinkedParticle(qreal _x,
 // All the force calculation should happen in here
 void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount)
 {
+
   //  EQUIDISTANCE
   //  have found average distance away from centre
   QVector3D distance = _particleCentre - m_pos;
@@ -93,18 +94,18 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 //  PLANAR
 //  Moves a particle to the average position of it's linked neighbours
-  for(unsigned int i=0; i<connectionCount; i++)
-  {
-    connectionCentre += linkPosition[i];
-  }
-  connectionCentre = connectionCentre/connectionCount;
-  planar = connectionCentre - m_pos;
+//  for(unsigned int i=0; i<connectionCount; i++)
+//  {
+//    connectionCentre += linkPosition[i];
+//  }
+//  connectionCentre = connectionCentre/connectionCount;
+//  planar = connectionCentre - m_pos;
 
-  float planarLength = planar.length();
-  float planarDist = m_size+(planarLength/2);
-  planar.normalize();
-  planar*=(planarDist/40);
-  m_vel+=planar;
+//  float planarLength = planar.length();
+//  float planarDist = m_size+(planarLength/2);
+//  planar.normalize();
+//  planar*=(planarDist/40);
+//  m_vel+=planar;
   //end of planar
 
   calculateUnlinked(_particleList);
@@ -360,6 +361,7 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
 
 void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
 {
+
   // Sanity check
   if(m_connectedParticles.size() < 2)
     return;
@@ -414,10 +416,11 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   //
 
 
+  normal.normalize();
   //create new particle
-  qreal x=m_pos.x()+normal.x();
-  qreal y=m_pos.y()+normal.y();
-  qreal z=m_pos.z()+normal.z();
+  qreal x=m_pos.x()+normal.x()*m_size;
+  qreal y=m_pos.y()+normal.y()*m_size;
+  qreal z=m_pos.z()+normal.z()*m_size;
 
 
 
@@ -464,7 +467,9 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 //  QVector3D averageDistance;
 //  std::vector<unsigned int> returnList;
 //  calculate(particleCentre, _particleList, averageDistance, returnList);
+
 }
+
 
 
 

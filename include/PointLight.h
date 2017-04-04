@@ -26,7 +26,7 @@ const QVector3D LIGHT_COLOUR = QVector3D(0.8f, 0.8f, 0.8f);
 /// @brief Deals with inputs, and diverts them to the appropriate classes. Point
 /// light class. Stores functions and parameters related to the scene lights.
 ////////////////////////////////////////////////////////////////////////////////
-class PointLight : public SelectObject
+class PointLight : public SelectableObject
 {
 public:
   //////////////////////////////////////////////////////////////////////////////

@@ -1,13 +1,9 @@
-
-
 ////////////////////////////////////////////////////////////////////////////////
 /// @file GLWindow.h
 /// @author Ramon Blanquer
 /// @author Fanny Marstrom
 /// @author Carola Gille
-/// @version 0.0.2
-/// @class GLWindow
-/// @brief Handles all the windowing related functionality and connects to the UI
+/// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef WINDOW_H
@@ -31,7 +27,6 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QWheelEvent>
-
 #include <QMainWindow>
 
 // Project
@@ -45,9 +40,6 @@
 /// Subclasses QOpenGLWindow which wraps all the functionality that allows
 /// QWindow to render OpenGL graphics.
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
 class GLWindow : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core
 
 {
@@ -94,7 +86,7 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief List of all scene objects. Not including particles.
   //////////////////////////////////////////////////////////////////////////////
-  std::vector<std::shared_ptr<SelectObject>> m_object_list;
+  std::vector<std::shared_ptr<SelectableObject>> m_object_list;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief vec3 to store light position.
