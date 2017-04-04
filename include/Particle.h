@@ -9,7 +9,8 @@
 #define PARTICLE_H
 
 // Native
-#include<memory>
+#include <memory>
+#include <vector>
 
 // Qt
 #include<QVector3D>
@@ -90,7 +91,7 @@ public:
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
   /////////////////////////////////////////////////////////////////////////////
-  virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
+  virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold.

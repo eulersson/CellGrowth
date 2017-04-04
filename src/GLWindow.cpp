@@ -620,7 +620,6 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
     case Qt::Key_Space:
       m_ps.splitRandomParticle();
       //m_ps.splitHitParticle();
-      qInfo("%d", m_ps.getSize());
       qDebug("%d particles in the system", m_ps.getSize());
       break;
 
