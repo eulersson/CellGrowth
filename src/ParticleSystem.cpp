@@ -93,9 +93,6 @@ void ParticleSystem::bulge()
   calculateParticleCentre();
 }
 
-
-
-
 void ParticleSystem::fill(unsigned int _amount)
 {
   std::random_device rd;
@@ -193,6 +190,10 @@ void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
   }
 }
 
+void ParticleSystem::setLightPos(QVector3D _lightPos)
+{
+  _lightPos = m_lightPos;
+}
 
 void ParticleSystem::splitRandomParticle()
 {
@@ -221,7 +222,6 @@ void ParticleSystem::splitRandomParticle()
   {
     m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
   }
-  std::cout<<"particles: "<<m_particleCount<<std::endl;
 }
 
 

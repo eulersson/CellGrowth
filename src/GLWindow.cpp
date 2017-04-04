@@ -9,6 +9,7 @@
 
 // Qt
 #include <QKeyEvent>
+#include <iostream>
 
 // Project
 #include "GLWindow.h"
@@ -531,6 +532,9 @@ void GLWindow::setupLights()
   pointlight->createGeometry(context(), masterUniqueColour);
   m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
 
+//  QVector3D lightPos = pointlight->getPosition();
+//  m_ps.setLightPos(lightPos);
+//  std::cout<<"light pos "<<lightPos.y()<<std::endl;
 
   m_input_manager->addShaderProgram(m_manipulator_program);
   m_input_manager->addShaderProgram(m_sun_program);
@@ -570,6 +574,16 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
 
 void GLWindow::updateParticleSystem()
 {
+  PointLight *pointlight;
+  pointlight = new PointLight(
+        QVector3D(0, 0, 0),
+        m_manipulator_program,
+        m_sun_program);
+
+  QVector3D lightPos = pointlight->getPosition();
+  m_ps.setLightPos(lightPos);
+  std::cout<<"light pos: "<<lightPos.x()<<" "<<lightPos.y()<<" "<<lightPos.z()<<std::endl;
+
   //m_ps.splitRandomParticle();
   m_ps.advance();
   sendParticleDataToOpenGL();
@@ -636,7 +650,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
     switch(ev->key())
     {
         case Qt::Key_Space:
-               m_ps.splitRandomParticle();
+            m_ps.splitRandomParticle();
             qDebug("%d particles in the system", m_ps.getSize());
             break;
 
