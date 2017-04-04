@@ -94,18 +94,18 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 //  PLANAR
 //  Moves a particle to the average position of it's linked neighbours
-  for(unsigned int i=0; i<connectionCount; i++)
-  {
-    connectionCentre += linkPosition[i];
-  }
-  connectionCentre = connectionCentre/connectionCount;
-  planar = connectionCentre - m_pos;
+//  for(unsigned int i=0; i<connectionCount; i++)
+//  {
+//    connectionCentre += linkPosition[i];
+//  }
+//  connectionCentre = connectionCentre/connectionCount;
+//  planar = connectionCentre - m_pos;
 
-  float planarLength = planar.length();
-  float planarDist = m_size+(planarLength/2);
-  planar.normalize();
-  planar*=(planarDist/40);
-  m_vel+=planar;
+//  float planarLength = planar.length();
+//  float planarDist = m_size+(planarLength/2);
+//  planar.normalize();
+//  planar*=(planarDist/40);
+//  m_vel+=planar;
   //end of planar
 
   calculateUnlinked(_particleList);
