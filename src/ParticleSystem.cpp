@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @file ParticleSystem.cpp
 /// @author Carola Gille
@@ -14,7 +15,8 @@
 #include "include/ParticleSystem.h"
 
 // Default constructor creates a 2500 (50*50) distribution of particles
-ParticleSystem::ParticleSystem()
+ParticleSystem::ParticleSystem() :
+  m_gen(m_rd())
 {
   //qDebug("Default constructor called");
   m_particleCount=0;
@@ -27,7 +29,8 @@ ParticleSystem::ParticleSystem()
 }
 
 // For custom number of particlesm_packagedParticleData
-ParticleSystem::ParticleSystem(char _particleType)
+ParticleSystem::ParticleSystem(char _particleType):
+  m_gen(m_rd())
 {
   //qDebug("Custom constructor called");
   m_particleCount=0;
@@ -61,6 +64,7 @@ void ParticleSystem::advance()
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
     //split only if triggered by light
+
 //    if(m_particles[i]->testForSplit())
 //    {
 //      m_particles[i]->split(m_particles);
@@ -93,9 +97,6 @@ void ParticleSystem::bulge()
   calculateParticleCentre();
 }
 
-
-
-
 void ParticleSystem::fill(unsigned int _amount)
 {
   std::random_device rd;
@@ -105,6 +106,7 @@ void ParticleSystem::fill(unsigned int _amount)
   pos.push_back(QVector3D(0.5,0.5,0));
   pos.push_back(QVector3D(0.5,-0.5,0));
   pos.push_back(QVector3D(-0.5,-0.5,0));
+
 
   for (unsigned int i = 0; i < _amount; i++)
   {
@@ -140,19 +142,23 @@ void ParticleSystem::fill(unsigned int _amount)
   else
   {
     qDebug("To many particles to link");
+
   }
 }
 
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
 // the copy constructor triggered by the = (assignment) operator would trigger
 // a change of ownership. We do not want that. Read on unique_ptr and shared_ptr.
+
 Particle* ParticleSystem::getParticle(unsigned int _idx)
+
 {
   return m_particles[_idx].get();
 }
 
 // Gets the total number of particles
 unsigned int ParticleSystem::getSize()
+
 {
   // Changed this to query the size
   return m_particles.size();
@@ -196,8 +202,6 @@ void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
 
 void ParticleSystem::splitRandomParticle()
 {
-  std::random_device rd;
-  std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
 
@@ -208,19 +212,19 @@ void ParticleSystem::splitRandomParticle()
 
   if(m_particleType=='G')
   {
-  m_particles[distribution(gen)]->split(light,m_particles);
+  m_particles[distribution(m_gen)]->split(light,m_particles);
   }
   else if(m_particleType=='L')
   {
-    m_particles[distribution(gen)]->split(m_particles);
+    m_particles[distribution(m_gen)]->split(m_particles,m_gen);
   }
 
-  m_particleCount++;
+  m_particleCount=m_particles.size();
 
-  for (unsigned int i = 0; i < m_particleCount; ++i)
-  {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
-  }
+//  for (unsigned int i = 0; i < m_particleCount; ++i)
+//  {
+//    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+//  }
 
   qDebug("Particles: %d", m_particleCount);
 }
@@ -236,13 +240,13 @@ void ParticleSystem::splitHitParticle()
     m_particles[i]->getHitParticles(m_particles);
   }
 
-  m_particles[0]->split(m_particles);
+  m_particles[0]->split(m_particles,m_gen  );
   m_particleCount++;
 
-  for (unsigned int i = 0; i < m_particleCount; ++i)
-  {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
-  }
+//  for (unsigned int i = 0; i < m_particleCount; ++i)
+//  {
+//    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+//  }
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)

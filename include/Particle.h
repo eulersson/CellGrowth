@@ -92,16 +92,19 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   virtual void split(QVector3D, std::vector<std::unique_ptr<Particle>>&) {}
 
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(std::vector<std::unique_ptr<Particle>>&) {}
+
+  virtual void split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
   /// they collide with anything.
   //////////////////////////////////////////////////////////////////////////////
+
   virtual bool recursiveCollision(
       QVector3D,
       std::vector<std::unique_ptr<Particle>>&) { return false; }
@@ -189,13 +192,6 @@ public:
       std::vector<QVector3D> &_linkPos,
       std::vector<std::unique_ptr<Particle>> &_particleList);
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns the index of the particle in the particle system.
-  /// @param[in] _particleList List from the particle system holding all
-  /// existing particles.
-  /// @return Index number of the the particle in the particle system.
-  //////////////////////////////////////////////////////////////////////////////
-  int getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief static function that resets the m_ID_counter to 0.
@@ -221,6 +217,7 @@ protected:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Unique ID of particle used for storing connections.
+  /// represents the index in the particle list
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_ID;
 
