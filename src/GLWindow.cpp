@@ -340,7 +340,7 @@ void GLWindow::drawQuad()
 
   m_quad_program->bind();
   m_quad_vao->bind();
-    m_quad_program->setUniformValue("drawLinks", m_draw_links);
+    m_quad_program->setUniformValue("drawLinks", true);
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
     glDrawArrays(GL_TRIANGLES, 0, 6);
   m_quad_vao->release();
@@ -620,16 +620,20 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
 
     case Qt::Key_1:
       m_activeRenderPassIndex = m_ADSIndex;
+      emit changedShadingType(0);
       qDebug("ADS Render.");
       break;
 
     case Qt::Key_2:
       m_activeRenderPassIndex = m_xRayIndex;
+
+      emit changedShadingType(1);
       qDebug("X-Ray visualisation.");
       break;
 
     case Qt::Key_3:
       m_activeRenderPassIndex = m_AOIndex;
+      emit changedShadingType(2);
       qDebug("Ambient Occlusion.");
       break;
 
@@ -718,13 +722,26 @@ void GLWindow::cancel()
 
 void GLWindow::showConnections(bool _state)
 {
-  // Maybe there could be an attribute here that could be toggled and tested when rendering
+  m_draw_links=_state;
   sendParticleDataToOpenGL();
 }
 
 void GLWindow::setShading(QString _type)
 {
-  // Same here maybe have attribute that then gets passed to shader?
+  if (_type=="ADS")
+  {
+    m_activeRenderPassIndex = m_ADSIndex;
+
+  }
+  else if(_type=="Ambient Occlusion")
+  {
+    m_activeRenderPassIndex = m_AOIndex;
+
+  }
+  else if(_type=="X Ray")
+  {
+    m_activeRenderPassIndex = m_xRayIndex;
+  }
   sendParticleDataToOpenGL();
 }
 
@@ -772,7 +789,7 @@ void GLWindow::setGrowthRadius(int _amount)
 
 void GLWindow::restart()
 {
-  // Restart program
+  m_ps.reset('L');
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetParticleTap(0);
@@ -781,6 +798,9 @@ void GLWindow::restart()
   emit resetSpring(30);
   emit resetChildrenThreshold(3);
   emit resetBranchLength(3.0);
+  m_activeRenderPassIndex=m_ADSIndex;
+  emit setShading(0);
+  emit setConnectionState(true);
   // Add reset functions here
 
 }

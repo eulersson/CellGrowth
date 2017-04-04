@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'GUI.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -73,7 +73,7 @@ public:
     QGridLayout *gridLayout_4;
     QCheckBox *m_showConnections;
     QLabel *label_9;
-    QComboBox *m_shadineType;
+    QComboBox *m_shadingType;
     QGroupBox *groupBox_5;
     QGridLayout *gridLayout_8;
     QPushButton *m_restart;
@@ -261,7 +261,7 @@ public:
 
         groupBox_4 = new QGroupBox(groupBox_3);
         groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
-        groupBox_4->setEnabled(false);
+        groupBox_4->setEnabled(true);
         sizePolicy1.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
         groupBox_4->setSizePolicy(sizePolicy1);
         groupBox_4->setFlat(false);
@@ -270,6 +270,7 @@ public:
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
         m_showConnections = new QCheckBox(groupBox_4);
         m_showConnections->setObjectName(QStringLiteral("m_showConnections"));
+        m_showConnections->setChecked(true);
 
         gridLayout_4->addWidget(m_showConnections, 0, 0, 1, 1);
 
@@ -278,10 +279,10 @@ public:
 
         gridLayout_4->addWidget(label_9, 1, 0, 1, 1);
 
-        m_shadineType = new QComboBox(groupBox_4);
-        m_shadineType->setObjectName(QStringLiteral("m_shadineType"));
+        m_shadingType = new QComboBox(groupBox_4);
+        m_shadingType->setObjectName(QStringLiteral("m_shadingType"));
 
-        gridLayout_4->addWidget(m_shadineType, 1, 1, 1, 1);
+        gridLayout_4->addWidget(m_shadingType, 1, 1, 1, 1);
 
 
         gridLayout_6->addWidget(groupBox_4, 3, 0, 1, 2);
@@ -331,46 +332,47 @@ public:
 
     void retranslateUi(QMainWindow *GUI)
     {
-        GUI->setWindowTitle(QApplication::translate("GUI", "MainWindow", Q_NULLPTR));
-        groupBox_3->setTitle(QApplication::translate("GUI", "GroupBox", Q_NULLPTR));
-        m_LP_forces->setTitle(QApplication::translate("GUI", "Forces", Q_NULLPTR));
-        label_3->setText(QApplication::translate("GUI", "Cohesion", Q_NULLPTR));
-        label_4->setText(QApplication::translate("GUI", "Spring", Q_NULLPTR));
-        LP_bulge->setText(QApplication::translate("GUI", "Bulge", Q_NULLPTR));
-        m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", Q_NULLPTR));
-        label_7->setText(QApplication::translate("GUI", "Radius for Branch Growth", Q_NULLPTR));
-        label_6->setText(QApplication::translate("GUI", "Branches per particle", Q_NULLPTR));
-        label_5->setText(QApplication::translate("GUI", "Branch Length", Q_NULLPTR));
-        m_particleTab->setTabText(m_particleTab->indexOf(m_growthParticleTab), QApplication::translate("GUI", "Growth Particles", Q_NULLPTR));
-        groupBox_2->setTitle(QApplication::translate("GUI", "Interaction", Q_NULLPTR));
+        GUI->setWindowTitle(QApplication::translate("GUI", "MainWindow", 0));
+        groupBox_3->setTitle(QApplication::translate("GUI", "GroupBox", 0));
+        m_LP_forces->setTitle(QApplication::translate("GUI", "Forces", 0));
+        label_3->setText(QApplication::translate("GUI", "Cohesion", 0));
+        label_4->setText(QApplication::translate("GUI", "Spring", 0));
+        LP_bulge->setText(QApplication::translate("GUI", "Bulge", 0));
+        m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", 0));
+        label_7->setText(QApplication::translate("GUI", "Radius for Branch Growth", 0));
+        label_6->setText(QApplication::translate("GUI", "Branches per particle", 0));
+        label_5->setText(QApplication::translate("GUI", "Branch Length", 0));
+        m_particleTab->setTabText(m_particleTab->indexOf(m_growthParticleTab), QApplication::translate("GUI", "Growth Particles", 0));
+        groupBox_2->setTitle(QApplication::translate("GUI", "Interaction", 0));
         m_splitType->clear();
         m_splitType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "Controlled by Light", Q_NULLPTR)
-         << QApplication::translate("GUI", "Controlled by Click", Q_NULLPTR)
-         << QApplication::translate("GUI", "Random", Q_NULLPTR)
+         << QApplication::translate("GUI", "Controlled by Light", 0)
+         << QApplication::translate("GUI", "Controlled by Click", 0)
+         << QApplication::translate("GUI", "Random", 0)
         );
-        label_8->setText(QApplication::translate("GUI", "Split Type", Q_NULLPTR));
-        groupBox->setTitle(QApplication::translate("GUI", "Particle", Q_NULLPTR));
-        label_2->setText(QApplication::translate("GUI", "Particle Size", Q_NULLPTR));
-        label->setText(QApplication::translate("GUI", "Particle Type", Q_NULLPTR));
+        label_8->setText(QApplication::translate("GUI", "Split Type", 0));
+        groupBox->setTitle(QApplication::translate("GUI", "Particle", 0));
+        label_2->setText(QApplication::translate("GUI", "Particle Size", 0));
+        label->setText(QApplication::translate("GUI", "Particle Type", 0));
         m_particleType->clear();
         m_particleType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "Linked Particles", Q_NULLPTR)
-         << QApplication::translate("GUI", "Growth Particles", Q_NULLPTR)
+         << QApplication::translate("GUI", "Linked Particles", 0)
+         << QApplication::translate("GUI", "Growth Particles", 0)
         );
-        groupBox_4->setTitle(QApplication::translate("GUI", "Display Options", Q_NULLPTR));
-        m_showConnections->setText(QApplication::translate("GUI", "Show connections", Q_NULLPTR));
-        label_9->setText(QApplication::translate("GUI", "Type of Shading", Q_NULLPTR));
-        m_shadineType->clear();
-        m_shadineType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "Ambient Occlusion", Q_NULLPTR)
-         << QApplication::translate("GUI", "X Ray", Q_NULLPTR)
-         << QApplication::translate("GUI", "ADS", Q_NULLPTR)
+        groupBox_4->setTitle(QApplication::translate("GUI", "Display Options", 0));
+        m_showConnections->setText(QApplication::translate("GUI", "Show connections", 0));
+        label_9->setText(QApplication::translate("GUI", "Type of Shading", 0));
+        m_shadingType->clear();
+        m_shadingType->insertItems(0, QStringList()
+         << QApplication::translate("GUI", "ADS", 0)
+         << QApplication::translate("GUI", "X Ray", 0)
+         << QApplication::translate("GUI", "Ambient Occlusion", 0)
         );
+        m_shadingType->setCurrentText(QApplication::translate("GUI", "ADS", 0));
         groupBox_5->setTitle(QString());
-        m_restart->setText(QApplication::translate("GUI", "Restart", Q_NULLPTR));
-        m_cancel->setText(QApplication::translate("GUI", "Cancel", Q_NULLPTR));
-        menuCells_ControlUI->setTitle(QApplication::translate("GUI", "Cells ControlUI", Q_NULLPTR));
+        m_restart->setText(QApplication::translate("GUI", "Restart", 0));
+        m_cancel->setText(QApplication::translate("GUI", "Cancel", 0));
+        menuCells_ControlUI->setTitle(QApplication::translate("GUI", "Cells ControlUI", 0));
     } // retranslateUi
 
 };

@@ -310,7 +310,7 @@
        <item row="3" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_4">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -333,6 +333,9 @@
             <property name="text">
              <string>Show connections</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -343,10 +346,13 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="m_shadineType">
+           <widget class="QComboBox" name="m_shadingType">
+            <property name="currentText">
+             <string>ADS</string>
+            </property>
             <item>
              <property name="text">
-              <string>Ambient Occlusion</string>
+              <string>ADS</string>
              </property>
             </item>
             <item>
@@ -356,7 +362,7 @@
             </item>
             <item>
              <property name="text">
-              <string>ADS</string>
+              <string>Ambient Occlusion</string>
              </property>
             </item>
            </widget>
