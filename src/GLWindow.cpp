@@ -5,7 +5,7 @@
 /// @author Carola Gille
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
-
+#include <iostream>
 // Qt
 #include <QKeyEvent>
 
@@ -84,20 +84,20 @@ void GLWindow::initializeGL()
 
 void GLWindow::paintGL()
 {
-  updateModelMatrix();
+    updateModelMatrix();
 
-  m_input_manager->setupCamera(width(), height());
-  m_input_manager->doMovement();
+    m_input_manager->setupCamera(width(), height());
+    m_input_manager->doMovement();
 
   m_fbo->bind();
-    loadMaterialToShader();
-    loadLightToShader();
-    loadMatrixToShader();
-    glEnable(GL_DEPTH_TEST);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    drawParticles();
-    if (m_draw_links) { drawLinks(); }
-    for(auto &s : m_object_list) { s->draw(); }
+      loadMaterialToShader();
+      loadLightToShader();
+      loadMatrixToShader();
+      glEnable(GL_DEPTH_TEST);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      drawParticles();
+      if (m_draw_links) { drawLinks(); }
+      for(auto &s : m_object_list) { s->draw(); }
 
 
   m_fbo->release();
@@ -314,20 +314,29 @@ void GLWindow::prepareParticles()
 
 void GLWindow::drawQuad()
 {
+  // From docs: When multiple textures are attached, the return value of
+  // QOpenGLFrameBufferObject::texture() is the ID of the first one.
+  // Notice that QOpenGLFrameBufferObject::takeTexture(GLuint) cannot be used
+  // as it was created the memory leaks because under the hood in was creating
+  // a new texture and returning it, so at every paint iteration so many
+  // textures were being created.
+
+  GLuint textureID = m_fbo->texture();
+
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(0));
+  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(1));
+  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(2));
+  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(3));
+  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE4);
-  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(4));
+  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE5);
-  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(5));
+  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE6);
-  glBindTexture(GL_TEXTURE_2D, m_fbo->takeTexture(6));
+  glBindTexture(GL_TEXTURE_2D, textureID);
 
   m_quad_program->bind();
   m_quad_vao->bind();
@@ -608,6 +617,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
   {
     case Qt::Key_Space:
       m_ps.splitRandomParticle();
+      qInfo("%d", m_ps.getSize());
       qDebug("%d particles in the system", m_ps.getSize());
       break;
 

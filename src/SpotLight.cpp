@@ -254,31 +254,67 @@ void SpotLight::setupObject()
 
   // Create geomtry
   std::vector<QVector3D> vertices;
-  unsigned int sectors = 20;
-  float radius = CONE_ANGLE/90.0f;
+  unsigned int segments = 20;
+  float amt=(2*M_PI)/segments;
+  float r = CONE_ANGLE/90.0f;
+  float thickness=0.04f; thickness++;
   float length = 3.0f*sin(qDegreesToRadians(coneangle));
   QVector3D topPoint = QVector3D(m_points[0], m_points[1], m_points[2]);
-  for(unsigned int i = 0; i < sectors; i++) {
+//  for(unsigned int i = 0; i < sectors; i++) {
 
-    float angle = (2 * M_PI) * ((float)i / (float)sectors);
-    float s = radius * sin(angle);
-    float c = radius * cos(angle);
+//    float angle = (2 * M_PI) * ((float)i / (float)sectors);
+//    float s = radius * sin(angle);
+//    float c = radius * cos(angle);
 
-    float angleNext = (2 * M_PI) * ((float)(i + 1) / (float)sectors);
-    float s2 = radius * sin(angleNext);
-    float c2 = radius * cos(angleNext);
+//    float angleNext = (2 * M_PI) * ((float)(i + 1) / (float)sectors);
+//    float s2 = radius * sin(angleNext);
+//    float c2 = radius * cos(angleNext);
 
-    float x = length;
-    float y = s;
-    float z = c;
+//    float x = length;
+//    float y = s;
+//    float z = c;
 
-    float x2 = length;
-    float y2 = s2;
-    float z2 = c2;
+//    float x2 = length;
+//    float y2 = s2;
+//    float z2 = c2;
 
-    vertices.push_back(QVector3D(x, y, z));
-    vertices.push_back(QVector3D(x2, y2, z2));
-    vertices.push_back(topPoint);
+//    vertices.push_back(QVector3D(x, y, z));
+//    vertices.push_back(QVector3D(x2, y2, z2));
+//    vertices.push_back(topPoint);
+//  }
+
+  QVector3D op(length,0,0);
+
+  QVector3D lastPoint = QVector3D(op.x(),op.y(),op.z());
+  for(size_t i=0; i<=segments;i++)
+  {
+    float angle = amt*i;
+
+    float x=0;
+    float z=r*cos(angle);
+    float y=r*sin(angle);
+    float lx=1;
+    float lz=thickness;
+    float ly=thickness;
+
+    if(lastPoint==QVector3D(op.x(),op.y(),op.z()))
+    {
+      lastPoint=QVector3D(x,y,z);
+      continue;
+    }
+
+
+    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(lastPoint+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
+
+    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(x*lx, y*ly, z*lz)+QVector3D(op.x(),op.y(),op.z()));
+
+    lastPoint=QVector3D(x,y,z);
+
+
   }
 
   // Make geometry OpenGL readable
