@@ -58,20 +58,20 @@ public:
   /// @param [in] _particleCount Total number of particles in the system
   /// @param [in] _lightPos Holds the position of the point light
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Repulses the particles which aren't connected by links to
   /// avoid collisions.
   /// @param [in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
-  void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList);
+  void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList, int _cohesionFactor);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the spring and hold functions between linked particles.
   /// @param [in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
-  void spring(std::vector<std::unique_ptr<Particle>> &_particleList);
+  void spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.

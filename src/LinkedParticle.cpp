@@ -36,7 +36,7 @@ LinkedParticle::LinkedParticle(qreal _x,
 
 
 // All the force calculation should happen in here
-void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor)
+void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor)
 {
   //  EQUIDISTANCE
   //  have found average distance away from centre
@@ -78,7 +78,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   }
 
   cohesion.normalize();
-  cohesion*=(cohesionDist/_cohesionFactor);
+  cohesion*=(cohesionDist/(_cohesionFactor*3.3f));
   m_vel+=cohesion;
   //end of cohere
 
@@ -102,16 +102,18 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   float planarLength = planar.length();
   float planarDist = m_size+(planarLength/2);
   planar.normalize();
-  planar*=(planarDist/40);
+  planar*=(planarDist/(_cohesionFactor*1.3f));
   m_vel+=planar;
   //end of planar
 
-  calculateUnlinked(_particleList);
+  //spring(_particleList, _springFactor);
+
+  calculateUnlinked(_particleList, _cohesionFactor);
 
   lightAttract(_particleList, _lightPos);
 }
 
-void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleList)
+void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor)
 {
   QVector3D spring;
   QVector3D hold;
@@ -130,7 +132,7 @@ void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleLis
     {
       float springDist = m_size-(springLength/2);
       spring.normalize();
-      spring*=(springDist/100);
+      spring*=(springDist/(_springFactor*3.3f));
       m_vel+=spring;
     }
 
@@ -290,7 +292,7 @@ void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleLis
 // }
 }
 
-void LinkedParticle::calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList)
+void LinkedParticle::calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList, int _cohesionFactor)
 {
   //REPULSE
   //Move the particles which aren't linked away from each other
