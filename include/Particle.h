@@ -90,7 +90,7 @@ public:
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
   /////////////////////////////////////////////////////////////////////////////
-  virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
+  //virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold.
@@ -270,6 +270,8 @@ protected:
   /// @brief Vector holding the IDs of all the particles being hit by light.
   //////////////////////////////////////////////////////////////////////////////
   std::vector<unsigned int> m_hitParticles;
+
+  std::vector<unsigned int> m_fallOff;
 
 };
 

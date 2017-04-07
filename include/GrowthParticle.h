@@ -65,7 +65,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
   //////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
+  //std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch from that Particle.

@@ -362,10 +362,9 @@ std::vector<unsigned int> LinkedParticle::getHitParticles(std::vector<std::uniqu
   for(unsigned int i=0; i<=_particleList.size(); i++)
   {
     lightDist = m_pos - _lightPos;
+    float hitLength = lightDist.length();
 
-    if((lightDist.x()<=0.5)
-            && (lightDist.y()<=0.5)
-            && (lightDist.z()<=0.5))
+    if(hitLength<=0.5)
     {
       m_hitParticles.push_back(_particleList[i]->getID());
       break;
@@ -375,9 +374,28 @@ std::vector<unsigned int> LinkedParticle::getHitParticles(std::vector<std::uniqu
   return m_hitParticles;
 }
 
+std::vector<unsigned int> LinkedParticle::getFallOff(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
+{
+  QVector3D lightDist;
+
+  for(unsigned int i=0; i<=_particleList.size(); i++)
+  {
+    lightDist = m_pos - _lightPos;
+    float fallOffLength = lightDist.length();
+
+    if(fallOffLength>=0.5 && fallOffLength<=2)
+    {
+      m_fallOff.push_back(_particleList[i]->getID());
+      break;
+    }
+  }
+  return m_fallOff;
+}
+
 void LinkedParticle::lightAttract(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
 {
   getHitParticles(_particleList, _lightPos);
+  getFallOff(_particleList, _lightPos);
 
   QVector3D lightDist;
 
@@ -389,6 +407,15 @@ void LinkedParticle::lightAttract(std::vector<std::unique_ptr<Particle>> &_parti
       {
         lightDist = _lightPos - m_pos;
         lightDist /= 1500;
+        m_vel += lightDist;
+      }
+    }
+    for(unsigned int k=0; k<m_fallOff.size(); k++)
+    {
+      if(i==k)
+      {
+        lightDist = _lightPos - m_pos;
+        lightDist /= 2000;
         m_vel += lightDist;
       }
     }

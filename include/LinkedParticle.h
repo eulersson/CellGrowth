@@ -94,7 +94,9 @@ public:
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
   /////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
+  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
+
+  std::vector<unsigned int> getFallOff(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
 
   // Computes all the relinking and creates a new particle
   //////////////////////////////////////////////////////////////////////////////
