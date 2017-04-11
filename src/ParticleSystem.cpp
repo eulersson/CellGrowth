@@ -18,6 +18,7 @@
 ParticleSystem::ParticleSystem() :
   m_gen(m_rd())
 {
+  m_currentParticleSize=2.0;
   //qDebug("Default constructor called");
   m_particleCount=0;
   m_particleType= 'L';
@@ -26,12 +27,14 @@ ParticleSystem::ParticleSystem() :
   m_cohesion = 30; //percent
   m_spring = 30;
 
+
 }
 
 // For custom number of particlesm_packagedParticleData
 ParticleSystem::ParticleSystem(char _particleType):
   m_gen(m_rd())
 {
+  m_currentParticleSize=2.0;
   //qDebug("Custom constructor called");
   m_particleCount=0;
 
@@ -46,10 +49,12 @@ ParticleSystem::ParticleSystem(char _particleType):
   //if it's a Growth particle we need 1 particle to start with
   else if (m_particleType== 'G')
   {
+
     fill(1);
     m_forces = true;
     m_cohesion = 30; //percent
     m_spring = 30;
+
   }
 
 }
@@ -127,13 +132,13 @@ void ParticleSystem::fill(unsigned int _amount)
 
     if(m_particleType=='G')
     {
-      m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(0,0,0)));
+      m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(0,0,0,m_currentParticleSize)));
        m_particleCount++;
 
     }
     else if(m_particleType=='L')
     {
-      m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z())));
+      m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z(),m_currentParticleSize)));
       //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     }
     m_particleCount++;
@@ -382,6 +387,7 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
 
 void ParticleSystem::setParticleSize(double _size)
 {
+  m_currentParticleSize=_size;
   for(unsigned int i=0;i< m_particles.size();i++)
   {
     m_particles[i]->setRadius(_size);

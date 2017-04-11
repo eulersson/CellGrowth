@@ -6,7 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <random>
-
+#include <cmath>
+#include <iostream>
 #include "GrowthParticle.h"
 
 
@@ -15,20 +16,17 @@ GrowthParticle::GrowthParticle():Particle()
   //qDebug("Growth Particle default constructor.");
 }
 
-GrowthParticle::GrowthParticle(qreal _x,
-                               qreal _y,
-                               qreal _z): Particle(_x,_y,_z)
+GrowthParticle::GrowthParticle(qreal _x,qreal _y,qreal _z,float _size):Particle(_x,_y,_z, _size)
 {
   m_childrenTreshold=3;
   m_branchLength=3.0;
   qDebug("Growth Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
-GrowthParticle::GrowthParticle(
-    qreal _x,
+GrowthParticle::GrowthParticle(qreal _x,
     qreal _y,
     qreal _z,
-    std::vector<unsigned int> _connectedParticles):Particle(_x,_y,_z,_connectedParticles)
+    std::vector<unsigned int> _connectedParticles, float _size):Particle(_x,_y,_z,_connectedParticles,_size)
 {
   m_childrenTreshold=3;
   m_branchLength=3.0;
@@ -74,9 +72,9 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
 
 
 
-    std::uniform_real_distribution<float> distributionX(m_pos[0]+0.001,_lightDirection[0]);
-    std::uniform_real_distribution<float> distributionY(m_pos[1]+0.001,_lightDirection[1]);
-    std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightDirection[2]);
+    std::uniform_real_distribution<float> distributionX(m_pos[0]+0.001,_lightDirection[0]+_lightDirection[0]);
+    std::uniform_real_distribution<float> distributionY(m_pos[1]+0.001,_lightDirection[1]+_lightDirection[1]);
+    std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightDirection[2]+_lightDirection[2]);
 
 
     //place new particle on side in  direction of light
@@ -85,6 +83,9 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
     float y;
     float z;
     QVector3D pos;
+
+    int counter=0;
+    int branchMultiplier=1;
     do{
 
 
@@ -103,9 +104,9 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
     //place new particle in direction of vector mutilplied by size of particle
     direction.normalize();
 
-    direction[0]*=(m_size*m_branchLength);
-    direction[1]*=(m_size*m_branchLength);
-    direction[2]*=(m_size*m_branchLength);
+    direction[0]*=(m_size*m_branchLength*branchMultiplier);
+    direction[1]*=(m_size*m_branchLength*branchMultiplier);
+    direction[2]*=(m_size*m_branchLength*branchMultiplier);
     x=m_pos[0]+direction[0];
     y=m_pos[1]+direction[1];
     z=m_pos[2]+direction[2];
@@ -116,17 +117,22 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
     pos[2]=z;
 
 
+    if(counter%50==0)
+    {
+      branchMultiplier+=1;
     }
+    counter++;
+    }while(collision(4,pos,_particleList));
+
     //check for collision
 
-    while(collision(2,pos,_particleList));
 
 
 
     // create new particle and add to particle list
 
 
-    _particleList.push_back(std::unique_ptr<GrowthParticle> (new GrowthParticle(x,y,z,newConnectedParticles)));
+    _particleList.push_back(std::unique_ptr<GrowthParticle> (new GrowthParticle(x,y,z,newConnectedParticles,m_size)));
 
     // add particle to links in mother particle
 
@@ -156,21 +162,16 @@ bool GrowthParticle::collision(int _levels,QVector3D _testPosition,std::vector<s
     //incase particle is first particle ever created
     if(parent==0){break;}
 
-     //find parent position in particle system
-    for(size_t i = 0; i < _particleList.size(); i++)
+    parent=links[0];
 
-    {
 
-      if(_particleList[i]->getID()==links[0])
-      {
-        parent=i;
-        break;
-      }
-    }
+
+
   }
 
-
-  return _particleList[parent]->recursiveCollision(_testPosition,_particleList);
+  bool collision=_particleList[parent]->recursiveCollision(_testPosition,_particleList);
+  //std::cout<<collision<<std::endl;
+  return collision;
 
 }
 
@@ -182,13 +183,17 @@ bool GrowthParticle::testCollision(QVector3D _particlePos)
   float distance=_particlePos.distanceToPoint(m_pos);
 
 
-  if (distance<=m_size/2)
+  if (distance<=m_size*2)
   {
-
+    //std::cout<<"Colliding"<<std::endl;
     return true;
+
   }
   else
   {
+//    std::cout<<"pos 1 "<<m_pos.x()<<m_pos.y()<<m_pos.z()<<std::endl;
+//    std::cout<<"pos 2 "<<_particlePos.x()<<_particlePos.y()<<_particlePos.z()<<std::endl;
+//    std::cout<<" m_size "<<m_size<<std::endl;
     return false;
   }
 }
@@ -202,27 +207,25 @@ bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::uni
   {
      return true;
   }
-
+  int start_i = 0;
   //if the particle doesn't have any children it will return
-  if(m_connectedParticles.size()<=1){return false;}
+  if(m_ID!=0)
+  {
+    if(m_connectedParticles.size()<=1){return false;}
+    start_i = 1;
+  }
 
   //starting from 1 as first particle is mother particle
 
-  for(size_t i=1;i<m_connectedParticles.size();i++)
+  for(size_t i=start_i;i<m_connectedParticles.size();i++)
   {
-    //find particle in particle list
-    for(size_t j=0;j<_particleList.size();j++)
 
-    {
-      if(_particleList[j]->getID()==m_connectedParticles[i])
-      {
-        //call the function recursivly
-        if(_particleList[j]->recursiveCollision(_particle,_particleList))
+        if(_particleList[m_connectedParticles[i]]->recursiveCollision(_particle,_particleList))
         {
           return true;
         }
-      }
-    }
+
+
   }
   return false;
 
@@ -240,4 +243,14 @@ void GrowthParticle::setChildThreshold(int _amount)
 void GrowthParticle::setBranchLength(float _value)
 {
   m_branchLength=_value;
+}
+
+float GrowthParticle::findAngle(QVector3D _vec1, QVector3D _vec2)
+{
+  float dot=QVector3D::dotProduct(_vec1,_vec2);
+  float length=_vec1.length()*_vec2.length();
+  float result = dot/length;
+  float angle=acos(result)*57.2958;
+  return angle;
+
 }

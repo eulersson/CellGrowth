@@ -17,7 +17,7 @@ LinkedParticle::LinkedParticle():Particle()
 // Specify the location where we want to place it
 LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
-                               qreal _z):Particle(_x,_y,_z)
+                               qreal _z, float _size):Particle(_x,_y,_z, _size)
 {
    //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
@@ -26,7 +26,7 @@ LinkedParticle::LinkedParticle(qreal _x,
 LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z,
-                               std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
+                               std::vector<unsigned int> _linkedParticles, float _size): Particle(_x,_y,_z,_linkedParticles, _size)
 {
 
   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
@@ -466,7 +466,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   relinkList.push_back(m_ID);
   //creating new particle
 
-  _particleList.push_back(std::unique_ptr<Particle>(new LinkedParticle(x,y,z,relinkList)));
+  _particleList.push_back(std::unique_ptr<Particle>(new LinkedParticle(x,y,z,relinkList,m_size)));
 
   //get the new particles ID
 

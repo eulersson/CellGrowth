@@ -29,12 +29,14 @@ public:
   /// @param[in] _x x Position of the particle.
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
 
   GrowthParticle(
       qreal _x,
       qreal _y,
-      qreal _z);
+      qreal _z,
+      float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position as well as
@@ -44,13 +46,15 @@ public:
   /// @param[in] _z z Position of the particle.
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
 
   GrowthParticle(
       qreal _x,
       qreal _y,
       qreal _z,
-      std::vector<unsigned int> _connectedParticles);
+      std::vector<unsigned int> _connectedParticles,
+      float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
@@ -132,7 +136,15 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   bool recursiveCollision(
       QVector3D _particle,
-      std::vector<std::unique_ptr<Particle>> &_particleList) override;
+      std::vector<std::unique_ptr<Particle>> &_particleList);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief findAngle finds angle between two vectors
+  /// @param[in] _vec1 first vector
+  /// @param[in] _vec2second vector
+  /// param[out] angle between the vectors
+  /////////////////////////////////////////////////////////////////////////////
+  float findAngle(QVector3D _vec1,QVector3D _vec2);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Length of a branches connecting to the particle

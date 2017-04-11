@@ -37,11 +37,13 @@ public:
   /// @param[in] _x x Position of the particle.
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
   Particle(
       qreal _x,
       qreal _y,
-      qreal _z);
+      qreal _z,
+      float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position as well as
@@ -51,12 +53,14 @@ public:
   /// @param[in] _z z Position of the particle.
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
   Particle(
       qreal _x,
       qreal _y,
       qreal _z,
-      std::vector<unsigned int> _connectedParticles);
+      std::vector<unsigned int> _connectedParticles,
+      float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Default constructor.
