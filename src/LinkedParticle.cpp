@@ -108,15 +108,31 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 //  m_vel+=planar;
   //end of planar
 
-  //spring(_particleList, _springFactor);
+  spring(_particleList, _springFactor);
 
   calculateUnlinked(_particleList, _cohesionFactor);
 
-  lightAttract(_particleList, _lightPos);
+
+  //lightAttract(_particleList, _lightPos);
+  //getHitParticles(_particleList, _lightPos);
+  getNearestParticle(_particleList, _lightPos);
+
+  particleLife++;
+
+  //PARTICLELIFE
+
+//  if (particleLife >= 100)
+//  {
+//    m_vel.setX(0);
+//    m_vel.setY(0);
+//    m_vel.setZ(0);
+//  }
+
 }
 
 void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor)
 {
+
   QVector3D spring;
   QVector3D hold;
   QVector3D linkedPos;
@@ -125,29 +141,29 @@ void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleLis
   getConnectionsID(connectedParticles);
 
   //SPRING AND HOLD #2
-  for(unsigned int i=0; i<connectedParticles.size(); i++)
-  {
-    linkedPos = _particleList[i]->getPosition();
-    spring = linkedPos - m_pos;
-    float springLength = spring.length();
-    if(springLength>=m_size*2)
-    {
-      float springDist = m_size-(springLength/2);
-      spring.normalize();
-      spring*=(springDist/(_springFactor*3.3f));
-      m_vel+=spring;
-    }
+//  for(unsigned int i=0; i<connectedParticles.size(); i++)
+//  {
+//    linkedPos = _particleList[i]->getPosition();
+//    spring = linkedPos - m_pos;
+//    float springLength = spring.length();
+//    if(springLength>=m_size*2)
+//    {
+//      float springDist = m_size-(springLength/2);
+//      spring.normalize();
+//      spring*=(springDist/(_springFactor*3.3f));
+//      m_vel+=spring;
+//    }
 
-    hold = m_pos - linkedPos;
-    float holdLength = hold.length();
-    if(holdLength<=m_size*2)
-    {
-      float holdDist = m_size-(holdLength/2);
-      hold.normalize();
-      hold*=holdDist;
-      m_vel+=hold;
-    }
-  }
+//    hold = m_pos - linkedPos;
+//    float holdLength = hold.length();
+//    if(holdLength<=m_size)
+//    {
+//      float holdDist = m_size-(holdLength/2);
+//      hold.normalize();
+//      hold*=holdDist;
+//      m_vel+=hold;
+//    }
+//  }
 
 //  float distanceY = 0;
 //  float distanceX = 0;
@@ -353,46 +369,107 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
     m_vel += distance;
   }
 }
-
 std::vector<unsigned int> LinkedParticle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
 {
   //Finds the particles within the point light radius so that they may be split
+  std::vector<unsigned int> m_hitParticles;
   QVector3D lightDist;
+  //std::cout<<"lightDist: "<<lightDist.x()<<std::endl;
 
-  for(unsigned int i=0; i<=_particleList.size(); i++)
+  for(unsigned int i=0; i<=_particleList.size()-1; i++)
   {
-    lightDist = m_pos - _lightPos;
-
-    if((lightDist.x()<=0.5)
-            && (lightDist.y()<=0.5)
-            && (lightDist.z()<=0.5))
+    lightDist = (_particleList[i]->getPosition()) - _lightPos;
+    if((lightDist.x()<=1 && lightDist.x() >= -1)
+            && (lightDist.y()<=1 && lightDist.y() >= -1)
+            && (lightDist.z()<=1 && lightDist.z() >= -1))
     {
-      m_hitParticles.push_back(_particleList[i]->getID());
-      break;
+      uint hitParticle = _particleList[i]->getID();
+      //std::cout<<"hitParticle:"<<hitParticle<<std::endl;
+      m_hitParticles.push_back(hitParticle);
     }
   }
-//  std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
+  //std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
   return m_hitParticles;
+}
+
+unsigned int LinkedParticle::getNearestParticle(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
+{
+  //Finds the particles within the point light radius so that they may be split
+  //std::vector<unsigned int> m_nearestParticles;
+  std::vector<float> m_lightDistances;
+
+  for (unsigned int i=0; i<=_particleList.size()-1; i++)
+  {
+    QVector3D lightDist = (_particleList[i]->getPosition() - _lightPos);
+    m_lightDistances.push_back(lightDist.length());
+  }
+
+  std::vector<float>::iterator minElement=std::min_element (std::begin(m_lightDistances), std::end(m_lightDistances));
+  unsigned int minElementIndex = std::distance(std::begin(m_lightDistances), minElement);
+  //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
+
+//  std::vector<float>::iterator minElement2;
+//  std::vector<float>::iterator minElement3;
+//  unsigned int minElementIndex2;
+//  unsigned int minElementIndex3;
+
+//  if (minElementIndex!=0)
+//  {
+//     minElement2 = std::min_element (std::begin(m_lightDistances), minElement);
+//     minElementIndex2 = std::distance(std::begin(m_lightDistances), minElement2);
+//     //std::cout<<"minElementIndex2:"<<minElementIndex2<<std::endl;
+//  }
+//  if (minElementIndex!=(m_lightDistances.size()-1))
+//  {
+//     minElement3 = std::min_element (minElement+1, std::end(m_lightDistances));
+//     minElementIndex3 = std::distance(std::begin(m_lightDistances), minElement3);
+//     //std::cout<<"minElementIndex3:"<<minElementIndex3<<std::endl;
+//  }
+
+//  m_nearestParticles.push_back(minElementIndex);
+
+//  if (minElementIndex=0)
+//  {
+//    m_nearestParticles.push_back(minElementIndex3);
+//  }
+
+//  else if (minElementIndex=(m_lightDistances.size()-1))
+//  {
+//    m_nearestParticles.push_back(minElementIndex2);
+//  }
+
+//  else
+//  {
+//    if (m_lightDistances[minElementIndex2] < m_lightDistances[minElementIndex3])
+//    {
+//      m_nearestParticles.push_back(minElementIndex2);
+//    }
+//    else
+//    {
+//      m_nearestParticles.push_back(minElementIndex3);
+//    }
+
+//  }
+
+  return minElementIndex;
 }
 
 void LinkedParticle::lightAttract(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
 {
-  getHitParticles(_particleList, _lightPos);
 
   QVector3D lightDist;
+  lightDist = m_pos - _lightPos;
 
-  for(unsigned int i=0; i<=_particleList.size(); i++)
+  if((lightDist.x()<=0.5)
+          && (lightDist.y()<=0.5)
+          && (lightDist.z()<=0.5))
   {
-    for(unsigned int j=0; j<m_hitParticles.size(); j++)
-    {
-      if(i==j)
-      {
-        lightDist = _lightPos - m_pos;
-        lightDist /= 1500;
-        m_vel += lightDist;
-      }
-    }
+    lightDist = _lightPos - m_pos;
+    lightDist /= 50;
+    m_vel += lightDist;
+
   }
+
 }
 
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
@@ -406,6 +483,8 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
 
 void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
 {
+ // hitParticles = getHitParticle(_particleList, _lightPos);
+ // std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
 
   // Sanity check
   if(m_connectedParticles.size() < 2)
@@ -437,7 +516,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
     while(b == a)
       b = distribution(_gen) - 1;
   }
-
+  std::cout<<"splitting between particles "<<a<<" and "<<b<<std::endl;
   QVector3D normal = QVector3D::normal(linkPosition[a], linkPosition[b]);
 
   //filling two arrays with links based on there position relative to the plane created by the two first particles
@@ -507,13 +586,3 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 //  calculate(particleCentre, _particleList, averageDistance, returnList);
 
 }
-
-
-
-
-
-
-
-
-
-

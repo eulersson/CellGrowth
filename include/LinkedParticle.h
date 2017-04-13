@@ -94,7 +94,9 @@ public:
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
   /////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
+  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
+
+  unsigned int getNearestParticle(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
 
   // Computes all the relinking and creates a new particle
   //////////////////////////////////////////////////////////////////////////////
@@ -114,6 +116,7 @@ private:
   /// @brief return Returns the distance to the plane
   //////////////////////////////////////////////////////////////////////////////
   int planeSorting(QVector3D _normal,QVector3D _planePoint,QVector3D _testPoint);
+  int particleLife;
 
 };
 

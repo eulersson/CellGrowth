@@ -695,6 +695,7 @@ void GLWindow::setParticleSize(double _size)
 void GLWindow::setParticleType(int _type)
 {
   m_ps.splitRandomParticle();
+  //m_ps.splitHitParticle();
 
   emit resetForces(true);
   emit resetCohesion(30);

@@ -63,11 +63,6 @@ public:
   void bulge(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Does not do anything for this class.
-  //////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
-
-  //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch from that Particle.
   /// @param[in] _lightDirection Light direction.
   /// @param[in] _particleList List of all particles.

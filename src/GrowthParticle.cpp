@@ -46,10 +46,6 @@ void GrowthParticle::bulge(QVector3D _particleCentre)
 
 }
 
-std::vector<unsigned int> GrowthParticle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
-{
-
-}
 
 void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_ptr<Particle> > &_particleList)
 {

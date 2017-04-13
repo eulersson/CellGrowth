@@ -90,7 +90,7 @@ public:
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
   /////////////////////////////////////////////////////////////////////////////
-  virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
+ //virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold.
@@ -119,6 +119,8 @@ public:
   //////////////////////////////////////////////////////////////////////////////
 
   virtual void split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
+
+  virtual unsigned int getNearestParticle(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
@@ -269,7 +271,7 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Vector holding the IDs of all the particles being hit by light.
   //////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> m_hitParticles;
+  //std::vector<unsigned int> m_hitParticles;
 
 };
 

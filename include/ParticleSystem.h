@@ -69,8 +69,6 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void splitRandomParticle();
 
-  void splitHitParticle();
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief This will delete a particle and all the connections to it.
   /// @param[in] _idx Index of the particle to remove.
@@ -204,6 +202,8 @@ private:
   /// @brief Stores the list of particles in the system.
   //////////////////////////////////////////////////////////////////////////////
   std::vector<std::unique_ptr<Particle>> m_particles;
+
+  //std::vector<std::unique_ptr<Particle>> m_hitParticles;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Keeps track of the number of particles.
