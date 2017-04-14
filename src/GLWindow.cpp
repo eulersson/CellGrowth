@@ -619,7 +619,6 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
   {
     case Qt::Key_Space:
       m_ps.splitRandomParticle();
-      //m_ps.splitHitParticle();
       qInfo("%d", m_ps.getSize());
       qDebug("%d particles in the system", m_ps.getSize());
       break;
@@ -695,11 +694,11 @@ void GLWindow::setParticleSize(double _size)
 void GLWindow::setParticleType(int _type)
 {
   m_ps.splitRandomParticle();
-  //m_ps.splitHitParticle();
 
   emit resetForces(true);
+  emit resetParticleDeath(false);
   emit resetCohesion(30);
-  emit resetSpring(30);
+  emit resetLocalCohesion(30);
   emit resetChildrenThreshold(3);
   emit resetBranchLength(3.0);
 
@@ -759,6 +758,22 @@ void GLWindow::toggleForces(bool _state)
   sendParticleDataToOpenGL();
 }
 
+void GLWindow::toggleParticleDeath(bool _state)
+{
+  // Only for LinkedParticles
+  m_ps.toggleParticleDeath(_state);
+  sendParticleDataToOpenGL();
+
+  if(_state==true)
+  {
+    emit enableBulge(false);
+  }
+  else if (_state==false)
+  {
+    emit enableBulge(true);
+  }
+}
+
 void GLWindow::setCohesion(int _amount)
 {
   // Only for LinkedParticles
@@ -773,10 +788,10 @@ void GLWindow::bulge()
   sendParticleDataToOpenGL();
 }
 
-void GLWindow::setSpring(int _amount)
+void GLWindow::setLocalCohesion(int _amount)
 {
   // Only for LinkedParticles
-  m_ps.setSpring(_amount);
+  m_ps.setLocalCohesion(_amount);
   sendParticleDataToOpenGL();
 }
 
@@ -801,8 +816,9 @@ void GLWindow::restart()
   emit resetParticleType(0);
   emit resetParticleTap(0);
   emit resetForces(true);
+  emit resetParticleDeath(false);
   emit resetCohesion(30);
-  emit resetSpring(30);
+  emit resetLocalCohesion(30);
   emit resetChildrenThreshold(3);
   emit resetBranchLength(3.0);
   emit changedShadingType(0);

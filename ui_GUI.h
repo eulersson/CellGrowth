@@ -48,9 +48,10 @@ public:
     QGridLayout *gridLayout_5;
     QLabel *label_3;
     QSlider *m_LP_cohesion;
-    QSlider *m_LP_spring;
+    QSlider *m_LP_localCohesion;
     QLabel *label_4;
     QPushButton *LP_bulge;
+    QCheckBox *m_LP_particleDeath;
     QWidget *m_growthParticleTab;
     QGridLayout *gridLayout_3;
     QLabel *label_7;
@@ -127,31 +128,46 @@ public:
         label_3 = new QLabel(m_LP_forces);
         label_3->setObjectName(QStringLiteral("label_3"));
 
-        gridLayout_5->addWidget(label_3, 0, 0, 1, 1);
+        gridLayout_5->addWidget(label_3, 1, 0, 1, 1);
 
         m_LP_cohesion = new QSlider(m_LP_forces);
         m_LP_cohesion->setObjectName(QStringLiteral("m_LP_cohesion"));
+        m_LP_cohesion->setAutoFillBackground(false);
+        m_LP_cohesion->setMinimum(10);
+        m_LP_cohesion->setMaximum(99);
         m_LP_cohesion->setValue(30);
         m_LP_cohesion->setOrientation(Qt::Horizontal);
+        m_LP_cohesion->setInvertedAppearance(false);
+        m_LP_cohesion->setInvertedControls(false);
 
-        gridLayout_5->addWidget(m_LP_cohesion, 0, 1, 1, 1);
+        gridLayout_5->addWidget(m_LP_cohesion, 1, 1, 1, 1);
 
-        m_LP_spring = new QSlider(m_LP_forces);
-        m_LP_spring->setObjectName(QStringLiteral("m_LP_spring"));
-        m_LP_spring->setValue(30);
-        m_LP_spring->setOrientation(Qt::Horizontal);
+        m_LP_localCohesion = new QSlider(m_LP_forces);
+        m_LP_localCohesion->setObjectName(QStringLiteral("m_LP_localCohesion"));
+        m_LP_localCohesion->setAutoFillBackground(false);
+        m_LP_localCohesion->setMinimum(10);
+        m_LP_localCohesion->setMaximum(99);
+        m_LP_localCohesion->setValue(30);
+        m_LP_localCohesion->setOrientation(Qt::Horizontal);
+        m_LP_localCohesion->setInvertedAppearance(false);
+        m_LP_localCohesion->setInvertedControls(false);
 
-        gridLayout_5->addWidget(m_LP_spring, 1, 1, 1, 1);
+        gridLayout_5->addWidget(m_LP_localCohesion, 2, 1, 1, 1);
 
         label_4 = new QLabel(m_LP_forces);
         label_4->setObjectName(QStringLiteral("label_4"));
 
-        gridLayout_5->addWidget(label_4, 1, 0, 1, 1);
+        gridLayout_5->addWidget(label_4, 2, 0, 1, 1);
 
         LP_bulge = new QPushButton(m_LP_forces);
         LP_bulge->setObjectName(QStringLiteral("LP_bulge"));
 
-        gridLayout_5->addWidget(LP_bulge, 2, 0, 1, 2);
+        gridLayout_5->addWidget(LP_bulge, 3, 0, 1, 2);
+
+        m_LP_particleDeath = new QCheckBox(m_LP_forces);
+        m_LP_particleDeath->setObjectName(QStringLiteral("m_LP_particleDeath"));
+
+        gridLayout_5->addWidget(m_LP_particleDeath, 0, 0, 1, 1);
 
 
         gridLayout_7->addWidget(m_LP_forces, 0, 0, 1, 1);
@@ -336,8 +352,9 @@ public:
         groupBox_3->setTitle(QApplication::translate("GUI", "GroupBox", 0));
         m_LP_forces->setTitle(QApplication::translate("GUI", "Forces", 0));
         label_3->setText(QApplication::translate("GUI", "Cohesion", 0));
-        label_4->setText(QApplication::translate("GUI", "Spring", 0));
+        label_4->setText(QApplication::translate("GUI", "Local Cohesion", 0));
         LP_bulge->setText(QApplication::translate("GUI", "Bulge", 0));
+        m_LP_particleDeath->setText(QApplication::translate("GUI", "Particle Death", 0));
         m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", 0));
         label_7->setText(QApplication::translate("GUI", "Radius for Branch Growth", 0));
         label_6->setText(QApplication::translate("GUI", "Branches per particle", 0));

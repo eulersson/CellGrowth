@@ -426,6 +426,8 @@ public slots:
   //////////////////////////////////////////////////////////////////////////////
   void toggleForces(bool _state);
 
+  void toggleParticleDeath(bool _state);
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Slot for changing cohesion amount only valid for Linked Particles.
   /// @param[in] _amount Amount of cohesion.
@@ -438,10 +440,10 @@ public slots:
   void bulge();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Slot for changing spring amount only vallied for Linked Particles.
-  /// @param[in] _amount Amount of spring.
+  /// @brief Slot for changing local cohesion amount only vallied for Linked Particles.
+  /// @param[in] _amount Amount of local cohesion.
   //////////////////////////////////////////////////////////////////////////////
-  void setSpring(int _amount);
+  void setLocalCohesion(int _amount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Slot for the length of the branches in Growth Particles.
@@ -494,6 +496,8 @@ signals:
   //////////////////////////////////////////////////////////////////////////////
   void resetForces(bool state);
 
+  void resetParticleDeath (bool state);
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Singal emits when cohesion value needs to be reset
   /// @param[in] value cohesion amount.
@@ -501,10 +505,10 @@ signals:
   void resetCohesion(int value);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Singal emits when spring value needs to be reset
-  /// @param[in] value spring amount.
+  /// @brief Singal emits when localCohesion value needs to be reset
+  /// @param[in] value localCohesion amount.
   //////////////////////////////////////////////////////////////////////////////
-  void resetSpring(int value);
+  void resetLocalCohesion(int value);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Signal emits when child threshold for growth particle needs to be
@@ -542,6 +546,8 @@ signals:
   /// @param[in] state state of the connections
   //////////////////////////////////////////////////////////////////////////////
   void setConnectionState(bool state);
+
+  void enableBulge(bool value);
 };
 
 #endif // WINDOW_H

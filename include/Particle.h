@@ -77,7 +77,7 @@ public:
   /// @param [in] _particleCount Total number of particles in the system
   /// @param [in] _lightPos Holds the position of the point light
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.
@@ -117,16 +117,12 @@ public:
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-
   virtual void split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
-
-  virtual unsigned int getNearestParticle(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
   /// they collide with anything.
   //////////////////////////////////////////////////////////////////////////////
-
   virtual bool recursiveCollision(
       QVector3D,
       std::vector<std::unique_ptr<Particle>>&) { return false; }
@@ -178,7 +174,7 @@ public:
   /// @param[in] _ID ID of the particle that is to be connected to the current
   /// particle.
   //////////////////////////////////////////////////////////////////////////////
-  void connect(unsigned int _ID);
+  virtual void connect(unsigned int _ID,std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Deletes an ID from the connection list. In other words, it breaks
@@ -220,6 +216,8 @@ public:
   /// @brief static function that resets the m_ID_counter to 0.
   //////////////////////////////////////////////////////////////////////////////
   static void resetIDCounter();
+
+
 
 protected:
   //////////////////////////////////////////////////////////////////////////////
