@@ -292,7 +292,7 @@ unsigned int ParticleSystem::getNearestParticle()
   for (unsigned int i=0; i<=m_particleCount-1; i++)
   {
     QVector3D lightDist = (m_particles[i]->getPosition() - m_lightPos);
-    m_lightDistances.push_back(lightDist.length());
+    m_lightDistances.push_back(lightDist.lengthSquared());
   }
 
   std::vector<float>::iterator minElement=std::min_element (std::begin(m_lightDistances), std::end(m_lightDistances));
@@ -397,12 +397,12 @@ void ParticleSystem::toggleParticleDeath(bool _state)
 
 void ParticleSystem::setCohesion(int _amount)
 {
-  m_cohesion = _amount;
+  m_cohesion = 100 - (_amount);
 }
 
 void ParticleSystem::setLocalCohesion(int _amount)
 {
-  m_localCohesion = _amount;
+  m_localCohesion = 100 - (_amount);
 }
 
 void ParticleSystem::setBranchLength(float _amount)

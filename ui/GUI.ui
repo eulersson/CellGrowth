@@ -96,13 +96,13 @@
                  <bool>false</bool>
                 </property>
                 <property name="minimum">
-                 <number>10</number>
+                 <number>0</number>
                 </property>
                 <property name="maximum">
-                 <number>99</number>
+                 <number>90</number>
                 </property>
                 <property name="value">
-                 <number>30</number>
+                 <number>5</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -121,13 +121,13 @@
                  <bool>false</bool>
                 </property>
                 <property name="minimum">
-                 <number>10</number>
+                 <number>0</number>
                 </property>
                 <property name="maximum">
-                 <number>99</number>
+                 <number>90</number>
                 </property>
                 <property name="value">
-                 <number>30</number>
+                 <number>80</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>

@@ -503,7 +503,7 @@ void GLWindow::setupLights()
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
 
   PointLight* pointlight;
-  pointlight = new PointLight(QVector3D(0, 0, 0), m_manipulator_program, m_sun_program);
+  pointlight = new PointLight(QVector3D(0, 3, 0), m_manipulator_program, m_sun_program);
   pointlight->createGeometry(context(), masterUniqueColour);
   m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
 

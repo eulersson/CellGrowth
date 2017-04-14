@@ -133,9 +133,9 @@ public:
         m_LP_cohesion = new QSlider(m_LP_forces);
         m_LP_cohesion->setObjectName(QStringLiteral("m_LP_cohesion"));
         m_LP_cohesion->setAutoFillBackground(false);
-        m_LP_cohesion->setMinimum(10);
-        m_LP_cohesion->setMaximum(99);
-        m_LP_cohesion->setValue(30);
+        m_LP_cohesion->setMinimum(0);
+        m_LP_cohesion->setMaximum(90);
+        m_LP_cohesion->setValue(10);
         m_LP_cohesion->setOrientation(Qt::Horizontal);
         m_LP_cohesion->setInvertedAppearance(false);
         m_LP_cohesion->setInvertedControls(false);
@@ -145,9 +145,9 @@ public:
         m_LP_localCohesion = new QSlider(m_LP_forces);
         m_LP_localCohesion->setObjectName(QStringLiteral("m_LP_localCohesion"));
         m_LP_localCohesion->setAutoFillBackground(false);
-        m_LP_localCohesion->setMinimum(10);
-        m_LP_localCohesion->setMaximum(99);
-        m_LP_localCohesion->setValue(30);
+        m_LP_localCohesion->setMinimum(0);
+        m_LP_localCohesion->setMaximum(90);
+        m_LP_localCohesion->setValue(60);
         m_LP_localCohesion->setOrientation(Qt::Horizontal);
         m_LP_localCohesion->setInvertedAppearance(false);
         m_LP_localCohesion->setInvertedControls(false);
