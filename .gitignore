@@ -32,10 +32,12 @@ cells
 
 # Custom
 build/*
+debug/*
 *.debug
 *.pro.autosave
 *.pro.user
 .DS_Store
 .qmake.stash
 Makefile*
+ui_GUI.h
 cells

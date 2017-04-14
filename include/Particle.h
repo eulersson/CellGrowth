@@ -9,7 +9,8 @@
 #define PARTICLE_H
 
 // Native
-#include<memory>
+#include <memory>
+#include <vector>
 
 // Qt
 #include<QVector3D>
