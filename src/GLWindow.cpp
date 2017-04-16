@@ -197,9 +197,9 @@ void GLWindow::loadLightToShader()
     m_ps.setLightPos(m_lightPos);
 
     m_quad_program->setUniformValue("light.position", m_lightPos);
-    m_quad_program->setUniformValue("light.ambient", QVector3D(1.0f, 1.0f, 1.0f));
+    m_quad_program->setUniformValue("light.ambient", QVector3D(ambient, ambient, ambient));
     m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
-    m_quad_program->setUniformValue("light.specular", QVector3D(1.0f, 1.0f, 1.0f));
+    m_quad_program->setUniformValue("light.specular", QVector3D(specular, specular, specular));
     m_quad_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
     m_quad_program->setUniformValue("light.Linear", 0.09f);
     m_quad_program->setUniformValue("light.Quadratic", 0.032f);
@@ -553,8 +553,13 @@ void GLWindow::updateParticleSystem()
 {
   m_ps.setLightPos(m_lightPos);
   //std::cout<<"light pos: "<<m_lightPos.x()<<" "<<m_lightPos.y()<<" "<<m_lightPos.z()<<std::endl;
+  if (lightON == true)
+  {
+    m_ps.splitRandomParticle();
+    qInfo("%d", m_ps.getSize());
+    qDebug("%d particles in the system", m_ps.getSize());
+  }
 
-  //m_ps.splitRandomParticle();
   m_ps.advance();
   sendParticleDataToOpenGL();
 }
@@ -697,8 +702,8 @@ void GLWindow::setParticleType(int _type)
 
   emit resetForces(true);
   emit resetParticleDeath(false);
-  emit resetCohesion(30);
-  emit resetLocalCohesion(30);
+  emit resetCohesion(80);
+  emit resetLocalCohesion(5);
   emit resetChildrenThreshold(3);
   emit resetBranchLength(3.0);
 
@@ -709,13 +714,16 @@ void GLWindow::setParticleType(int _type)
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
+    emit enableSplitType(true);
 
   }
   else
   {
     particleType = 'G';
+    emit resetSplitType(0);
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
+    emit enableSplitType(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
@@ -774,6 +782,34 @@ void GLWindow::toggleParticleDeath(bool _state)
   }
 }
 
+void GLWindow::setSplitType(int _type)
+{
+  //m_ps.setSplitType(_type);
+  sendParticleDataToOpenGL();
+  std::cout<<"splitType:"<<_type<<std::endl;
+
+  if (_type==0)
+  {
+    ambient = 1.0;
+    specular = 1.0;
+    lightON = false;
+    emit enableLightOn(false);
+    emit enableLightOff(false);
+  }
+
+  else if (_type==1)
+  {
+    ambient = 0.5;
+    specular = 0;
+    emit enableLightOn(true);
+    emit enableLightOff(true);
+  }
+
+  //m_ps.reset(particleType);
+  sendParticleDataToOpenGL();
+
+}
+
 void GLWindow::setCohesion(int _amount)
 {
   // Only for LinkedParticles
@@ -787,6 +823,26 @@ void GLWindow::bulge()
   m_ps.bulge();
   sendParticleDataToOpenGL();
 }
+
+void GLWindow::lightOn()
+{
+  //Only for LinkedParticles
+  ambient = 1.0;
+  specular = 1.0;
+  lightON = true;
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::lightOff()
+{
+  //Only for LinkedParticles
+  ambient = 0.5;
+  specular = 0;
+  lightON = false;
+  sendParticleDataToOpenGL();
+}
+
+
 
 void GLWindow::setLocalCohesion(int _amount)
 {
@@ -814,26 +870,23 @@ void GLWindow::restart()
 
   emit resetParticleSize(2);
   emit resetParticleType(0);
+  emit resetSplitType(0);
   emit resetParticleTap(0);
   emit resetForces(true);
   emit resetParticleDeath(false);
-  emit resetCohesion(30);
-  emit resetLocalCohesion(30);
+  emit resetCohesion(5);
+  emit resetLocalCohesion(80);
   emit resetChildrenThreshold(3);
   emit resetBranchLength(3.0);
   emit changedShadingType(0);
-  emit setConnectionState(true);
+  emit setConnectionState(true);;
   m_ps.reset('L');
   // Add reset functions here
 
-}
-
-void GLWindow::setSplitType(QString _type)
-{
-  // Not sure where to put this really
 }
 
 void GLWindow::setChildThreshold(int _amount)
 {
   m_ps.setChildThreshold(_amount);
 }
+
