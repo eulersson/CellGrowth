@@ -55,7 +55,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
