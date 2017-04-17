@@ -12,7 +12,6 @@
 // Project
 #include "Particle.h"
 
-
 // Initialize static member
 unsigned int Particle::m_ID_counter(0);
 
@@ -25,7 +24,6 @@ Particle::Particle()
     , m_foodThreshold(0)
 {
   //qDebug("Particle default constructor.");
-  m_hit = true;
 }
 
 
@@ -37,7 +35,6 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
     , m_foodThreshold(100)
 {
   //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
-  m_hit = true;
 }
 
 
@@ -53,7 +50,6 @@ Particle::Particle(qreal _x,
 {
  // qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
          //"particles", _x, _y, _z);
-  m_hit = true;
   m_connectedParticles = _connectedParticles;
 }
 
@@ -103,14 +99,17 @@ void Particle::connect(unsigned int _ID)
 
 void Particle::deleteConnection(unsigned int _ID)
 {
-  for (size_t i = 0; i < m_connectedParticles.size(); i++)
+  for(size_t i;i<m_connectedParticles.size();i++)
   {
-    if (m_connectedParticles[i] == _ID)
+    if(m_connectedParticles[i]==_ID)
     {
-      m_connectedParticles.erase(m_connectedParticles.begin() + i);
+      m_connectedParticles.erase(m_connectedParticles.begin() +i);
       break;
     }
+
   }
+
+
 }
 
 
@@ -131,46 +130,25 @@ int Particle::getConnectionCount()
   return m_connectedParticles.size();
 }
 
-std::vector<unsigned int> Particle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList)
-{
-  for(unsigned int i=0; i<=_particleList.size(); i++)
-  {
-    if(m_hit == true)
-    {
-      m_hitParticles.push_back(_particleList[i]->getID());
-      break;
-    }
-  }
-  return m_hitParticles;
-}
-
 void Particle::getPosFromConnections(std::vector<QVector3D> &_linkPos,std::vector<std::unique_ptr<Particle>> &_particleList)
 {
   // Looks for the Id in the particleList of the particle system and then gets the position
   _linkPos.clear();
   QVector3D tempVec;
 
-  for(size_t i = 0; i < m_connectedParticles.size(); i++)
+
+  for(size_t i=0;i<m_connectedParticles.size();i++)
   {
-    for(size_t j = 0; j < _particleList.size(); j++)
-    {
-      if(_particleList[j]->getID() == m_connectedParticles[i])
-      {
-        _particleList[j]->getPos(tempVec);
-        _linkPos.push_back(tempVec);
-        break;
-      }
-    }
+    _particleList[m_connectedParticles[i]]->getPos(tempVec);
+    _linkPos.push_back(tempVec);
   }
+
 }
 
 
-int Particle::getPosInPS(std::vector<std::unique_ptr<Particle>> &_particleList)
+void Particle::resetIDCounter()
 {
-  for (unsigned int i = 0; i < _particleList.size(); i++)
-  {
-    if (_particleList[i]->getID() == m_ID)
-      return i;
-  }
-  return -1; // Return negative one if none is found.
+  m_ID_counter=0;
 }
+
+

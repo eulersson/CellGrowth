@@ -1,7 +1,8 @@
-#version 450 core
 
-out vec4 fColor;
+#version 410 core
+
+layout (location = 6) out vec3 gLinks;       // Color Attachment 6
 
 void main() {
-    fColor = vec4(1.0);
+    gLinks = vec3(1.0);
 }

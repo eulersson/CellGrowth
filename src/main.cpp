@@ -1,6 +1,7 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 /// @file main.cpp
-/// @author Lola Gille
+/// @author Carola Gille
 /// @author Glenn Nygard
 /// @author Lydia Kenton
 /// @author Esme Prior
@@ -9,27 +10,54 @@
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <QGuiApplication>
+#include <QApplication>
 
-#include "Scene.h"
-#include "Window.h"
+#include <QtGlobal>
+#include "GUI.h"
+
+
+
+
+
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "DEBUG: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtInfoMsg:
+        fprintf(stderr, "INFO: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "WARNING: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "CRITICAL: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "FATAL: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        abort();
+    }
+}
+
 
 int main(int argc, char *argv[])
 {
-  QGuiApplication app(argc, argv);
+  qInstallMessageHandler(myMessageOutput);
 
-  Window window;
-  QSurfaceFormat fmt;
-  fmt.setProfile(QSurfaceFormat::CoreProfile);
-  fmt.setVersion(4,5);
-  fmt.setSamples(16);
-  fmt.setSwapInterval(1);
-  window.setFormat(fmt);
+  #ifdef Q_OS_MACX
+  QSurfaceFormat format;
+  format.setDepthBufferSize(32);
+  format.setMajorVersion(4);
+  format.setMinorVersion(1);
+  format.setProfile(QSurfaceFormat::CoreProfile);
+  QSurfaceFormat::setDefaultFormat(format);
+  #endif
 
-  Scene scene(&window);
-  window.setScene(&scene);
+  QApplication app(argc, argv);
+  GUI window;
 
-  window.resize(720, 720);
   window.show();
 
   return app.exec();

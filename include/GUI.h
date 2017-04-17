@@ -1,0 +1,40 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file GUI.h
+/// @author Carola Gille
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
+#ifndef GUI_H
+#define GUI_H
+
+// Qt
+#include <QMainWindow>
+
+// Project
+#include "GLWindow.h"
+
+namespace Ui {
+class GUI;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// @class GUI
+/// @brief Graphic User Interface to interact with the program.
+///////////////////////////////////////////////////////////////////////////////////
+class GUI : public QMainWindow
+{
+  Q_OBJECT
+
+public:
+  explicit GUI(QWidget *parent = 0);
+  ~GUI();
+
+private:
+  Ui::GUI *m_ui;
+
+  // Open Gl widget which displays the Cells
+  GLWindow *m_gl;
+
+};
+
+#endif // GUI_H

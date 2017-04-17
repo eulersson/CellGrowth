@@ -6,15 +6,15 @@
 
 #include "InputManager.h"
 
-InputManager::InputManager (QWindow *_window) :
+InputManager::InputManager (QOpenGLWidget *_window) :
   m_camera(QVector3D(0.0f, 0.0f, 10.0f)),
   m_window(_window),
   m_keys{0},
   m_mousePressed(false)
 {
+  m_fbo = new QOpenGLFramebufferObject(_window->width(), _window->height());
     // Camera initialisation
     // Must be run on start for camera to calculate its position and orientation
-    setupCamera();
     m_camera.processMouseMovement(0, 0);
 }
 
@@ -50,31 +50,24 @@ void InputManager::doMovement()
 void InputManager::getUniqueColour(const int _x, const int _y,
                                    QOpenGLShaderProgram* m_manipulatorProgram)
 {
+  m_fbo->bind();
   // Clear colour buffer for temporary drawing
   // This must be run before actual drawing to frame buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // Draw all objects in a unique colour
   for(auto &s : m_objectList) { s->drawBackBuffer(); }
-  // Pixel storing colour information
-  std::array<unsigned char, 3> pixel;
 
-  // Get viewport
-  std::array<GLint, 4> viewport;
-  glGetIntegerv(GL_VIEWPORT, &viewport[0]);
+  QImage img = m_fbo->toImage();
+//  img.save("/home/i7243466/Desktop/koko.jpg");
 
-  // Read pixel at 1 by 1 pixels
-  glReadPixels(
-    _x* m_window->devicePixelRatio(),
-    viewport[3] - _y*m_window->devicePixelRatio(),
-    1,
-    1,
-    GL_RGB,
-    GL_UNSIGNED_BYTE,
-    &pixel[0]);
+  QColor col = img.pixelColor(_x, _y);
+  //qDebug("%d %d %d", col.red(), col.green(), col.blue());
 
-  QVector3D pixelColour = QVector3D(pixel[0], pixel[1], pixel[2]);
+  QVector3D pixelColour = QVector3D(col.red(), col.green(), col.blue());
   setCurrentUniqueColour(pixelColour);
+
+   m_fbo->release();
 }
 
 void InputManager::doSelection(const int _x, const int _y)
@@ -94,14 +87,11 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
   m_programs.push_back(_program);
 }
 
-void InputManager::setupCamera()
+void InputManager::setupCamera(int _w, int _h)
 {
-  int screenWidth = 720;
-  int screenHeight = 480;
-
   m_projection.setToIdentity();
-  m_projection.perspective(45, (float)screenWidth / (float)screenHeight,
-                         0.1f, 1000.0f);
+  m_projection.perspective(45.0f, (float)_w / (float)_h,
+                         0.1f, 10000.0f);
 
   for(int i = 0; i < m_programs.size(); i++)
   {
@@ -122,7 +112,7 @@ void InputManager::setupCamera()
 }
 
 void InputManager::setObjectList(
-    std::vector<std::shared_ptr<SelectObject> > _objectList)
+    std::vector<std::shared_ptr<SelectableObject> > _objectList)
 {
   m_objectList=_objectList;
 }
@@ -173,6 +163,10 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
   GLfloat ypos = event->pos().y();
   GLfloat xoffset = xpos - m_lastX;
   GLfloat yoffset = m_lastY - ypos;
+
+//  qDebug("last: %f %f", m_lastX, m_lastY);
+//  qDebug("pos: %f %f", xpos, ypos);
+//  qDebug("offset: %f %f", xoffset, yoffset);
 
   // Only process movement if the mouse button and alt is pressed
   if (m_mousePressed && m_alt_key==true)
@@ -273,3 +267,12 @@ void InputManager::wheelEvent(QWheelEvent *event)
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
 }
+
+void InputManager::resized(int _w, int _h)
+{
+  delete m_fbo;
+  m_fbo = new QOpenGLFramebufferObject(_w, _h);
+
+
+}
+

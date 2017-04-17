@@ -1,3 +1,11 @@
+
+////////////////////////////////////////////////////////////////////////////////
+/// @file ParticleSystem.cpp
+/// @author Carola Gille
+/// @author Ramon Blanquer
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 // Native
 #include <math.h>
 #include <iostream>
@@ -7,47 +15,76 @@
 #include "include/ParticleSystem.h"
 
 // Default constructor creates a 2500 (50*50) distribution of particles
-ParticleSystem::ParticleSystem()
+ParticleSystem::ParticleSystem() :
+  m_gen(m_rd())
 {
   //qDebug("Default constructor called");
   m_particleCount=0;
-  fill(3);
+  m_particleType= 'L';
+  fill(12);
+  m_forces = true;
+  m_cohesion = 30; //percent
+  m_spring = 30;
+
 }
 
 // For custom number of particlesm_packagedParticleData
-ParticleSystem::ParticleSystem(int _amount)
+ParticleSystem::ParticleSystem(char _particleType):
+  m_gen(m_rd())
 {
   //qDebug("Custom constructor called");
   m_particleCount=0;
-  fill(_amount);
+
+
+  m_particleType = _particleType;
+
+  //if it's a linked particle we need 3 particle
+  if (m_particleType=='L')
+  {
+    fill(3);
+  }
+  //if it's a Growth particle we need 1 particle to start with
+  else if (m_particleType== 'G')
+  {
+    fill(1);
+    m_forces = true;
+    m_cohesion = 30; //percent
+    m_spring = 30;
+  }
 
 }
 
-// Calculates new forces on each particles and advects them
+
 void ParticleSystem::advance()
 {
+  //reseting the particle count to the size of the particle list
   m_particleCount=m_particles.size();
-  //m_averageDistance=calculateAverageDistanceFromCentre();
 
   // First splitting
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
+    //split only if triggered by light
+
 //    if(m_particles[i]->testForSplit())
 //    {
 //      m_particles[i]->split(m_particles);
 //    }
   }
 
-  // Then moving
-  for (unsigned int i = 0; i < m_particleCount; ++i)
+  //calcuting the forces
+  if (m_forces==true)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+    for (unsigned int i = 0; i < m_particleCount; ++i)
+    {
+      m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_spring);
+    }
+
+    for (unsigned int i = 0; i < m_particleCount; ++i)
+    {
+      m_particles[i]->advance();
+    }
   }
 
-  for (unsigned int i = 0; i < m_particleCount; ++i)
-  {
-    m_particles[i]->advance();
-  }
 }
 
 void ParticleSystem::bulge()
@@ -61,60 +98,116 @@ void ParticleSystem::bulge()
   calculateParticleCentre();
 }
 
-// Starting with 4 particles that are all linked together
 void ParticleSystem::fill(unsigned int _amount)
 {
-  std::random_device rd;
-  std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(-10.0,10.0);
   std::vector<QVector3D> pos;
-  pos.push_back(QVector3D(0.5,0.5,0));
-  pos.push_back(QVector3D(0.5,-0.5,0));
-  pos.push_back(QVector3D(-0.5,-0.5,0));
+
+  const float X = 0.525731112119133606;
+  const float Z = 0.850650808352039932;
+  const float N= 0.0f;
+
+  pos.push_back(QVector3D(-X,N,Z));
+  pos.push_back(QVector3D(X,N,Z));
+  pos.push_back(QVector3D(-X,N,-Z));
+  pos.push_back(QVector3D(X,N,-Z));
+  pos.push_back(QVector3D(N,Z,X));
+  pos.push_back(QVector3D(N,Z,-X));
+  pos.push_back(QVector3D(N,-Z,X));
+  pos.push_back(QVector3D(N,-Z,-X));
+  pos.push_back(QVector3D(Z,X,N));
+  pos.push_back(QVector3D(-Z,X,N));
+  pos.push_back(QVector3D(Z,-X,N));
+  pos.push_back(QVector3D(-Z,-X,N));
+
 
   for (unsigned int i = 0; i < _amount; i++)
   {
-    //qreal x=distribution(gen);
-    //qreal y=distribution(gen);
-    //qreal z=distribution(gen);
-    //qreal z = -25.0f;
 
-    //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
-    m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(),pos[i].y(),pos[i].z())));
+
+    if(m_particleType=='G')
+    {
+      m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(0,0,0)));
+       m_particleCount++;
+
+    }
+    else if(m_particleType=='L')
+    {
+      m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z())));
+      //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    }
     m_particleCount++;
   }
 
-  if (_amount <= 4)
+  if (_amount <= 12)
   {
-    // We start with a small amount of particles so they can all be linked to each other
-    for (unsigned int i=0; i < m_particles.size(); i++)
-    {
-      // Linking all other particles to the i particle
-      for (unsigned int j = 0; j < m_particles.size(); j++)
-      {
-        if (j == i) { continue; }
-        m_particles[i]->connect(m_particles[j]->getID());
-      }
-    }
+   if (m_particleType=='G')
+   {
+         // We start with a small amount of particles so they can all be linked to each other
+         for (unsigned int i=0; i < m_particles.size(); i++)
+         {
+           // Linking all other particles to the i particle
+           for (unsigned int j = 0; j < m_particles.size(); j++)
+           {
+             if (j == i) { continue; }
+             m_particles[i]->connect(m_particles[j]->getID());
+           }
+         }
+   }
+   else if (m_particleType=='L')
+   {
+      m_particles[0]->connect(1);
+      m_particles[0]->connect(4);
+      m_particles[0]->connect(6);
+      m_particles[0]->connect(9);
+      m_particles[0]->connect(11);
+      m_particles[1]->connect(4);
+      m_particles[1]->connect(6);
+      m_particles[1]->connect(8);
+      m_particles[1]->connect(10);
+      m_particles[2]->connect(3);
+      m_particles[2]->connect(5);
+      m_particles[2]->connect(7);
+      m_particles[2]->connect(9);
+      m_particles[2]->connect(11);
+      m_particles[3]->connect(5);
+      m_particles[3]->connect(7);
+      m_particles[3]->connect(8);
+      m_particles[3]->connect(10);
+      m_particles[4]->connect(5);
+      m_particles[4]->connect(8);
+      m_particles[4]->connect(9);
+      m_particles[5]->connect(8);
+      m_particles[5]->connect(9);
+      m_particles[6]->connect(7);
+      m_particles[6]->connect(10);
+      m_particles[6]->connect(11);
+      m_particles[7]->connect(10);
+      m_particles[7]->connect(11);
+      m_particles[8]->connect(10);
+      m_particles[9]->connect(11);
+   }
   }
 
-  else
-  {
-    //run a triangulation algorithm
-    //This will need to be added later
-  }
+//  else
+//  {
+//    qDebug("To many particles to link");
+//  }
 }
 
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
 // the copy constructor triggered by the = (assignment) operator would trigger
 // a change of ownership. We do not want that. Read on unique_ptr and shared_ptr.
+
 Particle* ParticleSystem::getParticle(unsigned int _idx)
+
 {
   return m_particles[_idx].get();
 }
 
 // Gets the total number of particles
 unsigned int ParticleSystem::getSize()
+
 {
   // Changed this to query the size
   return m_particles.size();
@@ -155,57 +248,65 @@ void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
   }
 }
 
+void ParticleSystem::setLightPos(QVector3D _lightPos)
+{
+  m_lightPos = _lightPos;
+}
 
 void ParticleSystem::splitRandomParticle()
 {
-  std::random_device rd;
-  std::mt19937_64 gen(rd());
   std::uniform_real_distribution<float> distribution(0,m_particles.size());
 
-  QVector3D light(-100*sin(m_particleCount*10),- 100,100+sin(m_particleCount*10));
 
-  // !!!!!!  ATTENTION SPLIT FUNCTION SHOULD BE BASED ON PARTICLE TYPE
+  // calling diffrent split function based on the particle type
 
-  //m_particleCount=m_particles.size();
-  //m_averageDistance=calculateAverageDistanceFromCentre();
-
-  for (unsigned int i = 0; i < m_particleCount; ++i)
+  if(m_particleType=='G')
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+  m_particles[distribution(m_gen)]->split(m_lightPos,m_particles);
   }
-
-  m_particles[distribution(gen)]->split(m_particles);
-  m_particleCount++;
-//  QVector3D vec;
-//  m_particles[m_particles.size() - 1]->getPos(vec);
-
-  for (unsigned int i = 0; i < m_particleCount; ++i)
+  else if(m_particleType=='L')
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+    m_particles[distribution(m_gen)]->split(m_particles,m_gen);
   }
-  std::cout<<"particles: "<<m_particleCount<<std::endl;
 }
-
-
-
-
-
 
 void ParticleSystem::splitHitParticle()
 {
-  for (unsigned int i = 0; i < m_particleCount; ++i)
-  {
-    m_particles[i]->getHitParticles(m_particles);
-  }
-
-  m_particles[0]->split(m_particles);
-  m_particleCount++;
+  m_particleCount=m_particles.size();
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_spring);
   }
+
+  qDebug("Particles: %d", m_particleCount);
+
 }
+
+//void ParticleSystem::splitHitParticle()
+//{
+//  std::vector<unsigned int> hitParticleList;
+//  for (unsigned int i = 0; i < m_particleCount; ++i)
+//  {
+//    hitParticleList = m_particles[i]->getHitParticles(m_particles, m_lightPos);
+//    for(unsigned int j=0; hitParticleList.size(); j++)
+//    {
+//      std::random_shuffle(hitParticleList.begin(), hitParticleList.end());
+//      if(i==j)
+//      {
+//        float splitPosition = float(((m_lightPos.x() + m_lightPos.y() + m_lightPos.z()) / 3.0f ));
+//        m_particles[splitPosition]->split(m_particles);
+//      }
+//    }
+//  }
+
+//  m_particleCount++;
+
+//  for (unsigned int i = 0; i < m_particleCount; ++i)
+//  {
+//    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount);
+//  }
+//}
 
 void ParticleSystem::deleteParticle(unsigned int _index)
 {
@@ -280,5 +381,68 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
   averageDistance = averageDistance/(m_particles.size());
   //std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
   return averageDistance;
+}
 
+void ParticleSystem::setParticleSize(double _size)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setRadius(_size);
+  }
+}
+
+void ParticleSystem::toggleForces(bool _state)
+{
+  m_forces=_state;
+}
+
+void ParticleSystem::setCohesion(int _amount)
+{
+  m_cohesion = _amount;
+}
+
+void ParticleSystem::setSpring(int _amount)
+{
+  m_spring = _amount;
+}
+
+void ParticleSystem::setBranchLength(float _amount)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setBranchLength(_amount);
+  }
+}
+
+void ParticleSystem::setChildThreshold(int _value)
+{
+  for(unsigned int i=0;i< m_particles.size();i++)
+  {
+    m_particles[i]->setChildThreshold(_value);
+  }
+}
+
+void ParticleSystem::setGrowthRadius(int _amount)
+{
+  //not sure where to put either
+}
+
+void ParticleSystem::reset(char _particleType)
+{
+  m_particles.clear();
+  m_particleCount=0;
+  Particle::resetIDCounter();
+  m_particleType=_particleType;
+  if (m_particleType=='L')
+  {
+    fill(12);
+
+    m_forces = true;
+    m_cohesion = 30; //percent
+    m_spring = 30;
+  }
+  else if (m_particleType== 'G')
+  {
+    fill(1);
+  }
 }
