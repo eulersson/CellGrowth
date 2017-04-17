@@ -186,6 +186,11 @@ void ParticleSystem::splitRandomParticle()
   std::cout<<"particles: "<<m_particleCount<<std::endl;
 }
 
+
+
+
+
+
 void ParticleSystem::splitHitParticle()
 {
   for (unsigned int i = 0; i < m_particleCount; ++i)
