@@ -59,7 +59,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _springFactor) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
@@ -67,18 +67,12 @@ public:
   void bulge(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Does not do anything for this class.
-  //////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) override;
-
-  //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch from that Particle.
   /// @param[in] _lightDirection Light direction.
   /// @param[in] _particleList List of all particles.
   //////////////////////////////////////////////////////////////////////////////
-  void split(
-      QVector3D _lightDirection,
-      std::vector<std::unique_ptr<Particle>> &_particleList) override;
+  void split(QVector3D _lightDirection,
+      std::vector<std::unique_ptr<Particle>> &_particleList, std::__1::mt19937_64 _gen) override;
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -138,13 +132,6 @@ private:
       QVector3D _particle,
       std::vector<std::unique_ptr<Particle>> &_particleList);
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief findAngle finds angle between two vectors
-  /// @param[in] _vec1 first vector
-  /// @param[in] _vec2second vector
-  /// param[out] angle between the vectors
-  /////////////////////////////////////////////////////////////////////////////
-  float findAngle(QVector3D _vec1,QVector3D _vec2);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Length of a branches connecting to the particle

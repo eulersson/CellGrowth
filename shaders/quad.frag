@@ -59,10 +59,10 @@ uniform int height;
 out vec4 FragColor;
 
 //Setting samper2D into vec3. Easier to read code.
-vec3 Depth = texture2D(depth, TexCoord).rgb;
-vec3 Normals = normalize(texture2D(normal, TexCoord).rgb);
-vec3 Position = texture2D(positionTex, TexCoord).xyz;
-vec3 ScreenN = texture2D(ScreenNormals, TexCoord).rgb;
+vec3 Depth = texture(depth, TexCoord).rgb;
+vec3 Normals = normalize(texture(normal, TexCoord).rgb);
+vec3 Position = texture(positionTex, TexCoord).xyz;
+vec3 ScreenN = texture(ScreenNormals, TexCoord).rgb;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ vec4 AO()
         offset.xy /= offset.w;
         offset.xy = offset.xy * 0.5 + 0.5;
 
-        float sampleDepth = texture2D(positionTex, offset.xy).z;
+        float sampleDepth = texture(positionTex, offset.xy).z;
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(FragPos.z - sampleDepth));
         occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
     }
@@ -119,12 +119,12 @@ vec4 AO()
         for (int y = -2; y < 2; ++y)
         {
             vec2 offset = vec2(float(x), float (y)) * texelSize;
-            result =+ texture2D(SSAOInputBlur, TexCoord + offset).r;
+            result =+ texture(SSAOInputBlur, TexCoord + offset).r;
         }
     }
 
     //Applying
-    vec3 Diffuse = texture2D(diffuse, TexCoord).rgb;
+    vec3 Diffuse = texture(diffuse, TexCoord).rgb;
     vec3 ambient = vec3(0.3 * Diffuse * occlusion);
     vec3 lighting = ambient;
     vec3 viewDir = normalize( -FragPos );

@@ -91,7 +91,7 @@ void Particle::setRadius(float _radius)
   m_size = _radius;
 }
 
-void Particle::connect(unsigned int _ID)
+void Particle::connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList)
 {
   m_connectedParticles.push_back(_ID);
 }
