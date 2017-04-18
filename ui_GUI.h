@@ -344,7 +344,7 @@ public:
 
         retranslateUi(GUI);
 
-        m_particleTab->setCurrentIndex(1);
+        m_particleTab->setCurrentIndex(0);
         m_splitType->setCurrentIndex(0);
 
 

@@ -705,12 +705,13 @@ void GLWindow::setParticleType(int _type)
   emit resetCohesion(80);
   emit resetLocalCohesion(5);
   emit resetChildrenThreshold(3);
-  emit resetBranchLength(3.0);
+  emit resetBranchLength(0.5);
 
   char particleType;
   if (_type == 0)
   {
     particleType = 'L';
+
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
@@ -720,10 +721,10 @@ void GLWindow::setParticleType(int _type)
   else
   {
     particleType = 'G';
-    emit resetSplitType(0);
+    //emit resetSplitType(0);
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
-    emit enableSplitType(false);
+    emit enableSplitType(true);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
@@ -871,7 +872,7 @@ void GLWindow::restart()
   emit resetCohesion(5);
   emit resetLocalCohesion(80);
   emit resetChildrenThreshold(3);
-  emit resetBranchLength(3.0);
+  emit resetBranchLength(0.5);
   emit changedShadingType(0);
   emit setConnectionState(true);;
   m_ps.reset('L');

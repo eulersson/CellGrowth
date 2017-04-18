@@ -263,13 +263,13 @@ void ParticleSystem::splitRandomParticle()
   std::uniform_int_distribution<int> distribution(0,m_particles.size()-1);
 
   uint nearestParticle = getNearestParticle();
-  std::cout<<"nearestParticle:"<<nearestParticle<<std::endl;
+  //std::cout<<"nearestParticle:"<<nearestParticle<<std::endl;
 
   // calling different split function based on the particle type
 
   if(m_particleType=='G')
   {
-  m_particles[distribution(m_gen)]->split(m_lightPos,m_particles,m_gen);
+  m_particles[nearestParticle]->split(m_lightPos,m_particles,m_gen);
   }
   else if(m_particleType=='L')
   {
