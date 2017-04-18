@@ -53,6 +53,8 @@ DISTFILES += \
     shaders/links.frag \
     shaders/manip.vert \
     shaders/manip.frag \
+    shaders/skybox.vert \
+    shaders/skybox.frag \
     shaders/sun.vert \
     shaders/sun.frag \
     shaders/particles.vert \
@@ -60,10 +62,12 @@ DISTFILES += \
     shaders/quad.vert \
     shaders/quad.frag
 
-
 FORMS += \
     ui/GUI.ui
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+
+RESOURCES += \
+    resources.qrc
 
 

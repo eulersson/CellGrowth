@@ -60,26 +60,28 @@ void GLWindow::initializeGL()
 
   m_input_manager = new InputManager(this);
 
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_MULTISAMPLE);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_COLOR_MATERIAL);
-  glShadeModel(GL_SMOOTH);
+//  glEnable(GL_DEPTH_TEST);
+//  glEnable(GL_MULTISAMPLE);
+//  glEnable(GL_LIGHTING);
+//  glEnable(GL_LIGHT0);
+//  glEnable(GL_COLOR_MATERIAL);
+//  glShadeModel(GL_SMOOTH);
 
-  generateSphereData(4); // Four subdivisions of an icosahedra
+    generateSphereData(4); // Four subdivisions of an icosahedra
 
-  m_sphere_vbo.create();
-  m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    m_sphere_vbo.create();
+    m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
-  initializeMatrix();
+    initializeMatrix();
 
-  prepareQuad();
-  prepareParticles();
-  setupFBO();
-  setupLights();
-  sampleKernel();
-  m_activeRenderPassIndex = m_ADSIndex;
+    prepareSkyBox();
+    prepareQuad();
+    prepareParticles();
+
+    setupFBO();
+    setupLights();
+    sampleKernel();
+    m_activeRenderPassIndex = m_ADSIndex;
 
 
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -88,6 +90,7 @@ void GLWindow::initializeGL()
 
 void GLWindow::paintGL()
 {
+
     updateModelMatrix();
 
     m_input_manager->setupCamera(width(), height());
@@ -104,28 +107,51 @@ void GLWindow::paintGL()
       for(auto &s : m_object_list) { s->draw(); }
 
 
+
   m_fbo->release();
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if (m_activeRenderPassIndex == m_xRayIndex)
-    {
-      glEnable(GL_BLEND);
-      glEnable(GL_CULL_FACE);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glBlendEquation(GL_MAX);
-    }
-    else if (m_activeRenderPassIndex == m_ADSIndex)
-    {
-      glDisable(GL_CULL_FACE);
-      glDisable(GL_BLEND);
-    }
-    else if (m_activeRenderPassIndex == m_AOIndex)
-    {
-      glDisable(GL_CULL_FACE);
-      glDisable(GL_BLEND);
-    }
+    glDepthMask(GL_FALSE);
+    drawSkyBox();
+    glDepthMask(GL_TRUE);
+
+
+
+//    if (m_activeRenderPassIndex == m_xRayIndex)
+//    {
+//      glEnable(GL_BLEND);
+//      glEnable(GL_CULL_FACE);
+//      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//      glBlendEquation(GL_MAX);
+//    }
+//    else if (m_activeRenderPassIndex == m_ADSIndex)
+//    {
+//      glDisable(GL_CULL_FACE);
+//      glDisable(GL_BLEND);
+//    }
+//    else if (m_activeRenderPassIndex == m_AOIndex)
+//    {
+//      glDisable(GL_CULL_FACE);
+//      glDisable(GL_BLEND);
+//    }
+
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     drawQuad();
+    glDisable(GL_BLEND);
+
+
+
+//    glEnable(GL_BLEND);
+//    glDisable(GL_CULL_FACE);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //drawSkyBox();
+
+
+
 
     updateParticleSystem();
 }
@@ -178,6 +204,7 @@ void GLWindow::loadMatrixToShader()
     m_part_program->setUniformValue("ViewMatrix", m_view_matrix);
     m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
     m_part_program->release();
+
 }
 
 void GLWindow::loadCameraInfoToShader()
@@ -197,9 +224,9 @@ void GLWindow::loadLightToShader()
     m_ps.setLightPos(m_lightPos);
 
     m_quad_program->setUniformValue("light.position", m_lightPos);
-    m_quad_program->setUniformValue("light.ambient", QVector3D(ambient, ambient, ambient));
+    m_quad_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
     m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
-    m_quad_program->setUniformValue("light.specular", QVector3D(specular, specular, specular));
+    m_quad_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
     m_quad_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
     m_quad_program->setUniformValue("light.Linear", 0.09f);
     m_quad_program->setUniformValue("light.Quadratic", 0.032f);
@@ -242,15 +269,14 @@ void GLWindow::prepareQuad()
   m_quad_program->bind();
 
   // Passing textures to shader.
-  m_quad_program->setUniformValue("depth", 0);
-  m_quad_program->setUniformValue("positionTex", 1);
-  m_quad_program->setUniformValue("normal", 2);
-  m_quad_program->setUniformValue("diffuse", 3);
-  m_quad_program->setUniformValue("ssaoNoiseTex", 4);
-  m_quad_program->setUniformValue("ScreenNormals", 5);
-  m_quad_program->setUniformValue("Links", 6);
-  m_quad_program->setUniformValue("SSAOInputBlur", 7);
-
+  m_quad_program->setUniformValue("tDepth"         , 0);
+  m_quad_program->setUniformValue("tPosition"      , 1);
+  m_quad_program->setUniformValue("tNormal"        , 2);
+  m_quad_program->setUniformValue("tDiffuse"       , 3);
+  m_quad_program->setUniformValue("tSSAONoise"     , 4);
+  m_quad_program->setUniformValue("tScreenNormals" , 5);
+  m_quad_program->setUniformValue("tMask"          , 6);
+  m_quad_program->setUniformValue("tLinks"         , 7);
 
   // Subroutine ShadingPass Index.
   m_ADSIndex    = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "ADSRender");
@@ -311,6 +337,109 @@ void GLWindow::prepareParticles()
   sendParticleDataToOpenGL();
 }
 
+void GLWindow::prepareSkyBox()
+{
+  GLfloat points[] = {
+    -1.0f ,  1.0f , -1.0f ,
+    -1.0f , -1.0f , -1.0f ,
+     1.0f , -1.0f , -1.0f ,
+     1.0f , -1.0f , -1.0f ,
+     1.0f ,  1.0f , -1.0f ,
+    -1.0f ,  1.0f , -1.0f ,
+
+    -1.0f , -1.0f ,  1.0f ,
+    -1.0f , -1.0f , -1.0f ,
+    -1.0f ,  1.0f , -1.0f ,
+    -1.0f ,  1.0f , -1.0f ,
+    -1.0f ,  1.0f ,  1.0f ,
+    -1.0f , -1.0f ,  1.0f ,
+
+     1.0f , -1.0f , -1.0f ,
+     1.0f , -1.0f ,  1.0f ,
+     1.0f ,  1.0f ,  1.0f ,
+     1.0f ,  1.0f ,  1.0f ,
+     1.0f ,  1.0f , -1.0f ,
+     1.0f , -1.0f , -1.0f ,
+
+    -1.0f , -1.0f ,  1.0f ,
+    -1.0f ,  1.0f ,  1.0f ,
+     1.0f ,  1.0f ,  1.0f ,
+     1.0f ,  1.0f ,  1.0f ,
+     1.0f , -1.0f ,  1.0f ,
+    -1.0f , -1.0f ,  1.0f ,
+
+    -1.0f ,  1.0f , -1.0f ,
+     1.0f ,  1.0f , -1.0f ,
+     1.0f ,  1.0f ,  1.0f ,
+     1.0f ,  1.0f ,  1.0f ,
+    -1.0f ,  1.0f ,  1.0f ,
+    -1.0f ,  1.0f , -1.0f ,
+
+    -1.0f , -1.0f , -1.0f ,
+    -1.0f , -1.0f ,  1.0f ,
+     1.0f , -1.0f , -1.0f ,
+     1.0f , -1.0f , -1.0f ,
+    -1.0f , -1.0f ,  1.0f ,
+     1.0f , -1.0f ,  1.0f
+  };
+
+  m_skybox_program = new QOpenGLShaderProgram(this);
+  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/skybox.vert");
+  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/skybox.frag");
+  m_skybox_program->link();
+
+  m_skybox_vao = new QOpenGLVertexArrayObject(this);
+  m_skybox_vao->create();
+
+  m_skybox_vbo.create();
+  m_skybox_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+
+  m_skybox_program->bind();
+
+  m_skybox_vao->bind();
+  m_skybox_vbo.bind();
+
+  m_skybox_vbo.allocate(points, 6*6*3 * sizeof(GLfloat));
+
+  m_skybox_program->enableAttributeArray("pos");
+
+  m_skybox_program->setAttributeBuffer("pos", GL_FLOAT, 0, 3);
+  m_skybox_program->setUniformValue("tSkyBox", 8);
+
+  m_skybox_vao->release();
+
+  m_skybox_program->release();
+
+  const QImage posx = QImage(":/forest_posx.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posy = QImage(":/forest_posy.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posz = QImage(":/forest_posz.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negx = QImage(":/forest_negx.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negy = QImage(":/forest_negy.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negz = QImage(":/forest_negz.jpg").convertToFormat(QImage::Format_RGB888);
+
+  m_skybox_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
+  if (posz.isNull()) qDebug("Null image");
+  qDebug("%d %d %d",posz.width(), posz.height(), posz.depth());
+
+  m_skybox_texture->create();
+  m_skybox_texture->setSize(posx.width(), posx.height(), posx.depth());
+  m_skybox_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
+  m_skybox_texture->allocateStorage();
+
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posx.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posy.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posz.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negx.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negy.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negz.constBits(),0);
+
+  m_skybox_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
+  m_skybox_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+  m_skybox_texture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+
+  m_skybox_texture->generateMipMaps();
+}
+
 void GLWindow::drawQuad()
 {
   // From docs: When multiple textures are attached, the return value of
@@ -322,21 +451,21 @@ void GLWindow::drawQuad()
 
   GLuint textureID = m_fbo->texture();
 
-  glActiveTexture(GL_TEXTURE0);
+  glActiveTexture(GL_TEXTURE0);  // Depth (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE1);
+  glActiveTexture(GL_TEXTURE1);  // Position (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE2);
+  glActiveTexture(GL_TEXTURE2);  // Normal (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE3);
+  glActiveTexture(GL_TEXTURE3);  // Diffuse (RGBA)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE4);
+  glActiveTexture(GL_TEXTURE4);  // SSAONoise (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE5);
+  glActiveTexture(GL_TEXTURE5);  // ScreenNormals (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE6);
+  glActiveTexture(GL_TEXTURE6);  // Mask (RGBA)
   glBindTexture(GL_TEXTURE_2D, textureID);textureID += 1;
-  glActiveTexture(GL_TEXTURE7);
+  glActiveTexture(GL_TEXTURE7);  // Links (RGBA)
   glBindTexture(GL_TEXTURE_2D, textureID);
 
   m_quad_program->bind();
@@ -377,19 +506,50 @@ void GLWindow::drawLinks()
   m_links_program->release();
 }
 
+void GLWindow::drawSkyBox()
+{
+  glActiveTexture(GL_TEXTURE8);
+  m_skybox_texture->bind();
+
+    m_skybox_program->bind();
+
+    QMatrix4x4 V = m_input_manager->getViewMatrix();
+
+    // Stay just with the rotation part of the camera view matrix
+    V = QMatrix4x4(V.row(0)[0], V.row(0)[1], V.row(0)[2], 0,
+                   V.row(1)[0], V.row(1)[1], V.row(1)[2], 0,
+                   V.row(2)[0], V.row(2)[1], V.row(2)[2], 0,
+                   0          ,           0,           0, 1);
+
+    m_skybox_program->setUniformValue("Projection", m_input_manager->getProjectionMatrix());
+    m_skybox_program->setUniformValue("View", V);
+
+    m_skybox_vao->bind();
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+    m_skybox_vao->release();
+
+    m_skybox_program->release();
+}
+
 void GLWindow::setupFBO()
 {
-  m_fbo =new QOpenGLFramebufferObject(width(), height(), QOpenGLFramebufferObject::Depth);
+
+  int maxColorAttachments;
+  glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+  qDebug("---> %d", maxColorAttachments);
+
+  // GL_COLOR_ATTACHMENT0: Depth
+  m_fbo = new QOpenGLFramebufferObject(width(), height(), QOpenGLFramebufferObject::Depth);
 
   m_fbo->bind();
 
-  m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT1
-  m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT2
-  m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT3
-  m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT4
-  m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT5
-  m_fbo->addColorAttachment(width(), height());  // GL_COLOR_ATTACHMENT6
-  m_fbo->addColorAttachment(width(), height()); // GL_COLOR_ATTACHMENT7
+  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT1: Position
+  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT2: Normal
+  m_fbo->addColorAttachment(width(), height(), GL_RGBA);  // GL_COLOR_ATTACHMENT3: Diffuse
+  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT4: SSAONoise
+  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT5: ScreenNormals
+  m_fbo->addColorAttachment(width(), height(), GL_RGBA);  // GL_COLOR_ATTACHMENT6: Mask
+  m_fbo->addColorAttachment(width(), height(), GL_RGBA);  // GL_COLOR_ATTACHMENT7: Links
 
   const GLenum attachments[] = {
     GL_COLOR_ATTACHMENT0,
@@ -399,7 +559,7 @@ void GLWindow::setupFBO()
     GL_COLOR_ATTACHMENT4,
     GL_COLOR_ATTACHMENT5,
     GL_COLOR_ATTACHMENT6,
-    GL_COLOR_ATTACHMENT7
+    GL_COLOR_ATTACHMENT7,
   };
 
   // Drawing multiple buffers.
@@ -431,7 +591,7 @@ void GLWindow::setupFBO()
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     qCritical("Framebuffer not complete!");
 
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glViewport(0, 0, width(), height());
   m_fbo->release();
 }
@@ -553,7 +713,7 @@ void GLWindow::updateParticleSystem()
 {
   m_ps.setLightPos(m_lightPos);
   //std::cout<<"light pos: "<<m_lightPos.x()<<" "<<m_lightPos.y()<<" "<<m_lightPos.z()<<std::endl;
-  if (lightON == true)
+  if (m_lightON == true)
   {
     m_ps.splitRandomParticle();
     qInfo("%d", m_ps.getSize());
@@ -790,17 +950,17 @@ void GLWindow::setSplitType(int _type)
 
   if (_type==0)
   {
-    ambient = 1.0;
-    specular = 1.0;
-    lightON = false;
+    m_ambient = 1.0;
+    m_specular = 1.0;
+    m_lightON = false;
     emit enableLightOn(false);
     emit enableLightOff(false);
   }
 
   else if (_type==1)
   {
-    ambient = 0.5;
-    specular = 0;
+    m_ambient = 0.5;
+    m_specular = 0;
     emit enableLightOn(true);
     emit enableLightOff(true);
   }
@@ -827,18 +987,18 @@ void GLWindow::bulge()
 void GLWindow::lightOn()
 {
   //Only for LinkedParticles
-  ambient = 1.0;
-  specular = 1.0;
-  lightON = true;
+  m_ambient = 1.0;
+  m_specular = 1.0;
+  m_lightON = true;
   sendParticleDataToOpenGL();
 }
 
 void GLWindow::lightOff()
 {
   //Only for LinkedParticles
-  ambient = 0.5;
-  specular = 0;
-  lightON = false;
+  m_ambient = 0.5;
+  m_specular = 0;
+  m_lightON = false;
   sendParticleDataToOpenGL();
 }
 
