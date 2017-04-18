@@ -61,7 +61,6 @@ vec3 Position = texture2D(tPosition, TexCoord).xyz;
 vec3 ScreenN = texture2D(tScreenNormals, TexCoord).rgb;
 vec4 Diffuse = texture2D(tDiffuse, TexCoord).rgba;
 
-
 ////////////////////////////////////////////////////////////////////////////////
 ///                      AMBIENT OCCLUSION SHADING
 /// Source: https://learnopengl.com/#!Advanced-Lighting/SSAO

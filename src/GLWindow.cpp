@@ -684,8 +684,8 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
   // Recursion subdivision algorithm from:
   // http://www.opengl.org.ru/docs/pg/0208.html
 
-  double X = 0.25731112119133606;
-  double Z = 0.850650808352039932;
+  GLfloat X = 0.25731112119133606;
+  GLfloat Z = 0.850650808352039932;
 
   GLfloat vdata[12][3] = {
      {-X, 0.0f, Z}, {X, 0.0f, Z}, {-X, 0.0f, -Z}, {X, 0.0f, -Z},

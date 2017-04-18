@@ -7,7 +7,7 @@
 
 // Standard
 #include <vector>
-
+#include <cmath>
 // Qt
 #include <QOpenGLFunctions>
 
