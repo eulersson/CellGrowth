@@ -70,7 +70,7 @@ public:
   /// @param[in] _lightDirection Light direction.
   /// @param[in] _particleList List of all particles.
   //////////////////////////////////////////////////////////////////////////////
-  void split(QVector3D _lightPos,
+  bool split(QVector3D _lightPos,
       std::vector<std::unique_ptr<Particle>> &_particleList, std::__1::mt19937_64 _gen) override;
 
 
@@ -78,13 +78,13 @@ public:
   /// @brief sets the child threshold
   /// @param[in] _amount amount of children allowed per branch.
   //////////////////////////////////////////////////////////////////////////////
-  void setChildThreshold(int _amount);
+  void setChildThreshold(int _amount) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the branch length of a branch.
   /// @param[in] _value length of the branch.
   //////////////////////////////////////////////////////////////////////////////
-  void setBranchLength(float _value);
+  void setBranchLength(float _value) override;
 
 
 
@@ -129,7 +129,7 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   bool recursiveCollision(
       QVector3D _particle,
-      std::vector<std::unique_ptr<Particle>> &_particleList);
+      std::vector<std::unique_ptr<Particle>> &_particleList) override;
 
 
   //////////////////////////////////////////////////////////////////////////////

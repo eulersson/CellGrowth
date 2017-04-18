@@ -44,13 +44,13 @@ void GrowthParticle::bulge(QVector3D _particleCentre)
 
 }
 
-void GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Particle> > &_particleList,std::mt19937_64 _gen)
+bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Particle> > &_particleList,std::mt19937_64 _gen)
 {
 
   //triggered by reaching the food threshold
   //checks length of linked list to see if the max particle treshold is reached
   if(m_connectedParticles.size() >= m_childrenTreshold)
-  {return;}
+  {return false;}
 
 
     //creating list for new particles including mother particle
@@ -148,6 +148,7 @@ void GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
 
     int new_ID = _particleList[_particleList.size()-1 ]->getID();
     m_connectedParticles.push_back(new_ID);
+    return true;
 
 }
 

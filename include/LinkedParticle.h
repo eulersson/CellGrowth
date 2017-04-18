@@ -105,7 +105,7 @@ public:
   /// are linked to the new and which to the old particle.
   /// @param[in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
-  void split(std::vector<std::unique_ptr<Particle> > &_particleList, std::mt19937_64 _gen) override;
+  bool split(std::vector<std::unique_ptr<Particle> > &_particleList, std::mt19937_64 _gen) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Double checks that all links go both ways, and if not, creates new
@@ -115,6 +115,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList) override;
 
+  void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList) override;
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Tests for position relative to a plane.

@@ -100,7 +100,7 @@ public:
   /// @brief Returns main light shader program.
   /// @param[in] retshader !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void getMainProgram(QOpenGLShaderProgram **retshader);
+  void getMainProgram(QOpenGLShaderProgram **retshader) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Initialises VBO/VAO of light object.

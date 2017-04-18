@@ -115,7 +115,7 @@ public:
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(QVector3D ,
+  virtual bool split(QVector3D ,
                      std::vector<std::unique_ptr<Particle>> &_particleList, std::__1::mt19937_64 _gen) {}
 
 
@@ -123,7 +123,7 @@ public:
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
+  virtual bool split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
@@ -224,6 +224,7 @@ public:
   static void resetIDCounter();
 
 
+  virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){};
 
 protected:
   //////////////////////////////////////////////////////////////////////////////

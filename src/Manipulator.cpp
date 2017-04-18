@@ -45,15 +45,15 @@ void Manipulator::createGeometry(QOpenGLContext *context, std::vector<QVector3D>
 {
   // X ARROW
   QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject();
-  createArrow(vao_x, QVector3D(1.2, 0, 0), uColourVec[0], 0);
+  createArrow(vao_x, QVector3D(3, 0, 0), uColourVec[0], 0);
 
   // Y ARROW
   QOpenGLVertexArrayObject *vao_y = new QOpenGLVertexArrayObject();
-  createArrow(vao_y, QVector3D(0, 1.2, 0), uColourVec[1], 1);
+  createArrow(vao_y, QVector3D(0, 3, 0), uColourVec[1], 1);
 
   // Z ARROW
   QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject();
-  createArrow(vao_z, QVector3D(0, 0, 1.2), uColourVec[2], 2);
+  createArrow(vao_z, QVector3D(0, 0, 3), uColourVec[2], 2);
 }
 
 void Manipulator::draw()

@@ -439,7 +439,7 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
   return r;
 }
 
-void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
+bool LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
 {
  // hitParticles = getHitParticle(_particleList, _lightPos);
  // std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
@@ -448,7 +448,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   if(m_connectedParticles.size() < 2)
   {
     std::cout<<"NOT ENOUGH PARTICLES"<<std::endl;
-    return;
+    return false;
   }
   std::uniform_int_distribution<int> distribution(1, m_connectedParticles.size());
 
@@ -544,10 +544,11 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 //  QVector3D averageDistance;
 //  std::vector<unsigned int> returnList;
 //  calculate(particleCentre, _particleList, averageDistance, returnList);
+  return true;
 
 }
 
-void LinkedParticle::connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList)
+void LinkedParticle::doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList)
 {
   m_connectedParticles.push_back(_ID);
 

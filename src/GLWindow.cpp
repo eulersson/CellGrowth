@@ -3,6 +3,7 @@
 /// @author Ramon Blanquer
 /// @author Fanny Marstrom
 /// @author Carola Gille
+/// @author Esme Prior
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
@@ -19,7 +20,7 @@ float lerp(float a, float b, float f);
 
 GLWindow::GLWindow(QWidget*_parent)
   : QOpenGLWidget(_parent)
-  , m_draw_links(true)
+  , m_draw_links(false)
 {
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
@@ -716,6 +717,10 @@ void GLWindow::setParticleType(int _type)
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
     emit enableSplitType(true);
+    emit setConnectionState(false);
+    setShading("ADS");
+    emit changedShadingType(0);
+    emit resetNearestParticle(true);
 
   }
   else
@@ -725,6 +730,10 @@ void GLWindow::setParticleType(int _type)
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
     emit enableSplitType(true);
+    emit setConnectionState(true);
+    setShading("X Ray");
+    emit changedShadingType(1);
+    emit resetNearestParticle(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
@@ -874,7 +883,9 @@ void GLWindow::restart()
   emit resetChildrenThreshold(3);
   emit resetBranchLength(1);
   emit changedShadingType(0);
-  emit setConnectionState(true);;
+  emit setConnectionState(false);
+  emit resetNearestParticle(true);
+
   m_ps.reset('L');
   // Add reset functions here
 
@@ -883,5 +894,10 @@ void GLWindow::restart()
 void GLWindow::setChildThreshold(int _amount)
 {
   m_ps.setChildThreshold(_amount);
+}
+
+void GLWindow::setNearestParticle(bool _state)
+{
+    m_ps.setNearestParticleState(_state);
 }
 
