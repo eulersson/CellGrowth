@@ -53,6 +53,8 @@ DISTFILES += \
     shaders/links.frag \
     shaders/manip.vert \
     shaders/manip.frag \
+    shaders/skybox.vert \
+    shaders/skybox.frag \
     shaders/sun.vert \
     shaders/sun.frag \
     shaders/particles.vert \
