@@ -116,14 +116,14 @@ public:
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
   virtual bool split(QVector3D ,
-                     std::vector<std::unique_ptr<Particle>> &_particleList, std::__1::mt19937_64 _gen) {}
+                     std::vector<std::unique_ptr<Particle>> &_particleList, std::__1::mt19937_64 _gen) {return false;}
 
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual bool split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
+  virtual bool split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {return false;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
@@ -180,7 +180,7 @@ public:
   /// @param[in] _ID ID of the particle that is to be connected to the current
   /// particle.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void connect(unsigned int _ID,std::vector<std::unique_ptr<Particle>> &_particleList);
+  void connect(unsigned int _ID,std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Deletes an ID from the connection list. In other words, it breaks
@@ -224,7 +224,7 @@ public:
   static void resetIDCounter();
 
 
-  virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){};
+  virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){}
 
 protected:
   //////////////////////////////////////////////////////////////////////////////

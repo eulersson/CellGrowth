@@ -99,7 +99,7 @@ void Particle::connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> >
 
 void Particle::deleteConnection(unsigned int _ID)
 {
-  for(size_t i;i<m_connectedParticles.size();i++)
+  for(size_t i=0;i<m_connectedParticles.size();i++)
   {
     if(m_connectedParticles[i]==_ID)
     {

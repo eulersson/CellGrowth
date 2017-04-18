@@ -564,3 +564,4 @@ void LinkedParticle::doubleConnect(unsigned int _ID, std::vector<std::unique_ptr
   }
   _particleList[_ID]->connect(m_ID,_particleList);
 }
+

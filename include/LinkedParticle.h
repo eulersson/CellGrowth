@@ -113,7 +113,6 @@ public:
   /// @param[in] _ID Holds the unique ID of the particle.
   /// @param[in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
-  void connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList) override;
 
   void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList) override;
 private:
