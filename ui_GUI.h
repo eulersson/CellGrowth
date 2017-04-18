@@ -198,7 +198,7 @@ public:
         m_GP_branchLenght = new QDoubleSpinBox(m_growthParticleTab);
         m_GP_branchLenght->setObjectName(QStringLiteral("m_GP_branchLenght"));
         m_GP_branchLenght->setSingleStep(0.5);
-        m_GP_branchLenght->setValue(0.5);
+        m_GP_branchLenght->setValue(1);
 
         gridLayout_3->addWidget(m_GP_branchLenght, 3, 1, 1, 1);
 

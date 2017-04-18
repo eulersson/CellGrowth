@@ -19,17 +19,17 @@ GrowthParticle::GrowthParticle():Particle()
 GrowthParticle::GrowthParticle(qreal _x,qreal _y,qreal _z,float _size):Particle(_x,_y,_z, _size)
 {
   m_childrenTreshold=3;
-  m_branchLength=0.5;
+  m_branchLength=1.0;
   qDebug("Growth Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 GrowthParticle::GrowthParticle(qreal _x,
     qreal _y,
     qreal _z,
-    std::vector<unsigned int> _connectedParticles, float _size):Particle(_x,_y,_z,_connectedParticles,_size)
+    std::vector<unsigned int> _connectedParticles, float _size,float _branchLength):Particle(_x,_y,_z,_connectedParticles,_size)
 {
   m_childrenTreshold=3;
-  m_branchLength=0.5;
+  m_branchLength=_branchLength;
   qDebug("Growth Particle constructor passing in positions: %f,%f,%f and a list of"
          "particles", _x, _y, _z);
 }
@@ -62,9 +62,9 @@ void GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
 
 
 
-    std::uniform_real_distribution<float> distributionX(m_pos[0]+0.001,_lightPos[0]+_lightPos[0]);
-    std::uniform_real_distribution<float> distributionY(m_pos[1]+0.001,_lightPos[1]+_lightPos[1]);
-    std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightPos[2]+_lightPos[2]);
+    std::uniform_real_distribution<float> distributionX(m_pos[0]+0.001,_lightPos[0]);
+    std::uniform_real_distribution<float> distributionY(m_pos[1]+0.001,_lightPos[1]);
+    std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightPos[2]);
 
 
     //place new particle on side in  direction of light
@@ -75,7 +75,7 @@ void GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
     QVector3D pos;
 
     int counter=0;
-    int branchMultiplier=1;
+    float branchMultiplier=1.05;
     do{
 
 
@@ -86,24 +86,39 @@ void GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
 
     QVector3D lightDirection;
 
-    lightDirection[0]=_lightPos.x()-x;
-    lightDirection[0]=_lightPos.y()-y;
-    lightDirection[0]=_lightPos.z()-z;
-    //calculate vector
-    QVector3D direction;
-    direction[0]=m_pos[0]+x+(lightDirection.x()/2.0);
-    direction[1]=m_pos[1]+y+(lightDirection.y()/2.0);
-    direction[2]=m_pos[2]+z+(lightDirection.z()/2.0);
 
-    //place new particle in direction of vector mutilplied by size of particle
+
+    QVector3D direction;
+    direction[0]=x-m_pos[0];
+    direction[1]=y-m_pos[1];
+    direction[2]=z-m_pos[2];
+
+////    //place new particle in direction of vector mutilplied by size of particle
     direction.normalize();
 
-    direction[0]*=(m_size*m_branchLength*branchMultiplier);
-    direction[1]*=(m_size*m_branchLength*branchMultiplier);
-    direction[2]*=(m_size*m_branchLength*branchMultiplier);
-    x=m_pos[0]+direction[0];
-    y=m_pos[1]+direction[1];
-    z=m_pos[2]+direction[2];
+    x=m_pos[0]+direction[0]*(m_size+m_branchLength+branchMultiplier);
+    y=m_pos[1]+direction[1]*(m_size+m_branchLength+branchMultiplier);
+    z=m_pos[2]+direction[2]*(m_size+m_branchLength+branchMultiplier);
+
+//    lightDirection[0]=_lightPos.x()-x;
+//    lightDirection[1]=_lightPos.y()-y;
+//    lightDirection[2]=_lightPos.z()-z;
+
+//    //calculate vector
+//    lightDirection.normalize();
+
+//    direction[0]+=lightDirection.x();
+//    direction[1]+=lightDirection.y();
+//    direction[2]+=lightDirection.z();
+
+//    direction.normalize();
+
+
+//    direction[0]*=(m_size*m_branchLength*branchMultiplier);
+//    direction[1]*=(m_size*m_branchLength*branchMultiplier);
+//    direction[2]*=(m_size*m_branchLength*branchMultiplier);
+
+
 
 
     pos[0]=x;
@@ -111,9 +126,10 @@ void GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
     pos[2]=z;
 
 
+
     if(counter%50==0)
     {
-      branchMultiplier+=1.5;
+      branchMultiplier+=0.5;
     }
     counter++;
     }while(collision(4,pos,_particleList));
@@ -126,7 +142,7 @@ void GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
     // create new particle and add to particle list
 
 
-    _particleList.push_back(std::unique_ptr<GrowthParticle> (new GrowthParticle(x,y,z,newConnectedParticles,m_size)));
+    _particleList.push_back(std::unique_ptr<GrowthParticle> (new GrowthParticle(pos[0],pos[1],pos[2],newConnectedParticles,m_size,m_branchLength)));
 
     // add particle to links in mother particle
 

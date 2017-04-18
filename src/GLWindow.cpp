@@ -705,7 +705,7 @@ void GLWindow::setParticleType(int _type)
   emit resetCohesion(80);
   emit resetLocalCohesion(5);
   emit resetChildrenThreshold(3);
-  emit resetBranchLength(0.5);
+  emit resetBranchLength(1);
 
   char particleType;
   if (_type == 0)
@@ -872,7 +872,7 @@ void GLWindow::restart()
   emit resetCohesion(5);
   emit resetLocalCohesion(80);
   emit resetChildrenThreshold(3);
-  emit resetBranchLength(0.5);
+  emit resetBranchLength(1);
   emit changedShadingType(0);
   emit setConnectionState(true);;
   m_ps.reset('L');

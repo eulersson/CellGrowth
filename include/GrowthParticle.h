@@ -49,12 +49,11 @@ public:
   /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
 
-  GrowthParticle(
-      qreal _x,
+  GrowthParticle(qreal _x,
       qreal _y,
       qreal _z,
       std::vector<unsigned int> _connectedParticles,
-      float _size);
+      float _size, float _branchLength);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
