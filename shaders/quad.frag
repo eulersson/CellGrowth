@@ -1,10 +1,10 @@
 #version 410 core
 
 uniform sampler2D tDepth;          // Color Attachment 0
-uniform sampler2D tPosition;    // Color Attachment 1
+uniform sampler2D tPosition;       // Color Attachment 1
 uniform sampler2D tNormal;         // Color Attachment 2
 uniform sampler2D tDiffuse;        // Color Attachment 3
-uniform sampler2D tSSAONoise;   // Color Attachment 4
+uniform sampler2D tSSAONoise;      // Color Attachment 4
 uniform sampler2D tScreenNormals;  // Color Attachment 5
 uniform sampler2D tMask;           // Color Attachment 6
 uniform sampler2D tLinks;          // Color Attachment 7

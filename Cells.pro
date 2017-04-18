@@ -62,10 +62,12 @@ DISTFILES += \
     shaders/quad.vert \
     shaders/quad.frag
 
-
 FORMS += \
     ui/GUI.ui
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
+
+RESOURCES += \
+    resources.qrc
 
 

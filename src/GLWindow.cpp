@@ -224,9 +224,9 @@ void GLWindow::loadLightToShader()
     m_ps.setLightPos(m_lightPos);
 
     m_quad_program->setUniformValue("light.position", m_lightPos);
-    m_quad_program->setUniformValue("light.ambient", QVector3D(ambient, ambient, ambient));
+    m_quad_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
     m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
-    m_quad_program->setUniformValue("light.specular", QVector3D(specular, specular, specular));
+    m_quad_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
     m_quad_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
     m_quad_program->setUniformValue("light.Linear", 0.09f);
     m_quad_program->setUniformValue("light.Quadratic", 0.032f);
@@ -404,11 +404,40 @@ void GLWindow::prepareSkyBox()
   m_skybox_program->enableAttributeArray("pos");
 
   m_skybox_program->setAttributeBuffer("pos", GL_FLOAT, 0, 3);
+  m_skybox_program->setUniformValue("tSkyBox", 8);
 
   m_skybox_vao->release();
 
-  m_skybox_program->bind();
+  m_skybox_program->release();
 
+  const QImage posx = QImage(":/forest_posx.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posy = QImage(":/forest_posy.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posz = QImage(":/forest_posz.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negx = QImage(":/forest_negx.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negy = QImage(":/forest_negy.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negz = QImage(":/forest_negz.jpg").convertToFormat(QImage::Format_RGB888);
+
+  m_skybox_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
+  if (posz.isNull()) qDebug("Null image");
+  qDebug("%d %d %d",posz.width(), posz.height(), posz.depth());
+
+  m_skybox_texture->create();
+  m_skybox_texture->setSize(posx.width(), posx.height(), posx.depth());
+  m_skybox_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
+  m_skybox_texture->allocateStorage();
+
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posx.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posy.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posz.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negx.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negy.constBits(),0);
+  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negz.constBits(),0);
+
+  m_skybox_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
+  m_skybox_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+  m_skybox_texture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+
+  m_skybox_texture->generateMipMaps();
 }
 
 void GLWindow::drawQuad()
@@ -479,6 +508,9 @@ void GLWindow::drawLinks()
 
 void GLWindow::drawSkyBox()
 {
+  glActiveTexture(GL_TEXTURE8);
+  m_skybox_texture->bind();
+
     m_skybox_program->bind();
 
     QMatrix4x4 V = m_input_manager->getViewMatrix();
@@ -681,7 +713,7 @@ void GLWindow::updateParticleSystem()
 {
   m_ps.setLightPos(m_lightPos);
   //std::cout<<"light pos: "<<m_lightPos.x()<<" "<<m_lightPos.y()<<" "<<m_lightPos.z()<<std::endl;
-  if (lightON == true)
+  if (m_lightON == true)
   {
     m_ps.splitRandomParticle();
     qInfo("%d", m_ps.getSize());
@@ -918,17 +950,17 @@ void GLWindow::setSplitType(int _type)
 
   if (_type==0)
   {
-    ambient = 1.0;
-    specular = 1.0;
-    lightON = false;
+    m_ambient = 1.0;
+    m_specular = 1.0;
+    m_lightON = false;
     emit enableLightOn(false);
     emit enableLightOff(false);
   }
 
   else if (_type==1)
   {
-    ambient = 0.5;
-    specular = 0;
+    m_ambient = 0.5;
+    m_specular = 0;
     emit enableLightOn(true);
     emit enableLightOff(true);
   }
@@ -955,18 +987,18 @@ void GLWindow::bulge()
 void GLWindow::lightOn()
 {
   //Only for LinkedParticles
-  ambient = 1.0;
-  specular = 1.0;
-  lightON = true;
+  m_ambient = 1.0;
+  m_specular = 1.0;
+  m_lightON = true;
   sendParticleDataToOpenGL();
 }
 
 void GLWindow::lightOff()
 {
   //Only for LinkedParticles
-  ambient = 0.5;
-  specular = 0;
-  lightON = false;
+  m_ambient = 0.5;
+  m_specular = 0;
+  m_lightON = false;
   sendParticleDataToOpenGL();
 }
 
