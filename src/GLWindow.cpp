@@ -46,6 +46,7 @@ GLWindow::GLWindow(QWidget*_parent)
     m_timer.setInterval(0);
   }
   m_timer.start();
+
 }
 
 
@@ -128,6 +129,8 @@ void GLWindow::paintGL()
     drawQuad();
 
     updateParticleSystem();
+    setHitColour();
+    setFallOffColour();
 }
 
 void GLWindow::resizeGL(int _w, int _h)
@@ -200,7 +203,26 @@ void GLWindow::loadLightToShader()
     m_quad_program->setUniformValue("light.ambient", QVector3D(ambient, ambient, ambient));
     m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
     m_quad_program->setUniformValue("light.specular", QVector3D(specular, specular, specular));
-    m_quad_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
+
+    if(hitFlag == true)
+    {
+      colour.setX(0.3);
+      colour.setY(0.6);
+      colour.setZ(0.4);
+      m_quad_program->setUniformValue("light.colour", colour);
+    }
+    else if(fallOffFlag == true)
+    {
+      colour.setX(0.8);
+      colour.setY(0.5);
+      colour.setZ(0.2);
+      m_quad_program->setUniformValue("light.colour", colour);
+    }
+    else
+    {
+      m_quad_program->setUniformValue("light.colour", QVector3D(0.5,0.5,0.5));
+    }
+
     m_quad_program->setUniformValue("light.Linear", 0.09f);
     m_quad_program->setUniformValue("light.Quadratic", 0.032f);
 
@@ -217,7 +239,7 @@ void GLWindow::loadMaterialToShader()
   m_quad_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
   m_quad_program->setUniformValue("material.shininess", 32.0f);
 
-  // X-Ray Fall of to make only edges in full opacity.
+  // X-Ray Fall off to make only edges in full opacity.
   m_quad_program->setUniformValue("material.attenuation", 0.5f);
 
   m_quad_program->release();
@@ -503,7 +525,7 @@ void GLWindow::setupLights()
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
 
   PointLight* pointlight;
-  pointlight = new PointLight(QVector3D(0, 3, 0), m_manipulator_program, m_sun_program);
+  pointlight = new PointLight(QVector3D(0,0,0), m_manipulator_program, m_sun_program); //!!!!!!!!!!!!!!!!!
   pointlight->createGeometry(context(), masterUniqueColour);
   m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
 
@@ -552,7 +574,6 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
 void GLWindow::updateParticleSystem()
 {
   m_ps.setLightPos(m_lightPos);
-  //std::cout<<"light pos: "<<m_lightPos.x()<<" "<<m_lightPos.y()<<" "<<m_lightPos.z()<<std::endl;
   if (lightON == true)
   {
     m_ps.splitRandomParticle();
@@ -842,7 +863,56 @@ void GLWindow::lightOff()
   sendParticleDataToOpenGL();
 }
 
+void GLWindow::setHitColour()
+{
+  std::vector<unsigned int> hitParticles;
 
+  m_lightPos = m_object_list[0]->getPosition();
+
+  hitParticles = m_ps.getHitParticles(m_lightPos, colour);
+
+  for(unsigned int i=0; i<m_ps.getSize(); i++)
+  {
+    for(unsigned int j=0; j<hitParticles.size(); j++)
+    {
+      if(i==j)
+      {
+        hitFlag = true;
+      }
+      else
+      {
+        hitFlag = false;
+      }
+    }
+  }
+  std::cout<<"light pos: "<<m_lightPos.x()<<" "<<m_lightPos.y()<<" "<<m_lightPos.z()<<std::endl;
+  std::cout<<"hitParticles: "<<hitParticles.size()<<std::endl;
+}
+
+void GLWindow::setFallOffColour()
+{
+  std::vector<unsigned int> fallOff;
+
+  m_lightPos = m_object_list[0]->getPosition();
+
+  fallOff = m_ps.getFallOff(m_lightPos, colour);
+
+  for(unsigned int i=0; i<m_ps.getSize(); i++)
+  {
+    for(unsigned int j=0; j<fallOff.size(); j++)
+    {
+      if(i==j)
+      {
+        fallOffFlag = true;
+      }
+      else
+      {
+        fallOffFlag = false;
+      }
+    }
+  }
+  std::cout<<"fallOff: "<<fallOff.size()<<std::endl;
+}
 
 void GLWindow::setLocalCohesion(int _amount)
 {

@@ -86,7 +86,6 @@ void ParticleSystem::advance()
       m_particles[i]->advance();
     }
   }
-
 }
 
 void ParticleSystem::bulge()
@@ -259,7 +258,7 @@ void ParticleSystem::splitRandomParticle()
   std::uniform_int_distribution<int> distribution(0,m_particles.size()-1);
 
   uint nearestParticle = getNearestParticle();
-  std::cout<<"nearestParticle:"<<nearestParticle<<std::endl;
+  //std::cout<<"nearestParticle:"<<nearestParticle<<std::endl;
 
   // calling different split function based on the particle type
 
@@ -273,19 +272,6 @@ void ParticleSystem::splitRandomParticle()
   }
 }
 
-//void ParticleSystem::splitHitParticle()
-//{
-//  m_particleCount=m_particles.size();
-
-//  for (unsigned int i = 0; i < m_particleCount; ++i)
-//  {
-//    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
-//  }
-
-//  qDebug("Particles: %d", m_particleCount);
-
-//}
-
 unsigned int ParticleSystem::getNearestParticle()
 {
   //Finds the particle nearest to the point light radius so that they may be split
@@ -298,7 +284,7 @@ unsigned int ParticleSystem::getNearestParticle()
     m_lightDistances.push_back(lightDist.lengthSquared());
   }
 
-  std::vector<float>::iterator minElement=std::min_element (std::begin(m_lightDistances), std::end(m_lightDistances));
+  std::vector<float>::iterator minElement = std::min_element (std::begin(m_lightDistances), std::end(m_lightDistances));
   unsigned int minElementIndex = std::distance(std::begin(m_lightDistances), minElement);
   //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
 
@@ -448,4 +434,48 @@ void ParticleSystem::reset(char _particleType)
   {
     fill(1);
   }
+}
+
+std::vector<unsigned int> ParticleSystem::getHitParticles(QVector3D _lightPos, QVector3D _colour)
+{
+  //Finds the particles within the point light radius so that they may be split
+  std::vector<unsigned int> hitParticles;
+  QVector3D lightDist;
+
+  for(unsigned int i=0; i<=m_particles.size()-1; i++)
+  {
+    lightDist = (m_particles[i]->getPosition()) - _lightPos;
+    float hitLength = lightDist.length();
+
+    if(hitLength<=8)
+    {
+      uint hitParticle = m_particles[i]->getID();
+      hitParticles.push_back(hitParticle);
+    }
+  }
+  return hitParticles;
+}
+
+std::vector<unsigned int> ParticleSystem::getFallOff(QVector3D _lightPos, QVector3D _colour)
+{
+  std::vector<unsigned int> fallOff;
+  QVector3D lightDist;
+
+  for(unsigned int i=0; i<=m_particles.size()-1; i++)
+  {
+    lightDist = (m_particles[i]->getPosition()) - _lightPos;
+    float fallOffLength = lightDist.length();
+
+    if(fallOffLength>=8 && fallOffLength<=16)
+    {
+      uint fallOffParticle = m_particles[i]->getID();
+      fallOff.push_back(fallOffParticle);
+    }
+  }
+  return fallOff;
+}
+
+void ParticleSystem::setColour(float _colour)
+{
+  m_colour = _colour;
 }

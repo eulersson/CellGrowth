@@ -89,15 +89,6 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void lightAttract(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns a list containing all particles closest to the light.
-  /// @param [in] _particleList List of all particles
-  /// @param [in] _lightPos Holds the position of the point light
-  /////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
-
-  std::vector<unsigned int> getFallOff(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
-
   // Computes all the relinking and creates a new particle
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split, Calculates which particles

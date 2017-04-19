@@ -1,5 +1,7 @@
 #include "PointLight.h"
 
+#include <iostream>
+
 PointLight::PointLight(QVector3D _position, QOpenGLShaderProgram *_manipshaderp, QOpenGLShaderProgram *_sunshaderp) :
     m_manip(_position, _manipshaderp)
 {
