@@ -136,7 +136,6 @@ void ParticleSystem::fill(unsigned int _amount)
     else if(m_particleType=='L')
     {
       m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z())));
-      //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
     }
     m_particleCount++;
   }
@@ -191,10 +190,11 @@ void ParticleSystem::fill(unsigned int _amount)
    }
   }
 
-//  else
-//  {
-//    qDebug("To many particles to link");
-//  }
+  else
+  {
+    qDebug("To many particles to link");
+  }
+
 }
 
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
@@ -265,7 +265,8 @@ void ParticleSystem::splitRandomParticle()
 
   if(m_particleType=='G')
   {
-  m_particles[distribution(m_gen)]->split(m_lightPos,m_particles);
+  //m_particles[distribution(m_gen)]->split(m_lightPos,m_particles);
+  m_particles[nearestParticle]->split(m_lightPos,m_particles);
   }
   else if(m_particleType=='L')
   {

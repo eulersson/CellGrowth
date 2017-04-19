@@ -714,7 +714,7 @@ void GLWindow::setParticleType(int _type)
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
-    emit enableSplitType(true);
+    //emit enableSplitType(true);
 
   }
   else
@@ -723,7 +723,7 @@ void GLWindow::setParticleType(int _type)
     emit resetSplitType(0);
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
-    emit enableSplitType(false);
+    //emit enableSplitType(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();

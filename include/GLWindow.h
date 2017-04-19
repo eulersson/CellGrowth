@@ -608,7 +608,7 @@ signals:
   //////////////////////////////////////////////////////////////////////////////
   void enableLightOff(bool value);
 
-  void enableSplitType(bool value);
+  //void enableSplitType(bool value);
 
 };
 

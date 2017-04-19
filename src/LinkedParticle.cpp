@@ -399,16 +399,15 @@ std::vector<unsigned int> LinkedParticle::getHitParticles(std::vector<std::uniqu
   for(unsigned int i=0; i<=_particleList.size()-1; i++)
   {
     lightDist = (_particleList[i]->getPosition()) - _lightPos;
-    if((lightDist.x()<=1 && lightDist.x() >= -1)
-            && (lightDist.y()<=1 && lightDist.y() >= -1)
-            && (lightDist.z()<=1 && lightDist.z() >= -1))
+    std::cout<<"lightDistancelength:"<<lightDist.length()<<std::endl;
+    if(lightDist.length()<4)
     {
       uint hitParticle = _particleList[i]->getID();
       //std::cout<<"hitParticle:"<<hitParticle<<std::endl;
       m_hitParticles.push_back(hitParticle);
     }
   }
-  //std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
+  std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
   return m_hitParticles;
 }
 
