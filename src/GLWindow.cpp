@@ -60,12 +60,12 @@ void GLWindow::initializeGL()
 
   m_input_manager = new InputManager(this);
 
-//  glEnable(GL_DEPTH_TEST);
-//  glEnable(GL_MULTISAMPLE);
-//  glEnable(GL_LIGHTING);
-//  glEnable(GL_LIGHT0);
-//  glEnable(GL_COLOR_MATERIAL);
-//  glShadeModel(GL_SMOOTH);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MULTISAMPLE);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_COLOR_MATERIAL);
+  glShadeModel(GL_SMOOTH);
 
     generateSphereData(4); // Four subdivisions of an icosahedra
 
@@ -84,7 +84,7 @@ void GLWindow::initializeGL()
     m_activeRenderPassIndex = m_ADSIndex;
 
 
-  glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
 }
 
@@ -109,48 +109,41 @@ void GLWindow::paintGL()
 
 
   m_fbo->release();
-    //glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDepthMask(GL_FALSE);
-    drawSkyBox();
-    glDepthMask(GL_TRUE);
+    if (m_activeRenderPassIndex == m_xRayIndex)
+    {
+        glDepthMask(GL_FALSE);
+        drawSkyBox();
+        glDepthMask(GL_TRUE);
+
+      glEnable(GL_BLEND);
+      glEnable(GL_CULL_FACE);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glBlendEquation(GL_MAX);
+    }
+    else if (m_activeRenderPassIndex == m_ADSIndex)
+    {
+        glDepthMask(GL_FALSE);
+        drawSkyBox();
+        glDepthMask(GL_TRUE);
 
 
-
-//    if (m_activeRenderPassIndex == m_xRayIndex)
-//    {
-//      glEnable(GL_BLEND);
-//      glEnable(GL_CULL_FACE);
-//      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//      glBlendEquation(GL_MAX);
-//    }
-//    else if (m_activeRenderPassIndex == m_ADSIndex)
-//    {
-//      glDisable(GL_CULL_FACE);
-//      glDisable(GL_BLEND);
-//    }
-//    else if (m_activeRenderPassIndex == m_AOIndex)
-//    {
-//      glDisable(GL_CULL_FACE);
-//      glDisable(GL_BLEND);
-//    }
+      glDisable(GL_CULL_FACE);
+      glDisable(GL_BLEND);
+    }
+    else if (m_activeRenderPassIndex == m_AOIndex)
+    {
+      glDisable(GL_CULL_FACE);
+      glDisable(GL_BLEND);
+    }
 
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     drawQuad();
     glDisable(GL_BLEND);
-
-
-
-//    glEnable(GL_BLEND);
-//    glDisable(GL_CULL_FACE);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    //drawSkyBox();
-
-
+    glDisable(GL_CULL_FACE);
 
 
     updateParticleSystem();
@@ -227,7 +220,7 @@ void GLWindow::loadLightToShader()
     m_quad_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
     m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
     m_quad_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
-    m_quad_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
+    m_quad_program->setUniformValue("light.colour", QVector3D(1.0f, 1.0f, 1.0f));
     m_quad_program->setUniformValue("light.Linear", 0.09f);
     m_quad_program->setUniformValue("light.Quadratic", 0.032f);
 
@@ -340,47 +333,47 @@ void GLWindow::prepareParticles()
 void GLWindow::prepareSkyBox()
 {
   GLfloat points[] = {
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
+      -10.0f,  10.0f, -10.0f,
+      -10.0f, -10.0f, -10.0f,
+       10.0f, -10.0f, -10.0f,
+       10.0f, -10.0f, -10.0f,
+       10.0f,  10.0f, -10.0f,
+      -10.0f,  10.0f, -10.0f,
 
-    -1.0f , -1.0f ,  1.0f ,
-    -1.0f , -1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
+      -10.0f, -10.0f,  10.0f,
+      -10.0f, -10.0f, -10.0f,
+      -10.0f,  10.0f, -10.0f,
+      -10.0f,  10.0f, -10.0f,
+      -10.0f,  10.0f,  10.0f,
+      -10.0f, -10.0f,  10.0f,
 
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
+       10.0f, -10.0f, -10.0f,
+       10.0f, -10.0f,  10.0f,
+       10.0f,  10.0f,  10.0f,
+       10.0f,  10.0f,  10.0f,
+       10.0f,  10.0f, -10.0f,
+       10.0f, -10.0f, -10.0f,
 
-    -1.0f , -1.0f ,  1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f , -1.0f ,  1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
+      -10.0f, -10.0f,  10.0f,
+      -10.0f,  10.0f,  10.0f,
+       10.0f,  10.0f,  10.0f,
+       10.0f,  10.0f,  10.0f,
+       10.0f, -10.0f,  10.0f,
+      -10.0f, -10.0f,  10.0f,
 
-    -1.0f ,  1.0f , -1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
+      -10.0f,  10.0f, -10.0f,
+       10.0f,  10.0f, -10.0f,
+       10.0f,  10.0f,  10.0f,
+       10.0f,  10.0f,  10.0f,
+      -10.0f,  10.0f,  10.0f,
+      -10.0f,  10.0f, -10.0f,
 
-    -1.0f , -1.0f , -1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-     1.0f , -1.0f ,  1.0f
+      -10.0f, -10.0f, -10.0f,
+      -10.0f, -10.0f,  10.0f,
+       10.0f, -10.0f, -10.0f,
+       10.0f, -10.0f, -10.0f,
+      -10.0f, -10.0f,  10.0f,
+       10.0f, -10.0f,  10.0f
   };
 
   m_skybox_program = new QOpenGLShaderProgram(this);
@@ -451,6 +444,7 @@ void GLWindow::drawQuad()
 
   GLuint textureID = m_fbo->texture();
 
+  //Depth map of the particles.
   glActiveTexture(GL_TEXTURE0);  // Depth (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE1);  // Position (RGB)
@@ -459,12 +453,16 @@ void GLWindow::drawQuad()
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
   glActiveTexture(GL_TEXTURE3);  // Diffuse (RGBA)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
+  //SSAO noise from the particles.
   glActiveTexture(GL_TEXTURE4);  // SSAONoise (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
+  //Normals in screen space.
   glActiveTexture(GL_TEXTURE5);  // ScreenNormals (RGB)
   glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
+  //Diffuse.a mask
   glActiveTexture(GL_TEXTURE6);  // Mask (RGBA)
   glBindTexture(GL_TEXTURE_2D, textureID);textureID += 1;
+  //The links between the particles.
   glActiveTexture(GL_TEXTURE7);  // Links (RGBA)
   glBindTexture(GL_TEXTURE_2D, textureID);
 

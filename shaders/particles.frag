@@ -8,7 +8,7 @@ layout (location = 2) out vec3 gNormalPass;             // Color Attachment 2
 layout (location = 3) out vec4 gDiffusePass;            // Color Attachment 3
 layout (location = 4) out vec3 gSSAONoisePass;          // Color Attachment 4
 layout (location = 5) out vec3 gScreenNormalPass;       // Color Attachment 5
-layout (location = 6) out vec4 gMask;       // Color Attachment 6
+layout (location = 6) out vec4 gMask;                   // Color Attachment 6
 
 in vec3 vNormal;
 in vec3 vViewPosition;
