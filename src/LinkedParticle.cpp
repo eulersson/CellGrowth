@@ -536,7 +536,7 @@ bool LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   m_connectedParticles=keepList;
 
 
-  connect(newPartID,_particleList);
+  doubleConnect(newPartID,_particleList);
 
   m_foodLevel=0;
 

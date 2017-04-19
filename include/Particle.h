@@ -116,7 +116,7 @@ public:
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
   virtual bool split(QVector3D ,
-                     std::vector<std::unique_ptr<Particle>> &_particleList, std::__1::mt19937_64 _gen) {return false;}
+                     std::vector<std::unique_ptr<Particle>> &_particleList, std::mt19937_64 _gen) {return false;}
 
 
   //////////////////////////////////////////////////////////////////////////////

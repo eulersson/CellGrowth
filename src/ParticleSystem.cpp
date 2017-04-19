@@ -148,20 +148,7 @@ void ParticleSystem::fill(unsigned int _amount)
 
   if (_amount <= 12)
   {
-   if (m_particleType=='G')
-   {
-         // We start with a small amount of particles so they can all be linked to each other
-         for (unsigned int i=0; i < m_particles.size(); i++)
-         {
-           // Linking all other particles to the i particle
-           for (unsigned int j = 0; j < m_particles.size(); j++)
-           {
-             if (j == i) { continue; }
-             m_particles[i]->connect(m_particles[j]->getID(),m_particles);
-           }
-         }
-   }
-   else if (m_particleType=='L')
+   if (m_particleType=='L')
    {
       m_particles[0]->doubleConnect(1,m_particles);
       m_particles[0]->doubleConnect(4,m_particles);
@@ -464,9 +451,11 @@ void ParticleSystem::reset(char _particleType)
     m_particleDeath = false;
     m_cohesion = 30; //percent
     m_localCohesion = 30;
+    m_nearestParticleState=true;
   }
   else if (m_particleType== 'G')
   {
+    m_nearestParticleState=false;
     fill(1);
   }
 }
