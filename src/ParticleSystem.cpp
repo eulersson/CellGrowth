@@ -78,6 +78,9 @@ void ParticleSystem::advance()
   {
     for (unsigned int i = 0; i < m_particleCount; ++i)
     {
+      calculateParticleCentre();
+      calculateAverageDistanceFromCentre();
+      //m_randomParticles = getRandomParticles();
       m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
     }
 
@@ -277,6 +280,7 @@ void ParticleSystem::splitRandomParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
+    //std::vector<unsigned int> m_randomParticles = getRandomParticles();
     m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
   }
 
@@ -301,6 +305,16 @@ unsigned int ParticleSystem::getNearestParticle()
   //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
 
   return minElementIndex;
+}
+
+void ParticleSystem::getRandomParticles()
+{
+//  for (unsigned int i=0; i<=5; i++)
+//  {
+//    unsigned int randomIndex = rand() % m_particleCount;
+//    m_particles[randomIndex]->setFoodLevelTrue();
+
+//  }
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)
@@ -358,8 +372,6 @@ QVector3D ParticleSystem::calculateParticleCentre()
 
 QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
 {
-  QVector3D averageDistance;
-
   for (auto&particle : m_particles)
   {
     QVector3D particlePosition = particle->getPosition();
@@ -370,12 +382,12 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
     fabsDistance.setY(fabs (distance.y()));
     fabsDistance.setZ(fabs(distance.z()));
 
-    averageDistance += fabsDistance;
+    m_averageDistance += fabsDistance;
   }
 
-  averageDistance = averageDistance/(m_particles.size());
+  m_averageDistance = m_averageDistance/(m_particles.size());
   //std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
-  return averageDistance;
+  return m_averageDistance;
 }
 
 void ParticleSystem::setParticleSize(double _size)

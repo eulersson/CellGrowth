@@ -76,6 +76,8 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   //void spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor);
 
+  void pushRandomParticles();
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.
   /// @param [in] _particleCentre Position of the average centre of all particles

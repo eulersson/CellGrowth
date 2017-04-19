@@ -40,28 +40,22 @@ LinkedParticle::LinkedParticle(qreal _x,
 void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
 {
 
+    //std::cout<<"FoodLevelTrue:"<<m_ID<<std::endl;
+
+    std::cout<<"FoodLevelBefore:"<<m_foodLevel<<std::endl;
+    setFoodLevelTrue(m_foodLevel);
+    std::cout<<"FoodLevelAfter:"<<m_foodLevel<<std::endl;
+
+
     // EQUIDISTANCE
     // Calcualtes average distance from centre
     // Encourgaes particles towards this distance from centre
     // Stops the particles from wanting to get too close to the middle
     QVector3D distance = _particleCentre - m_pos;
+    //std::cout<<"averageDistance"<<_averageDistance.x()<<_averageDistance.y()<<_averageDistance.z()<<std::endl;
     QVector3D m_averageDistance = _averageDistance;
-    if(_particleCount>100)
-    {
-      m_averageDistance*=1.5;
-    }
-    else if(_particleCount>10)
-    {
-      m_averageDistance*=1.2;
-    }
-    QVector3D fabsDistance;
-    fabsDistance.setX(fabs (distance.x()));
-    fabsDistance.setY(fabs (distance.y()));
-    fabsDistance.setZ(fabs (distance.z()));
 
-    if (fabsDistance.x() < m_averageDistance.x()
-        && fabsDistance.y() < m_averageDistance.y()
-        && fabsDistance.z() < m_averageDistance.z())
+    if (distance.lengthSquared()<m_averageDistance.lengthSquared())
     {
         QVector3D sendAway = -(distance);
         sendAway/=100;
@@ -146,6 +140,17 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
     }
   }
   };
+
+}
+
+
+void LinkedParticle::pushRandomParticles()
+{
+
+//  if (m_foodLevel == true)
+//  {
+//    std::cout<<"FoodLevelTrue:"<<m_ID<<std::endl;
+//  }
 
 }
 
@@ -537,7 +542,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
   connect(newPartID,_particleList);
 
-  m_foodLevel=0;
+  //m_foodLevel=false;
 
 //  QVector3D particleCentre;
 //  QVector3D averageDistance;
