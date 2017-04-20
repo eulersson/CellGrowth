@@ -7,7 +7,7 @@
 #include "InputManager.h"
 
 InputManager::InputManager (QOpenGLWidget *_window) :
-  m_camera(QVector3D(0.0f, 0.0f, 10.0f)),
+  m_camera(QVector3D(0.0f, 0.0f, -20.0f)),
   m_window(_window),
   m_keys{0},
   m_mousePressed(false)
