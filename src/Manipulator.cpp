@@ -1,6 +1,11 @@
-#include "Manipulator.h"
+// Standard
 #include <cmath>
-//#define M_PI 3.14159
+
+// Project
+#include "Manipulator.h"
+
+// Defines
+#define M_PI 3.14159265358979323846
 
 const int DIRECTION_X = 0;
 const int DIRECTION_Y = 1;
@@ -10,8 +15,7 @@ const int ROTATION_Y = 3;
 const int ROTATION_Z = 4;
 
 // Manipulator move sensitivity
-const GLfloat SENSITIVITY = 0.04f;
-
+const GLfloat SENSITIVITY = 0.04f;  // --> this could be a static member maybe? @Glenn
 
 Manipulator::Manipulator(
       QVector3D _position,

@@ -7,10 +7,7 @@
 #ifndef SELECTOBJECT_H
 #define SELECTOBJECT_H
 
-
-
 // QT
-//#include <QtGui/QOpenGLFunctions>
 #include <QVector3D>
 #include <QDebug>
 
@@ -18,9 +15,6 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class SelectObject
@@ -30,7 +24,7 @@
 /// scene that will require key/mouse inputs. It will also provide camera
 /// calculations for these objects.
 ////////////////////////////////////////////////////////////////////////////////
-class SelectObject
+class SelectableObject
 {
 
 public:

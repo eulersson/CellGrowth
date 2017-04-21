@@ -7,10 +7,10 @@
 #ifndef ARCBALLCAMERA_H
 #define ARCBALLCAMERA_H
 
-// Native
+// Standard
 #include <vector>
 
-// QT
+// Qt
 #include <QOpenGLFunctions_4_5_Core>
 #include <QMatrix4x4>
 #include <QQuaternion>

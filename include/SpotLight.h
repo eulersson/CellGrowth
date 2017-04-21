@@ -7,10 +7,12 @@
 #ifndef SPOTLIGHT_H
 #define SPOTLIGHT_H
 
+// Qt
+#include <QtMath>
+
 // Project
 #include "Manipulator.h"
 #include "SelectObject.h"
-#include <QtMath>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief Default position
@@ -27,7 +29,7 @@ const QVector3D SPOT_LIGHT_COLOUR = QVector3D(0.8f, 0.8f, 0.8f);
 /// @brief Deals with inputs, and diverts them to the appropriate classes. Point
 /// light class. Stores functions and parameters related to the scene lights.
 ////////////////////////////////////////////////////////////////////////////////
-class SpotLight : public SelectObject
+class SpotLight : public SelectableObject
 {
 public:
   //////////////////////////////////////////////////////////////////////////////

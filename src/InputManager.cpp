@@ -107,7 +107,7 @@ void InputManager::setupCamera(int _w, int _h)
 }
 
 void InputManager::setObjectList(
-    std::vector<std::shared_ptr<SelectObject> > _objectList)
+    std::vector<std::shared_ptr<SelectableObject> > _objectList)
 {
   m_objectList=_objectList;
 }

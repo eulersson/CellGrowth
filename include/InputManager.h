@@ -88,7 +88,7 @@ public:
   /// objects that will be considered for the InputManager calculations.
   /// @param[in] _objectList Object list to set.
   //////////////////////////////////////////////////////////////////////////////
-  void setObjectList(std::vector<std::shared_ptr<SelectObject>> _objectList);
+  void setObjectList(std::vector<std::shared_ptr<SelectableObject>> _objectList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Gives the value of the current unique colour variable.
@@ -196,7 +196,7 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Vector of selectobjects in the scene.
   //////////////////////////////////////////////////////////////////////////////
-  std::vector<std::shared_ptr<SelectObject>> m_objectList;
+  std::vector<std::shared_ptr<SelectableObject>> m_objectList;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Array of bools stating which buttons are currently pressed.

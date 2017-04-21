@@ -1,3 +1,4 @@
+
 # Compiled Object files
 *.slo
 *.lo
@@ -31,12 +32,15 @@ cells
 
 # Custom
 build/*
+debug/*
 *.debug
 *.pro.autosave
 *.pro.user
 .DS_Store
 .qmake.stash
-Makefile
+Makefile*
+ui_GUI.h
+qrc_resources.cpp
 cells
 <<<<<<< HEAD
 

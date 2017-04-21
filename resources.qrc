@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="forest_negx.jpg">resources/cubemaps/forest/negx.jpg</file>
+        <file alias="forest_negy.jpg">resources/cubemaps/forest/negy.jpg</file>
+        <file alias="forest_negz.jpg">resources/cubemaps/forest/negz.jpg</file>
+        <file alias="forest_posx.jpg">resources/cubemaps/forest/posx.jpg</file>
+        <file alias="forest_posy.jpg">resources/cubemaps/forest/posy.jpg</file>
+        <file alias="forest_posz.jpg">resources/cubemaps/forest/posz.jpg</file>
+    </qresource>
+</RCC>
