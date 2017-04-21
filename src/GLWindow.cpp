@@ -86,6 +86,7 @@ void GLWindow::initializeGL()
 
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
+
 }
 
 void GLWindow::paintGL()
@@ -662,9 +663,12 @@ void GLWindow::setupLights()
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
 
-  PointLight* pointlight;
-  pointlight = new PointLight(QVector3D(0, 3, 0), m_manipulator_program, m_sun_program);
-  pointlight->createGeometry(context(), masterUniqueColour);
+  SpotLight *spotlight = new SpotLight(QVector3D(-4,0,0), m_manipulator_program, m_sun_program);
+  spotlight->createGeometry(masterUniqueColour);
+  m_object_list.push_back(std::move(std::unique_ptr<SpotLight>(spotlight)));
+
+  PointLight *pointlight = new PointLight(QVector3D(4,0,0), m_manipulator_program, m_sun_program);
+  pointlight->createGeometry(masterUniqueColour);
   m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
 
   m_input_manager->addShaderProgram(m_manipulator_program);
