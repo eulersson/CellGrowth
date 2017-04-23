@@ -46,11 +46,6 @@ void GrowthParticle::bulge(QVector3D _particleCentre)
 
 }
 
-//std::vector<unsigned int> GrowthParticle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
-//{
-
-//}
-
 void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_ptr<Particle> > &_particleList)
 {
 
@@ -58,7 +53,7 @@ void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_pt
   std::mt19937_64 gen(rd());
 
   //triggered by reaching the food threshold
-  //checks length of linked list to see if the max particle treshold is reached
+  //checks length of linked list to see if the max particle threshold is reached
   if(m_connectedParticles.size() >= m_childrenTreshold)
   {return;}
 

@@ -53,6 +53,10 @@ ParticleSystem::ParticleSystem(char _particleType):
     m_cohesion = 30; //percent
     m_localCohesion = 30;
   }
+  else if (m_particleType=='A')
+  {
+    fill(1);
+  }
 
 }
 
@@ -79,6 +83,13 @@ void ParticleSystem::advance()
     for (unsigned int i = 0; i < m_particleCount; ++i)
     {
       m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
+      if(m_particleType == 'A')
+      {
+        if(m_particles[i]->isAlive() == false)
+        {
+          deleteParticle(m_particles[i]->getID());
+        }
+      }
     }
 
     for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -129,13 +140,18 @@ void ParticleSystem::fill(unsigned int _amount)
     if(m_particleType=='G')
     {
       m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(0,0,0)));
-       m_particleCount++;
+      m_particleCount++;
 
     }
     else if(m_particleType=='L')
     {
       m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z())));
       //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+    }
+    else if(m_particleType=='A')
+    {
+      m_particles.emplace_back(std::unique_ptr<Particle>(new AutomataParticle(0,0,0)));
+      m_particleCount++;
     }
     m_particleCount++;
   }
@@ -293,6 +309,7 @@ unsigned int ParticleSystem::getNearestParticle()
 
 void ParticleSystem::deleteParticle(unsigned int _index)
 {
+  std::cout << "trying to delete particle" << _index << std::endl;
   std::vector<unsigned int> deleteList;
   m_particles[_index]->getConnectionsID(deleteList);
   int ID = m_particles[_index]->getID();
@@ -434,48 +451,10 @@ void ParticleSystem::reset(char _particleType)
   {
     fill(1);
   }
-}
-
-std::vector<unsigned int> ParticleSystem::getHitParticles(QVector3D _lightPos, QVector3D _colour)
-{
-  //Finds the particles within the point light radius so that they may be split
-  std::vector<unsigned int> hitParticles;
-  QVector3D lightDist;
-
-  for(unsigned int i=0; i<=m_particles.size()-1; i++)
+  else if (m_particleType == 'A')
   {
-    lightDist = (m_particles[i]->getPosition()) - _lightPos;
-    float hitLength = lightDist.length();
-
-    if(hitLength<=8)
-    {
-      uint hitParticle = m_particles[i]->getID();
-      hitParticles.push_back(hitParticle);
-    }
+    std::cout<<"hello"<<std::endl;
+    fill(1);
   }
-  return hitParticles;
 }
 
-std::vector<unsigned int> ParticleSystem::getFallOff(QVector3D _lightPos, QVector3D _colour)
-{
-  std::vector<unsigned int> fallOff;
-  QVector3D lightDist;
-
-  for(unsigned int i=0; i<=m_particles.size()-1; i++)
-  {
-    lightDist = (m_particles[i]->getPosition()) - _lightPos;
-    float fallOffLength = lightDist.length();
-
-    if(fallOffLength>=8 && fallOffLength<=16)
-    {
-      uint fallOffParticle = m_particles[i]->getID();
-      fallOff.push_back(fallOffParticle);
-    }
-  }
-  return fallOff;
-}
-
-void ParticleSystem::setColour(float _colour)
-{
-  m_colour = _colour;
-}
