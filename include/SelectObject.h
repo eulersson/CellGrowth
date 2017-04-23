@@ -39,7 +39,7 @@ public:
   /// @param[in] context Scene context
   /// @param[out] masterUniqueColour The updated unique colour to be used as object identifier.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void createGeometry(QOpenGLContext *context, QVector3D &masterUniqueColour) = 0;
+  virtual void createGeometry(QVector3D &masterUniqueColour) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draw the object to the main buffer.
@@ -57,7 +57,11 @@ public:
   /// @param offsety Y movement since last update.
   /// @param offsetz Z movement since last update.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void processMouseMovement(float offsetx, float offsety, float offsetz) = 0;
+  virtual void processMouseMovement(float _offsetx,
+                                    float _offsety,
+                                    float _offsetz,
+                                    QVector3D _campos,
+                                    QMatrix4x4 _view) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Set object as currently clicked/not clicked.

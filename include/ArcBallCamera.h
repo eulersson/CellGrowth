@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// @file ArcBallCamera.h
 /// @author Glenn Nygard
-/// @version 0.0.1
+/// @version 0.1.0
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef ARCBALLCAMERA_H
@@ -13,6 +13,7 @@
 // Qt
 #include <QOpenGLFunctions_4_5_Core>
 #include <QMatrix4x4>
+#include <QQuaternion>
 #include <QVector3D>
 #include <QtMath>
 
@@ -53,13 +54,7 @@ const GLfloat ARCSENSITIVTY = 0.25f;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class ArcBallCamera
-/// @brief Camera rotating around a given point.
-///
-/// Camera class based on the LearnOpenGL camera class, found here:
-/// https://learnopengl.com/#!Getting-started/Camera. Modified to use Qt
-/// functions instead og GLM and to rotate around a central point (ArcBall)
-/// instead of a 'flying man' approach.
-///
+/// @brief Camera rotating around origin.
 /// Movement:
 /// - alt + left mouse button to rotate around the rotation point
 /// - scroll wheel or w/s to zoom
@@ -104,22 +99,22 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets the point the camera rotates around.
   //////////////////////////////////////////////////////////////////////////////
-  void setRotationPoint(QVector3D rp);
+  void setRotationPoint(QVector3D _rp);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Processes keyboard inputs. Moves camera in a given direction.
   //////////////////////////////////////////////////////////////////////////////
-  void processKeyboard(ARCCamera_Movement direction, GLfloat deltaTime);
+  void processKeyboard(ARCCamera_Movement _direction, GLfloat _deltaTime);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Processes input received from a mouse input system.
   /// Expects the offset value in both the x and y direction.
   //////////////////////////////////////////////////////////////////////////////
-  void processMouseMovement(GLfloat xoffset, GLfloat yoffset,
-                            GLboolean constrainPitch = true);
+  void processMouseMovement(GLfloat _xoffset, GLfloat _yoffset);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Refocuses the camera to the focus point. This is to reset the
+  /// camera if rotations/position gets out of hand.
   //////////////////////////////////////////////////////////////////////////////
   void refocus();
 
@@ -128,14 +123,19 @@ public:
   /// Only requires input on the vertical wheel-axis.
   /// @param[in] steps !!!MISSING
   //////////////////////////////////////////////////////////////////////////////
-  void processMouseScroll(int steps);
+  void processMouseScroll(int _steps);
 
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates a new distance to the rotation point based on a velocity
   /// input.
   //////////////////////////////////////////////////////////////////////////////
-  void move(QVector3D velocity);
+  void move(QVector3D _velocity);
+
+  QQuaternion create_from_angle(const double &_xx,
+                                const double &_yy,
+                                const double &_zz,
+                                const double &_a);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Camera position.
@@ -197,6 +197,12 @@ private:
   /// @brief View matrix.
   //////////////////////////////////////////////////////////////////////////////
   QMatrix4x4 m_view;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Quaternion for camera rotation.
+  /// Set to identity quaternion (1,0,0,0).
+  //////////////////////////////////////////////////////////////////////////////
+  QQuaternion m_quat= QQuaternion();
 
 };
 

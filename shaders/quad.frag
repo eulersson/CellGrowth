@@ -1,19 +1,15 @@
 #version 410 core
 
-
-
-
-uniform sampler2D depth;          // Color Attachment 0
-uniform sampler2D positionTex;    // Color Attachment 1
-uniform sampler2D normal;         // Color Attachment 2
-uniform sampler2D diffuse;        // Color Attachment 3
-uniform sampler2D ssaoNoiseTex;   // Color Attachment 4
-uniform sampler2D ScreenNormals;  // Color Attachment 5
-uniform sampler2D Links;          // Color Attachment 6
-uniform sampler2D SSAOInputBlur; // Color Attachment 7
+uniform sampler2D tDepth;          // Color Attachment 0
+uniform sampler2D tPosition;       // Color Attachment 1
+uniform sampler2D tNormal;         // Color Attachment 2
+uniform sampler2D tDiffuse;        // Color Attachment 3
+uniform sampler2D tSSAONoise;      // Color Attachment 4
+uniform sampler2D tScreenNormals;  // Color Attachment 5
+uniform sampler2D tMask;           // Color Attachment 6
+uniform sampler2D tLinks;          // Color Attachment 7
 
 uniform vec3 samples[64];
-
 
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
@@ -59,11 +55,11 @@ uniform int height;
 out vec4 FragColor;
 
 //Setting samper2D into vec3. Easier to read code.
-vec3 Depth = texture2D(depth, TexCoord).rgb;
-vec3 Normals = normalize(texture2D(normal, TexCoord).rgb);
-vec3 Position = texture2D(positionTex, TexCoord).xyz;
-vec3 ScreenN = texture2D(ScreenNormals, TexCoord).rgb;
-
+vec3 Depth = texture2D(tDepth, TexCoord).rgb;
+vec3 Normals = normalize(texture2D(tNormal, TexCoord).rgb);
+vec3 Position = texture2D(tPosition, TexCoord).xyz;
+vec3 ScreenN = texture2D(tScreenNormals, TexCoord).rgb;
+vec4 Diffuse = texture2D(tDiffuse, TexCoord).rgba;
 
 ////////////////////////////////////////////////////////////////////////////////
 ///                      AMBIENT OCCLUSION SHADING
@@ -83,10 +79,10 @@ vec4 AO()
             Using positions from texture does not work. Issues with world space
             normals. fragmentPos have been replaced with FragPos for now.
     */
-    //vec3 fragmentPos = texture2D(positionTex, TexCoord).xyz;
+    //vec3 fragmentPos = texture2D(tPosition, TexCoord).xyz;
 
 
-    vec3 randomVec = normalize(texture(ssaoNoiseTex, TexCoord * noiseScale).xyz);
+    vec3 randomVec = normalize(texture(tSSAONoise, TexCoord * noiseScale).xyz);
     vec3 tangent = normalize(randomVec - ScreenN * dot(randomVec, ScreenN));
     vec3 bitangent = cross(ScreenN, tangent);
     mat3 TBN = mat3(tangent, bitangent, ScreenN);
@@ -104,7 +100,7 @@ vec4 AO()
         offset.xy /= offset.w;
         offset.xy = offset.xy * 0.5 + 0.5;
 
-        float sampleDepth = texture2D(positionTex, offset.xy).z;
+        float sampleDepth = texture2D(tPosition, offset.xy).z;
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(FragPos.z - sampleDepth));
         occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
     }
@@ -112,25 +108,24 @@ vec4 AO()
     occlusion = 1.0 - (occlusion / kernelSize);
 
     //Blur
-    vec2 texelSize = 1.0 / vec2(textureSize(SSAOInputBlur, 0));
+    vec2 texelSize = 1.0 / vec2(textureSize(tMask, 0));
     float result = 0.0;
     for (int x = -2; x < 2; ++x)
     {
         for (int y = -2; y < 2; ++y)
         {
             vec2 offset = vec2(float(x), float (y)) * texelSize;
-            result =+ texture2D(SSAOInputBlur, TexCoord + offset).r;
+            result =+ texture2D(tMask, TexCoord + offset).r;
         }
     }
 
     //Applying
-    vec3 Diffuse = texture2D(diffuse, TexCoord).rgb;
-    vec3 ambient = vec3(0.3 * Diffuse * occlusion);
+    vec3 ambient = vec3(0.3 * Diffuse.rgb * occlusion);
     vec3 lighting = ambient;
     vec3 viewDir = normalize( -FragPos );
 
     vec3 lightDir = normalize(light.position - FragPos);
-    vec3 diffuse = max(dot(ScreenN, lightDir), 0.0) * Diffuse * light.colour;
+    vec3 diffuse = max(dot(ScreenN, lightDir), 0.0) * Diffuse.rgb * light.colour;
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(ScreenN, halfwayDir), 0.0), 8.0);
     vec3 specular = light.colour * spec;
@@ -164,7 +159,7 @@ subroutine (ShadingPass)
 vec4 ADSRender()
 {
     //Particle positions in greyscale.
-    //float Grey = dot(texture(positionTex, TexCoord).rgb, vec3(texture(positionTex, TexCoord).r, texture(positionTex, TexCoord).g,texture(positionTex, TexCoord).b));
+    //float Grey = dot(texture(tPosition, TexCoord).rgb, vec3(texture(tPosition, TexCoord).r, texture(tPosition, TexCoord).g,texture(tPosition, TexCoord).b));
 
    // vec3 Depth = texture(depth, TexCoord).rgb;
 
@@ -172,7 +167,7 @@ vec4 ADSRender()
     vec3 Ambient = light.ambient * material.ambient;
 
     //Diffuse
-    vec3 sampledNormal = texture(ScreenNormals, TexCoord).rgb;
+    vec3 sampledNormal = texture(tScreenNormals, TexCoord).rgb;
 
     vec3 norm = sampledNormal;
     vec3 lightDir = normalize(light.position - FragPos);
@@ -199,7 +194,7 @@ subroutine (ShadingPass)
 vec4 xRayRender()
 {
     // Translucent Opacity
-    float Grey = dot(texture(ScreenNormals, TexCoord).rgb, vec3(texture(ScreenNormals, TexCoord).r, texture(ScreenNormals, TexCoord).g,texture(ScreenNormals, TexCoord).b));
+    float Grey = dot(texture(tScreenNormals, TexCoord).rgb, vec3(texture(tScreenNormals, TexCoord).r, texture(tScreenNormals, TexCoord).g,texture(tScreenNormals, TexCoord).b));
 
     //Transparent Opacity
     // float Grey = dot(texture(depth, TexCoord).rgb, vec3(texture(depth, TexCoord).r, texture(depth, TexCoord).g,texture(depth, TexCoord).b));
@@ -217,16 +212,15 @@ vec4 AORender()
 
 }
 
-
-
-
 void main(void)
 {
-    vec3 linksCol = texture(Links, TexCoord).rgb;
+    vec4 mask = texture(tMask, TexCoord).rgba;
+
+    vec4 linksCol = texture(tLinks, TexCoord).rgba;
     vec4 color = ShaderPassSelection();
 
     if (drawLinks) {
-        color = vec4(max(linksCol, color.rgb), color.a);
+        color = vec4(max(linksCol.rgb, color.rgb), max(Diffuse.a, linksCol.a));
     }
 
     FragColor = color;

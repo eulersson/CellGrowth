@@ -40,4 +40,9 @@ debug/*
 .qmake.stash
 Makefile*
 ui_GUI.h
+qrc_resources.cpp
 cells
+<<<<<<< HEAD
+
+=======
+>>>>>>> 96945cde9abcddace8af0d888b73fda122765b3d
