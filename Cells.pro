@@ -20,6 +20,7 @@ SOURCES += \
     src/GUI.cpp \
     src/PointLight.cpp \
     src/SelectObject.cpp \
+    src/SkyBox.cpp \
     src/SpotLight.cpp\
 
 OBJECTS_DIR = build/obj
@@ -39,6 +40,7 @@ HEADERS += \
     include/GUI.h \
     include/PointLight.h \
     include/SelectObject.h \
+    include/SkyBox.h \
     include/SpotLight.h \
 
 win32:LIBS += opengl32.lib

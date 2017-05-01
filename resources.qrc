@@ -19,7 +19,4 @@
         <file alias="sun.frag">resources/shaders/sun.frag</file>
         <file alias="sun.vert">resources/shaders/sun.vert</file>
     </qresource>
-    <qresource prefix="/shader"/>
-    <qresource prefix="/cubemaps"/>
-    <qresource prefix="/cubemaps/forest"/>
 </RCC>

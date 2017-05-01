@@ -59,6 +59,7 @@ void GLWindow::initializeGL()
   initializeOpenGLFunctions();
 
   m_input_manager = new InputManager(this);
+  m_skybox = new SkyBox(m_input_manager);
 
 //  glEnable(GL_DEPTH_TEST);
 //  glEnable(GL_MULTISAMPLE);
@@ -74,7 +75,7 @@ void GLWindow::initializeGL()
 
     initializeMatrix();
 
-    prepareSkyBox();
+    m_skybox->prepare();
     prepareQuad();
     prepareParticles();
 
@@ -114,7 +115,7 @@ void GLWindow::paintGL()
     glClear(GL_COLOR_BUFFER_BIT);
 
     glDepthMask(GL_FALSE);
-    drawSkyBox();
+    m_skybox->draw();
     glDepthMask(GL_TRUE);
 
 
@@ -338,109 +339,6 @@ void GLWindow::prepareParticles()
   sendParticleDataToOpenGL();
 }
 
-void GLWindow::prepareSkyBox()
-{
-  GLfloat points[] = {
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-
-    -1.0f , -1.0f ,  1.0f ,
-    -1.0f , -1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-
-    -1.0f , -1.0f ,  1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f , -1.0f ,  1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-
-    -1.0f ,  1.0f , -1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-
-    -1.0f , -1.0f , -1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-     1.0f , -1.0f ,  1.0f
-  };
-
-  m_skybox_program = new QOpenGLShaderProgram(this);
-  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/skybox.vert");
-  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/skybox.frag");
-  m_skybox_program->link();
-
-  m_skybox_vao = new QOpenGLVertexArrayObject(this);
-  m_skybox_vao->create();
-
-  m_skybox_vbo.create();
-  m_skybox_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-
-  m_skybox_program->bind();
-
-  m_skybox_vao->bind();
-  m_skybox_vbo.bind();
-
-  m_skybox_vbo.allocate(points, 6*6*3 * sizeof(GLfloat));
-
-  m_skybox_program->enableAttributeArray("pos");
-
-  m_skybox_program->setAttributeBuffer("pos", GL_FLOAT, 0, 3);
-  m_skybox_program->setUniformValue("tSkyBox", 8);
-
-  m_skybox_vao->release();
-
-  m_skybox_program->release();
-
-  const QImage posx = QImage(":/forest_posx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posy = QImage(":/forest_posy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posz = QImage(":/forest_posz.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negx = QImage(":/forest_negx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negy = QImage(":/forest_negy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negz = QImage(":/forest_negz.jpg").convertToFormat(QImage::Format_RGB888);
-
-  m_skybox_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
-  if (posz.isNull()) qDebug("Null image");
-  qDebug("%d %d %d",posz.width(), posz.height(), posz.depth());
-
-  m_skybox_texture->create();
-  m_skybox_texture->setSize(posx.width(), posx.height(), posx.depth());
-  m_skybox_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
-  m_skybox_texture->allocateStorage();
-
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posx.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posy.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posz.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negx.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negy.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negz.constBits(),0);
-
-  m_skybox_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
-  m_skybox_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-  m_skybox_texture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
-
-  m_skybox_texture->generateMipMaps();
-}
-
 void GLWindow::drawQuad()
 {
   // From docs: When multiple textures are attached, the return value of
@@ -505,31 +403,6 @@ void GLWindow::drawLinks()
   m_links_vao->release();
 
   m_links_program->release();
-}
-
-void GLWindow::drawSkyBox()
-{
-  glActiveTexture(GL_TEXTURE8);
-  m_skybox_texture->bind();
-
-    m_skybox_program->bind();
-
-    QMatrix4x4 V = m_input_manager->getViewMatrix();
-
-    // Stay just with the rotation part of the camera view matrix
-    V = QMatrix4x4(V.row(0)[0], V.row(0)[1], V.row(0)[2], 0,
-                   V.row(1)[0], V.row(1)[1], V.row(1)[2], 0,
-                   V.row(2)[0], V.row(2)[1], V.row(2)[2], 0,
-                   0          ,           0,           0, 1);
-
-    m_skybox_program->setUniformValue("Projection", m_input_manager->getProjectionMatrix());
-    m_skybox_program->setUniformValue("View", V);
-
-    m_skybox_vao->bind();
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-    m_skybox_vao->release();
-
-    m_skybox_program->release();
 }
 
 void GLWindow::setupFBO()
