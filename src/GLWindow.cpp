@@ -263,8 +263,8 @@ void GLWindow::prepareQuad()
   };
 
   m_quad_program = new QOpenGLShaderProgram(this);
-  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/quad.vert");
-  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/quad.frag");
+  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/quad.vert");
+  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/quad.frag");
   m_quad_program->link();
 
   m_quad_program->bind();
@@ -312,13 +312,13 @@ void GLWindow::prepareQuad()
 void GLWindow::prepareParticles()
 {
   m_part_program = new QOpenGLShaderProgram(this);
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/particles.vert");
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/particles.frag");
+  m_part_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/particles.vert");
+  m_part_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/particles.frag");
   m_part_program->link();
 
   m_links_program = new QOpenGLShaderProgram(this);
-  m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/links.vert");
-  m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/links.frag");
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/links.vert");
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/links.frag");
   m_links_program->link();
 
   m_part_vao = new QOpenGLVertexArrayObject(this);
@@ -385,8 +385,8 @@ void GLWindow::prepareSkyBox()
   };
 
   m_skybox_program = new QOpenGLShaderProgram(this);
-  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/skybox.vert");
-  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/skybox.frag");
+  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/skybox.vert");
+  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/skybox.frag");
   m_skybox_program->link();
 
   m_skybox_vao = new QOpenGLVertexArrayObject(this);
@@ -652,13 +652,13 @@ void GLWindow::randomKernel()
 void GLWindow::setupLights()
 {
   m_manipulator_program = new QOpenGLShaderProgram(this);
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/manip.vert");
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/manip.frag");
+  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/manip.vert");
+  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/manip.frag");
   m_manipulator_program->link();
 
   m_sun_program = new QOpenGLShaderProgram(this);
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/sun.vert");
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/sun.frag");
+  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sun.vert");
+  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/sun.frag");
   m_sun_program->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
