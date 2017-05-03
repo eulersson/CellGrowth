@@ -353,7 +353,7 @@ void GLWindow::paintGL()
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawParticles();
-    drawLinks();
+    if (m_draw_links) drawLinks();
   m_gbuffer_fbo->release();
 
   //////////////////////////////////////////////////////////////////////////////
@@ -943,6 +943,9 @@ void GLWindow::cancel()
 void GLWindow::showConnections(bool _state)
 {
   m_draw_links=_state;
+  m_lighting_program->bind();
+  m_lighting_program->setUniformValue("drawLinks", _state);
+  m_lighting_program->release();
   sendParticleDataToOpenGL();
 }
 
