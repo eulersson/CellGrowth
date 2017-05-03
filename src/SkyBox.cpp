@@ -55,8 +55,8 @@ void SkyBox::prepare()
   };
 
   m_program = new QOpenGLShaderProgram;
-  m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/skybox.vert");
-  m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/skybox.frag");
+  m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/skybox.vert");
+  m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/skybox.frag");
   m_program->link();
 
   m_vao = new QOpenGLVertexArrayObject;
@@ -81,12 +81,12 @@ void SkyBox::prepare()
 
   m_program->release();
 
-  const QImage posx = QImage(":/forest_posx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posy = QImage(":/forest_posy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posz = QImage(":/forest_posz.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negx = QImage(":/forest_negx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negy = QImage(":/forest_negy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negz = QImage(":/forest_negz.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posx = QImage("resources/cubemaps/forest/posx.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posy = QImage("resources/cubemaps/forest/posy.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posz = QImage("resources/cubemaps/forest/posz.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negx = QImage("resources/cubemaps/forest/negx.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negy = QImage("resources/cubemaps/forest/negy.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage negz = QImage("resources/cubemaps/forest/negz.jpg").convertToFormat(QImage::Format_RGB888);
 
   m_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
   if (posz.isNull()) qDebug("Null image");
