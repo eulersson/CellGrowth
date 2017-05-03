@@ -19,7 +19,6 @@ SOURCES += \
     src/ParticleSystem.cpp \
     src/GUI.cpp \
     src/PointLight.cpp \
-    src/SelectObject.cpp \
     src/SpotLight.cpp\
 
 OBJECTS_DIR = build/obj
@@ -38,8 +37,8 @@ HEADERS += \
     include/ParticleSystem.h \
     include/GUI.h \
     include/PointLight.h \
-    include/SelectObject.h \
     include/SpotLight.h \
+    include/SelectableObject.h
 
 win32:LIBS += opengl32.lib
 
