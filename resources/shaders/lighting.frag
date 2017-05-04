@@ -31,12 +31,12 @@ struct Light {
 ////////////////////////////////////////////////////////////////////////////////
 /// Textures
 ////////////////////////////////////////////////////////////////////////////////
-uniform sampler2D tPosition;
-uniform sampler2D tNormal;
+uniform sampler2D tWorldPosition;
+uniform sampler2D tViewPosition;
 uniform sampler2D tWorldNormal;
+uniform sampler2D tViewNormal;
 uniform sampler2D tSSAO;
 uniform sampler2D tLinks;
-uniform sampler2D tWorldPosition;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Uniforms
@@ -44,14 +44,15 @@ uniform sampler2D tWorldPosition;
 uniform Material material;
 uniform Light light;
 uniform bool drawLinks;
+uniform mat4 ProjectionMatrix;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Globals
 ////////////////////////////////////////////////////////////////////////////////
-vec3 Position = texture(tPosition, vTexCoords).xyz;
+vec3 ViewPosition  = texture( tViewPosition, vTexCoords).xyz;
 vec3 WorldPosition = texture(tWorldPosition, vTexCoords).xyz;
-float Depth = texture(tPosition, vTexCoords).z;
-vec3 ScreenNormal = normalize(texture(tNormal, vTexCoords).xyz);
+float Depth = texture(tViewPosition, vTexCoords).z;
+vec3 ViewNormal  = normalize(texture( tViewNormal, vTexCoords).xyz);
 vec3 WorldNormal = normalize(texture(tWorldNormal, vTexCoords).xyz);
 float Occlusion = texture(tSSAO, vTexCoords).r;
 float Links = texture(tLinks, vTexCoords).r;
@@ -106,8 +107,17 @@ vec4 ADSRender()
 subroutine (RenderType)
 vec4 XRayRender()
 {
+    vec4 result = vec4(1.0);
+    
+    float EdgeFalloff = 2.3;
+    float opacity = dot(normalize(ViewNormal), normalize(-ViewPosition));
+    opacity = abs(opacity);
+    opacity = 1.0 - pow(opacity, EdgeFalloff);
+     
+    result *= opacity;
+
     ///! WORK HERE VAL
-    return vec4(1.0);
+    return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +132,7 @@ vec4 AORender()
 
 void main() {
     vec4 color = RenderTypeSelection();
-    float alpha = length(Position) == 0.0 ? 0.0 : 1.0;
+    float alpha = length(ViewPosition) == 0.0 ? 0.0 : 1.0;
 
     // Composite the links on top if needed
     if (drawLinks)

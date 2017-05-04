@@ -53,12 +53,12 @@ GLWindow::GLWindow(QWidget*_parent)
 GLWindow::~GLWindow()
 {
   qDebug("Window::~Window - Do cleanu.p");
-  m_position_texture->destroy();
-  delete m_position_texture;
+  m_view_position_texture->destroy();
+  delete m_view_position_texture;
   m_world_position_texture->destroy();
   delete m_world_position_texture;
-  m_normal_texture->destroy();
-  delete m_normal_texture;
+  m_view_normal_texture->destroy();
+  delete m_view_normal_texture;
   m_world_normal_texture->destroy();
   delete m_world_normal_texture;
   m_occlusion_texture->destroy();
@@ -76,12 +76,12 @@ void GLWindow::prepareSSAOPipeline()
   //////////////////////////////////////////////////////////////////////////////
   qDebug("Setting texture sizes: %dx%d", width(), height());
 
-  m_position_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-  m_position_texture->setSize(width(), height());
-  m_position_texture->setMinificationFilter(QOpenGLTexture::Nearest);
-  m_position_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-  m_position_texture->setFormat(QOpenGLTexture::RGB32F);
-  m_position_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
+  m_view_position_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_view_position_texture->setSize(width(), height());
+  m_view_position_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_view_position_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_view_position_texture->setFormat(QOpenGLTexture::RGB32F);
+  m_view_position_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
 
   m_world_position_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
   m_world_position_texture->setSize(width(), height());
@@ -90,12 +90,12 @@ void GLWindow::prepareSSAOPipeline()
   m_world_position_texture->setFormat(QOpenGLTexture::RGB32F);
   m_world_position_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
 
-  m_normal_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-  m_normal_texture->setSize(width(), height());
-  m_normal_texture->setMinificationFilter(QOpenGLTexture::Nearest);
-  m_normal_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-  m_normal_texture->setFormat(QOpenGLTexture::RGB32F);
-  m_normal_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
+  m_view_normal_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_view_normal_texture->setSize(width(), height());
+  m_view_normal_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_view_normal_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_view_normal_texture->setFormat(QOpenGLTexture::RGB32F);
+  m_view_normal_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
 
   m_world_normal_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
   m_world_normal_texture->setSize(width(), height());
@@ -132,16 +132,14 @@ void GLWindow::prepareSSAOPipeline()
   m_gbuffer_fbo->bind();
   m_gbuffer_fbo->addColorAttachment(width(), height(), GL_RGB);    // GL_COLOR_ATTACHMENT1
 
-  qDebug("Position texture ID: %d", m_position_texture->textureId());
-  qDebug("Normal texture ID: %d", m_normal_texture->textureId());
-  glBindTexture(GL_TEXTURE_2D, m_position_texture->textureId());
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_position_texture->textureId(), 0);
-  glBindTexture(GL_TEXTURE_2D, m_normal_texture->textureId());
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_normal_texture->textureId(), 0);
+  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_world_position_texture->textureId(), 0);
+  glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_view_position_texture->textureId(), 0);
   glBindTexture(GL_TEXTURE_2D, m_world_normal_texture->textureId());
   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, m_world_normal_texture->textureId(), 0);
-  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, m_world_position_texture->textureId(), 0);
+  glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, m_view_normal_texture->textureId(), 0);
   glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, m_links_texture->textureId(), 0);
   const GLenum gbuffer_attachments[5] = {
@@ -273,9 +271,9 @@ void GLWindow::prepareSSAOPipeline()
   m_ssao_program->bind();
 
     // Texture unit to use
-    m_ssao_program->setUniformValue("tPosition" , 0);
-    m_ssao_program->setUniformValue("tNormal"   , 1);
-    m_ssao_program->setUniformValue("tTexNoise" , 2);
+    m_ssao_program->setUniformValue("tViewPosition" , 0);
+    m_ssao_program->setUniformValue("tViewNormal"   , 1);
+    m_ssao_program->setUniformValue("tTexNoise"     , 2);
 
   m_ssao_program->release();
 
@@ -291,12 +289,12 @@ void GLWindow::prepareSSAOPipeline()
   m_lighting_program->bind();
 
     // Texture unit to use
-    m_lighting_program->setUniformValue("tPosition"     , 0);
-    m_lighting_program->setUniformValue("tNormal"       , 1);
-    m_lighting_program->setUniformValue("tWorldNormal"  , 2);
-    m_lighting_program->setUniformValue("tSSAO"         , 3);
-    m_lighting_program->setUniformValue("tLinks"        , 4);
-    m_lighting_program->setUniformValue("tWorldPosition", 5);
+    m_lighting_program->setUniformValue("tWorldPosition" , 0);
+    m_lighting_program->setUniformValue("tViewPosition"  , 1);
+    m_lighting_program->setUniformValue("tWorldNormal"   , 2);
+    m_lighting_program->setUniformValue("tViewNormal"    , 3);
+    m_lighting_program->setUniformValue("tSSAO"          , 4);
+    m_lighting_program->setUniformValue("tLinks"         , 5);
 
     // Uniforms
     m_lighting_program->setUniformValue("drawLinks", true);
@@ -319,7 +317,7 @@ void GLWindow::initializeGL()
   m_input_manager = new InputManager(this);
   m_skybox = new SkyBox(m_input_manager);
 
-  generateSphereData(4); // Four subdivisions of an icosahedra
+  generateSphereData(2); // Four subdivisions of an icosahedra
   m_sphere_vbo.create();
   m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
@@ -350,7 +348,6 @@ void GLWindow::initializeGL()
   prepareQuad();
   prepareParticles();
   prepareSSAOPipeline();
-  sampleKernel();
 }
 
 void GLWindow::paintGL()
@@ -384,9 +381,9 @@ void GLWindow::paintGL()
     }
     m_ssao_program->setUniformValue("P", m_input_manager->getProjectionMatrix());
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_position_texture->textureId());
+    glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_normal_texture->textureId());
+    glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, m_noise_texture->textureId());
     m_quad_vao->bind();
@@ -426,18 +423,19 @@ void GLWindow::paintGL()
 
   m_lighting_program->bind();
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, m_position_texture->textureId());
+  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, m_normal_texture->textureId());
+  glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
   glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, m_world_normal_texture->textureId());
   glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
+  glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
   glActiveTexture(GL_TEXTURE4);
-  glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
+  glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
   glActiveTexture(GL_TEXTURE5);
-  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
+  glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
   m_quad_vao->bind();
+    m_lighting_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -446,7 +444,6 @@ void GLWindow::paintGL()
     glDisable(GL_BLEND);
   m_quad_vao->release();
   m_lighting_program->release();
-
 
   for(auto &s : m_object_list) { s->draw(); }
 
@@ -486,24 +483,6 @@ void GLWindow::initializeMatrices()
 
   m_model_matrix.setToIdentity();
   m_model_matrix.translate(0.0, 0.0, 0.0);
-}
-
-void GLWindow::loadMatrixToShader()
-{
-  // not being used now
-  m_geom_program->bind();
-  m_geom_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
-  m_geom_program->setUniformValue("ViewMatrix", m_view_matrix);
-  m_geom_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_geom_program->release();
-}
-
-void GLWindow::loadCameraInfoToShader()
-{
-    m_lighting_program->bind();
-    m_viewPos = QVector3D(0.0, 0.0, 0.0);
-    m_lighting_program->setUniformValue("viewPos", m_viewPos);
-    m_lighting_program->release();
 }
 
 void GLWindow::loadLightToShader()
@@ -593,43 +572,6 @@ void GLWindow::prepareParticles()
   sendParticleDataToOpenGL();
 }
 
-void GLWindow::drawQuad()
-{
-  // From docs: When multiple textures are attached, the return value of
-  // QOpenGLFrameBufferObject::texture() is the ID of the first one.
-  // Notice that QOpenGLFrameBufferObject::takeTexture(GLuint) cannot be used
-  // as it was created the memory leaks because under the hood in was creating
-  // a new texture and returning it, so at every paint iteration so many
-  // textures were being created.
-
-  GLuint textureID = m_fbo->texture();
-
-  glActiveTexture(GL_TEXTURE0);  // Depth (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE1);  // Position (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE2);  // Normal (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE3);  // Diffuse (RGBA)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE4);  // SSAONoise (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE5);  // ScreenNormals (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE6);  // Mask (RGBA)
-  glBindTexture(GL_TEXTURE_2D, textureID);textureID += 1;
-  glActiveTexture(GL_TEXTURE7);  // Links (RGBA)
-  glBindTexture(GL_TEXTURE_2D, textureID);
-
-  m_lighting_program->bind();
-  m_quad_vao->bind();
-    m_lighting_program->setUniformValue("drawLinks", true);
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-  m_quad_vao->release();
-  m_lighting_program->release();
-}
-
 void GLWindow::drawParticles()
 {
   m_geom_program->bind();
@@ -652,58 +594,6 @@ void GLWindow::drawLinks()
     glDrawElements(GL_LINES, m_links_data.size(), GL_UNSIGNED_INT, 0);
   m_links_vao->release();
   m_links_program->release();
-}
-
-void GLWindow::sampleKernel()
-{
-  std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
-  for(GLuint i = 0; i < m_ssaoKernel.size(); i++)
-  {
-    QVector3D sample(
-      randomFloats(generator) * 2.0 - 1.0,
-      randomFloats(generator) * 2.0 - 1.0,
-      randomFloats(generator)
-    );
-    sample.normalize();
-    sample *= randomFloats(generator);
-    GLfloat scale = GLfloat(i) / 64.0;
-    scale = lerp(0.1f, 1.0f, scale * scale);
-    sample *= scale;
-
-    m_ssaoKernel[i] = sample;
-
-    m_lighting_program->bind();
-    char buffer [12];
-    sprintf(buffer, "samples[%d]", i);
-    m_lighting_program->setUniformValue(buffer, sample);
-    m_lighting_program->release();
-  }
-}
-
-void GLWindow::randomKernel()
-{
-  std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
-  m_ssaoNoise.clear();
-
-  for(GLuint i = 0; i < 16; i++)
-  {
-    m_ssaoNoise.push_back(randomFloats(generator) * 2.0 - 1.0);
-    m_ssaoNoise.push_back(randomFloats(generator) * 2.0 - 1.0);
-    m_ssaoNoise.push_back(0.0f);
-  }
-
-  QOpenGLTexture* ssaoNoise_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-  ssaoNoise_texture->setMinificationFilter(QOpenGLTexture::Nearest);
-  ssaoNoise_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-  ssaoNoise_texture->setWrapMode(QOpenGLTexture::Repeat);
-
-  ssaoNoise_texture->setSize(4,4);
-  ssaoNoise_texture->setFormat(QOpenGLTexture::RGB16F);
-
-  ssaoNoise_texture->allocateStorage();
-  ssaoNoise_texture->setData(0, QOpenGLTexture::RGB, QOpenGLTexture::Float32, &m_ssaoNoise[0]);
-
-  ssaoNoise_texture->bind(5);
 }
 
 void GLWindow::setupLights()

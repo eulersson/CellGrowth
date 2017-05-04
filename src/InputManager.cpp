@@ -58,10 +58,8 @@ void InputManager::getUniqueColour(const int _x, const int _y)
   for(auto &s : m_objectList) { s->drawBackBuffer(); }
 
   QImage img = m_fbo->toImage();
-//  img.save("/home/i7243466/Desktop/koko.jpg");
 
   QColor col = img.pixelColor(_x, _y);
-  //qDebug("%d %d %d", col.red(), col.green(), col.blue());
 
   QVector3D pixelColour = QVector3D(col.red(), col.green(), col.blue());
   setCurrentUniqueColour(pixelColour);

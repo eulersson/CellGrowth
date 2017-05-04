@@ -4,8 +4,8 @@ out float fColor;
 
 in vec2 vTexCoords;
 
-uniform sampler2D tPosition;
-uniform sampler2D tNormal;
+uniform sampler2D tViewPosition;
+uniform sampler2D tViewNormal;
 uniform sampler2D tTexNoise;
 
 uniform vec3 samples[64];
@@ -19,8 +19,8 @@ const vec2 noiseScale = vec2(549.0/4.0, 514.0/4.0);
 
 void main() {
     // Get the needed inputs
-    vec3 position = texture(tPosition, vTexCoords).rgb;
-    vec3 normal = texture(tNormal, vTexCoords).rgb;
+    vec3 position = texture(tViewPosition, vTexCoords).rgb;
+    vec3 normal = texture(tViewNormal, vTexCoords).rgb;
     vec3 randomVector = normalize(texture(tTexNoise, vTexCoords * noiseScale).xyz);
 
     // TBN change-of-basis matrix: Change from tangent-space to view-space
@@ -43,7 +43,7 @@ void main() {
         offset.xyz = offset.xyz * 0.5 + 0.5;  // transform to range 0.0 - 1.0
 
         // Get sample depth
-        float sampleDepth = texture(tPosition, offset.xy).z;
+        float sampleDepth = texture(tViewPosition, offset.xy).z;
 
         // Range check and accumulate
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(position.z - sampleDepth));
