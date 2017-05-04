@@ -9,7 +9,7 @@ uniform sampler2D tViewNormal;
 uniform sampler2D tTexNoise;
 
 uniform vec3 samples[64];
-uniform mat4 P;
+uniform mat4 ProjectionMatrix;
 
 float radius = 0.9;     // uniform float radius;
 float bias = 0.25;     // uniform float bias;
@@ -38,7 +38,7 @@ void main() {
 
         // Project sample position (to sample texture) (to get position on screen/texture)
         vec4 offset = vec4(_sample, 1.0);
-        offset = P * offset;                  // from view to clip-space
+        offset = ProjectionMatrix * offset;                  // from view to clip-space
         offset.xyz /= offset.w;               // perspective divide
         offset.xyz = offset.xyz * 0.5 + 0.5;  // transform to range 0.0 - 1.0
 

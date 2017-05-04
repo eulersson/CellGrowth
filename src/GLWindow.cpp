@@ -18,9 +18,7 @@
 void subdivide(float*, float*, float*, long, std::vector<GLfloat>&);
 float lerp(float a, float b, float f);
 
-GLWindow::GLWindow(QWidget*_parent)
-  : QOpenGLWidget(_parent)
-  , m_draw_links(true)
+GLWindow::GLWindow(QWidget*_parent) : QOpenGLWidget(_parent)
 {
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
@@ -32,7 +30,6 @@ GLWindow::GLWindow(QWidget*_parent)
 
   setMouseTracking(true);
   setFocus();
-
 
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
   if(format().swapInterval() == -1)
@@ -47,26 +44,30 @@ GLWindow::GLWindow(QWidget*_parent)
     m_timer.setInterval(0);
   }
   m_timer.start();
+  m_draw_links = true;
 }
-
 
 GLWindow::~GLWindow()
 {
-  qDebug("Window::~Window - Do cleanu.p");
+  qDebug("Cleaning up...");
+
   m_view_position_texture->destroy();
-  delete m_view_position_texture;
   m_world_position_texture->destroy();
-  delete m_world_position_texture;
   m_view_normal_texture->destroy();
-  delete m_view_normal_texture;
   m_world_normal_texture->destroy();
-  delete m_world_normal_texture;
   m_occlusion_texture->destroy();
-  delete m_occlusion_texture;
   m_blurred_occlusion_texture->destroy();
-  delete m_blurred_occlusion_texture;
   m_links_texture->destroy();
+  m_noise_texture->destroy();
+
+  delete m_view_position_texture;
+  delete m_world_position_texture;
+  delete m_view_normal_texture;
+  delete m_world_normal_texture;
+  delete m_occlusion_texture;
+  delete m_blurred_occlusion_texture;
   delete m_links_texture;
+  delete m_noise_texture;
 }
 
 void GLWindow::prepareSSAOPipeline()
@@ -306,6 +307,7 @@ void GLWindow::prepareSSAOPipeline()
 
     // Setting the active renderpass.
     m_activeRenderPassIndex = m_ADSIndex;
+    m_rendering_mode = GLWindow::ADS;
 
   m_lighting_program->release();
 }
@@ -317,7 +319,7 @@ void GLWindow::initializeGL()
   m_input_manager = new InputManager(this);
   m_skybox = new SkyBox(m_input_manager);
 
-  generateSphereData(2); // Four subdivisions of an icosahedra
+  generateSphereData(4); // Four subdivisions of an icosahedra
   m_sphere_vbo.create();
   m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
@@ -363,7 +365,21 @@ void GLWindow::paintGL()
   m_gbuffer_fbo->bind();
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    drawParticles();
+
+    switch (m_rendering_mode) {
+    case GLWindow::XRAY:
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+      glEnable(GL_CULL_FACE);
+      drawParticles();
+      glDisable(GL_CULL_FACE);
+      glDisable(GL_BLEND);
+      break;
+    default:
+      drawParticles();
+      break;
+    }
+
     if (m_draw_links) drawLinks();
   m_gbuffer_fbo->release();
 
@@ -379,7 +395,7 @@ void GLWindow::paintGL()
       std::string s = "samples[" + std::to_string(i) + "]";
       m_ssao_program->setUniformValue(s.c_str(), m_ssao_kernel[i]);
     }
-    m_ssao_program->setUniformValue("P", m_input_manager->getProjectionMatrix());
+    m_ssao_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
     glActiveTexture(GL_TEXTURE1);
@@ -413,13 +429,25 @@ void GLWindow::paintGL()
   loadMaterialToShader();
   loadLightToShader();
 
-
+  glClearColor(0,0,0,0);
   glClear(GL_COLOR_BUFFER_BIT);
 
   // === Sky ===
-  glDepthMask(GL_FALSE);
-  m_skybox->draw();
-  glDepthMask(GL_TRUE);
+  switch (m_rendering_mode) {
+  case GLWindow::ADS:
+    glDepthMask(GL_FALSE);
+    m_skybox->draw();
+    glDepthMask(GL_TRUE);
+    break;
+  case GLWindow::AO:
+    glClearColor(1,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0,0,0,0);
+    break;
+  default:
+    break;
+  }
+
 
   m_lighting_program->bind();
   glActiveTexture(GL_TEXTURE0);
@@ -437,11 +465,14 @@ void GLWindow::paintGL()
   m_quad_vao->bind();
     m_lighting_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
+
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glDisable(GL_BLEND);
+
+
   m_quad_vao->release();
   m_lighting_program->release();
 
@@ -545,11 +576,6 @@ void GLWindow::prepareQuad()
 
 void GLWindow::prepareParticles()
 {
-  m_part_program = new QOpenGLShaderProgram(this);
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/particles.vert");
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/particles.frag");
-  m_part_program->link();
-
   m_links_program = new QOpenGLShaderProgram(this);
   m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/links.vert");
   m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/links.frag");
@@ -688,22 +714,22 @@ void GLWindow::sendParticleDataToOpenGL()
     // Sphere Data =============================================================
     m_sphere_vbo.bind();
     m_sphere_vbo.allocate(&m_sphere_data[0], m_sphere_data.size() * sizeof(GLfloat));
-    m_part_program->enableAttributeArray("position");
-    m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
+    m_geom_program->enableAttributeArray("position");
+    m_geom_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
 
     // Instance Data ===========================================================
     m_part_vbo.bind();
     m_part_vbo.allocate(&m_particle_data[0], m_ps.getSize() * 4 * sizeof(GLfloat));
 
-    m_part_program->enableAttributeArray("instances");
-    m_part_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
+    m_geom_program->enableAttributeArray("instances");
+    m_geom_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
 
     m_part_vbo.release();
-    glVertexAttribDivisor(m_part_program->attributeLocation("instances"), 1);
+    glVertexAttribDivisor(m_geom_program->attributeLocation("instances"), 1);
 
   m_part_vao->release();
 
-  // Link Data (on request) ====================================================
+  // Link Data (on request) =========================================23===========
   if (m_draw_links)
   {
     // Work on the links
@@ -742,12 +768,14 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
 
     case Qt::Key_1:
       m_activeRenderPassIndex = m_ADSIndex;
+      m_rendering_mode = GLWindow::ADS;
       emit changedShadingType(0);
       qDebug("ADS Render.");
       break;
 
     case Qt::Key_2:
       m_activeRenderPassIndex = m_XRayIndex;
+      m_rendering_mode = GLWindow::XRAY;
 
       emit changedShadingType(1);
       qDebug("X-Ray visualisation.");
@@ -755,6 +783,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
 
     case Qt::Key_3:
       m_activeRenderPassIndex = m_AOIndex;
+      m_rendering_mode = GLWindow::AO;
       emit changedShadingType(2);
       qDebug("Ambient Occlusion.");
       break;
@@ -860,16 +889,22 @@ void GLWindow::setShading(QString _type)
   if (_type=="ADS")
   {
     m_activeRenderPassIndex = m_ADSIndex;
+    m_rendering_mode = GLWindow::ADS;
+    emit setConnectionState(true);
 
   }
   else if(_type=="Ambient Occlusion")
   {
     m_activeRenderPassIndex = m_AOIndex;
+    m_rendering_mode = GLWindow::AO;
+    emit setConnectionState(false);
 
   }
   else if(_type=="X Ray")
   {
     m_activeRenderPassIndex = m_XRayIndex;
+    m_rendering_mode = GLWindow::XRAY;
+    emit setConnectionState(false);
   }
   sendParticleDataToOpenGL();
 }
