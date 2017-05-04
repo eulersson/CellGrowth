@@ -9,7 +9,7 @@
 
 // Project
 #include "Manipulator.h"
-#include "SelectObject.h"
+#include "SelectableObject.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief Default position
