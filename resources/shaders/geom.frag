@@ -3,6 +3,7 @@
 in vec3 vPosition;
 in vec3 vNormal;
 in vec3 vWorldNormal;
+in vec3 vWorldPosition;
 
 layout (location = 0) out vec3 gPositionPass;      // GL_COLOR_ATTACHMENT0
 layout (location = 1) out vec3 gNormalPass;        // GL_COLOR_ATTACHMENT1
@@ -13,4 +14,5 @@ void main() {
   gPositionPass = vPosition;
   gNormalPass = normalize(vNormal);
   gWorldNormalPass = normalize(vWorldNormal);
+  gWorldPositionPass = vWorldPosition;
 }

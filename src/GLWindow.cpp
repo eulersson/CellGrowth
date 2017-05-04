@@ -53,6 +53,20 @@ GLWindow::GLWindow(QWidget*_parent)
 GLWindow::~GLWindow()
 {
   qDebug("Window::~Window - Do cleanu.p");
+  m_position_texture->destroy();
+  delete m_position_texture;
+  m_world_position_texture->destroy();
+  delete m_world_position_texture;
+  m_normal_texture->destroy();
+  delete m_normal_texture;
+  m_world_normal_texture->destroy();
+  delete m_world_normal_texture;
+  m_occlusion_texture->destroy();
+  delete m_occlusion_texture;
+  m_blurred_occlusion_texture->destroy();
+  delete m_blurred_occlusion_texture;
+  m_links_texture->destroy();
+  delete m_links_texture;
 }
 
 void GLWindow::prepareSSAOPipeline()
@@ -421,6 +435,8 @@ void GLWindow::paintGL()
   glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
   glActiveTexture(GL_TEXTURE4);
   glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
+  glActiveTexture(GL_TEXTURE5);
+  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
   m_quad_vao->bind();
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
     glDisable(GL_DEPTH_TEST);
