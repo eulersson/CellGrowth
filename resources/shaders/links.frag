@@ -1,8 +1,8 @@
 
 #version 410 core
 
-layout (location = 7) out vec4 gLinks;       // Color Attachment 6
+layout (location = 4) out float gLinks;  // GL_COLOR_ATTACHMENT4
 
 void main() {
-    gLinks = vec4(1.0);
+    gLinks = 1.0;
 }

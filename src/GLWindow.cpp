@@ -9,6 +9,7 @@
 // Qt
 #include <QKeyEvent>
 #include <iostream>
+#include <string>
 
 // Project
 #include "GLWindow.h"
@@ -17,9 +18,7 @@
 void subdivide(float*, float*, float*, long, std::vector<GLfloat>&);
 float lerp(float a, float b, float f);
 
-GLWindow::GLWindow(QWidget*_parent)
-  : QOpenGLWidget(_parent)
-  , m_draw_links(true)
+GLWindow::GLWindow(QWidget*_parent) : QOpenGLWidget(_parent)
 {
   QSurfaceFormat fmt;
   fmt.setProfile(QSurfaceFormat::CoreProfile);
@@ -31,7 +30,6 @@ GLWindow::GLWindow(QWidget*_parent)
 
   setMouseTracking(true);
   setFocus();
-
 
   connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
   if(format().swapInterval() == -1)
@@ -46,12 +44,272 @@ GLWindow::GLWindow(QWidget*_parent)
     m_timer.setInterval(0);
   }
   m_timer.start();
+  m_draw_links = true;
 }
-
 
 GLWindow::~GLWindow()
 {
-  qDebug("Window::~Window - Do cleanu.p");
+  qDebug("Cleaning up...");
+
+  m_view_position_texture->destroy();
+  m_world_position_texture->destroy();
+  m_view_normal_texture->destroy();
+  m_world_normal_texture->destroy();
+  m_occlusion_texture->destroy();
+  m_blurred_occlusion_texture->destroy();
+  m_links_texture->destroy();
+  m_noise_texture->destroy();
+
+  delete m_view_position_texture;
+  delete m_world_position_texture;
+  delete m_view_normal_texture;
+  delete m_world_normal_texture;
+  delete m_occlusion_texture;
+  delete m_blurred_occlusion_texture;
+  delete m_links_texture;
+  delete m_noise_texture;
+}
+
+void GLWindow::prepareSSAOPipeline()
+{
+  //////////////////////////////////////////////////////////////////////////////
+  /// Framebuffer textures initialization
+  //////////////////////////////////////////////////////////////////////////////
+  qDebug("Setting texture sizes: %dx%d", width(), height());
+
+  m_view_position_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_view_position_texture->setSize(width(), height());
+  m_view_position_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_view_position_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_view_position_texture->setFormat(QOpenGLTexture::RGB32F);
+  m_view_position_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
+
+  m_world_position_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_world_position_texture->setSize(width(), height());
+  m_world_position_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_world_position_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_world_position_texture->setFormat(QOpenGLTexture::RGB32F);
+  m_world_position_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
+
+  m_view_normal_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_view_normal_texture->setSize(width(), height());
+  m_view_normal_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_view_normal_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_view_normal_texture->setFormat(QOpenGLTexture::RGB32F);
+  m_view_normal_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
+
+  m_world_normal_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_world_normal_texture->setSize(width(), height());
+  m_world_normal_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_world_normal_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_world_normal_texture->setFormat(QOpenGLTexture::RGB32F);
+  m_world_normal_texture->allocateStorage(QOpenGLTexture::RGB, QOpenGLTexture::Float32);
+
+  m_occlusion_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_occlusion_texture->setSize(width(), height());
+  m_occlusion_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_occlusion_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_occlusion_texture->setFormat(QOpenGLTexture::RGB16_UNorm);
+  m_occlusion_texture->allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::Float16);
+
+  m_blurred_occlusion_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_blurred_occlusion_texture->setSize(width(), height());
+  m_blurred_occlusion_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_blurred_occlusion_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_blurred_occlusion_texture->setFormat(QOpenGLTexture::RGB16_UNorm);
+  m_blurred_occlusion_texture->allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::Float16);
+
+  m_links_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_links_texture->setSize(width(), height());
+  m_links_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_links_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_links_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
+  m_links_texture->allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::UInt8);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// gBuffer FBO preparation
+  /////////////////////////////////////////////////////////////////////////////
+  m_gbuffer_fbo = new QOpenGLFramebufferObject(width(), height()); // GL_COLOR_ATTACHMENT0
+  m_gbuffer_fbo->bind();
+  m_gbuffer_fbo->addColorAttachment(width(), height(), GL_RGB);    // GL_COLOR_ATTACHMENT1
+
+  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_world_position_texture->textureId(), 0);
+  glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_view_position_texture->textureId(), 0);
+  glBindTexture(GL_TEXTURE_2D, m_world_normal_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, m_world_normal_texture->textureId(), 0);
+  glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, m_view_normal_texture->textureId(), 0);
+  glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, m_links_texture->textureId(), 0);
+  const GLenum gbuffer_attachments[5] = {
+    GL_COLOR_ATTACHMENT0,
+    GL_COLOR_ATTACHMENT1,
+    GL_COLOR_ATTACHMENT2,
+    GL_COLOR_ATTACHMENT3,
+    GL_COLOR_ATTACHMENT4
+  };
+  glDrawBuffers(5, gbuffer_attachments);
+
+  // Create and attach depth buffer (renderbuffer) =============================
+  GLuint rbo_depth;
+
+  // Generate renderbuffer object names
+  glGenRenderbuffers(1, &rbo_depth);
+
+  // Bind a named renderbuffer object
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+
+  // Establish data storage, fromat and dimensions of a renderbuffer object's image
+  glRenderbufferStorage(
+    GL_RENDERBUFFER,     // Target
+    GL_DEPTH_COMPONENT,  // Internal Format
+    width(), height()    // Dimensions
+  );
+
+  // Attach a renderbuffer object to a framebuffer object
+  glFramebufferRenderbuffer(
+    GL_FRAMEBUFFER,       // Target
+    GL_DEPTH_ATTACHMENT,  // Attachment
+    GL_RENDERBUFFER,      // Renderbuffer Target
+    rbo_depth             // Renderbuffer
+  );
+
+  // Finally check if framebuffer object is complete
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    qCritical("gBuffer FBO not complete!");
+  m_gbuffer_fbo->release();
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// SSAO FBO preparation
+  //////////////////////////////////////////////////////////////////////////////
+  m_ssao_fbo = new QOpenGLFramebufferObject(width(), height());
+  m_ssao_fbo->bind();
+
+  qDebug("Occlusion texture ID: %d", m_occlusion_texture->textureId());
+  glBindTexture(GL_TEXTURE_2D, m_occlusion_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_occlusion_texture->textureId(), 0);
+
+  const GLenum ssao_attachments[1] = {GL_COLOR_ATTACHMENT0};
+  glDrawBuffers(1, ssao_attachments);
+
+  // Finally check if framebuffer object is complete
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    qCritical("SSAO FBO not complete");
+
+  m_ssao_fbo->release();
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Blur FBO preparetion
+  //////////////////////////////////////////////////////////////////////////////
+  m_blur_fbo = new QOpenGLFramebufferObject(width(), height());
+  m_blur_fbo->bind();
+
+  qDebug("Blurred occlusion texture ID: %d", m_blurred_occlusion_texture->textureId());
+  glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_blurred_occlusion_texture->textureId(), 0);
+
+  const GLenum blur_attachments[1] = {GL_COLOR_ATTACHMENT0};
+  glDrawBuffers(1, blur_attachments);
+
+  // Finally check if framebuffer object is complete
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    qCritical("Blur FBO not complete");
+
+  m_blur_fbo->release();
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// SSAO kernel preparation
+  //////////////////////////////////////////////////////////////////////////////
+  std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
+  std::default_random_engine generator;
+  m_ssao_kernel.clear();
+  for (size_t i = 0; i < 64; ++i)
+  {
+    QVector3D sample(
+      randomFloats(generator) * 2.0 - 1.0,
+      randomFloats(generator) * 2.0 - 1.0,
+      randomFloats(generator)
+    );
+
+    sample.normalize();
+    sample *= randomFloats(generator);
+    float scale = (float)i/64.0f;
+    scale = lerp(0.1f, 1.0f, scale*scale);
+    sample *= scale;
+    m_ssao_kernel.push_back(sample);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Noise texture generation
+  //////////////////////////////////////////////////////////////////////////////
+  std::vector<QVector3D> ssaoNoise;
+  for (size_t i = 0; i < 16; i++)
+  {
+    QVector3D noise(
+      randomFloats(generator) * 2.0 - 1.0,
+      randomFloats(generator) * 2.0 - 1.0,
+      0.0
+    );
+
+    ssaoNoise.push_back(noise);
+  }
+
+  m_noise_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+  m_noise_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+  m_noise_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+  m_noise_texture->setWrapMode(QOpenGLTexture::Repeat);
+  m_noise_texture->setSize(4,4);
+  m_noise_texture->setFormat(QOpenGLTexture::RGB16F);
+  m_noise_texture->allocateStorage();
+  m_noise_texture->setData(0, QOpenGLTexture::RGB, QOpenGLTexture::Float16, &ssaoNoise[0]);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Shader configuration
+  //////////////////////////////////////////////////////////////////////////////
+  // === SSAO ===
+  m_ssao_program->bind();
+
+    // Texture unit to use
+    m_ssao_program->setUniformValue("tViewPosition" , 0);
+    m_ssao_program->setUniformValue("tViewNormal"   , 1);
+    m_ssao_program->setUniformValue("tTexNoise"     , 2);
+
+  m_ssao_program->release();
+
+  // === BLUR ===
+  m_blur_program->bind();
+
+    // Texture unit to use
+    m_blur_program->setUniformValue("tInputSSAO", 0);
+
+  m_blur_program->release();
+
+  // === LIGHTING ===
+  m_lighting_program->bind();
+
+    // Texture unit to use
+    m_lighting_program->setUniformValue("tWorldPosition" , 0);
+    m_lighting_program->setUniformValue("tViewPosition"  , 1);
+    m_lighting_program->setUniformValue("tWorldNormal"   , 2);
+    m_lighting_program->setUniformValue("tViewNormal"    , 3);
+    m_lighting_program->setUniformValue("tSSAO"          , 4);
+    m_lighting_program->setUniformValue("tLinks"         , 5);
+
+    // Uniforms
+    m_lighting_program->setUniformValue("drawLinks", true);
+
+    // Subroutine ShadingPass Index.
+    m_ADSIndex  = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "ADSRender");
+    m_XRayIndex = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "XRayRender");
+    m_AOIndex   = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "AORender");
+
+    // Setting the active renderpass.
+    m_activeRenderPassIndex = m_ADSIndex;
+    m_rendering_mode = GLWindow::ADS;
+
+  m_lighting_program->release();
 }
 
 void GLWindow::initializeGL()
@@ -59,127 +317,193 @@ void GLWindow::initializeGL()
   initializeOpenGLFunctions();
 
   m_input_manager = new InputManager(this);
+  m_skybox = new SkyBox(m_input_manager);
 
-//  glEnable(GL_DEPTH_TEST);
-//  glEnable(GL_MULTISAMPLE);
-//  glEnable(GL_LIGHTING);
-//  glEnable(GL_LIGHT0);
-//  glEnable(GL_COLOR_MATERIAL);
-//  glShadeModel(GL_SMOOTH);
+  generateSphereData(4); // Four subdivisions of an icosahedra
+  m_sphere_vbo.create();
+  m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
-    generateSphereData(4); // Four subdivisions of an icosahedra
+  initializeMatrices();
+  setupLights();
+  m_skybox->prepare();
 
-    m_sphere_vbo.create();
-    m_sphere_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
+  m_geom_program = new QOpenGLShaderProgram;
+  m_geom_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/geom.vert");
+  m_geom_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/geom.frag");
+  m_geom_program->link();
 
-    initializeMatrix();
+  m_ssao_program = new QOpenGLShaderProgram;
+  m_ssao_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/ssao.vert");
+  m_ssao_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/ssao.frag");
+  m_ssao_program->link();
 
-    prepareSkyBox();
-    prepareQuad();
-    prepareParticles();
+  m_blur_program = new QOpenGLShaderProgram;
+  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/ssao.vert");
+  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/blur.frag");
+  m_blur_program->link();
 
-    setupFBO();
-    setupLights();
-    sampleKernel();
-    m_activeRenderPassIndex = m_ADSIndex;
+  m_lighting_program = new QOpenGLShaderProgram;
+  m_lighting_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/ssao.vert");
+  m_lighting_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/lighting.frag");
+  m_lighting_program->link();
 
-
-  glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-
-
+  prepareQuad();
+  prepareParticles();
+  prepareSSAOPipeline();
 }
 
 void GLWindow::paintGL()
 {
+  updateModelMatrix();
 
-    updateModelMatrix();
+  m_input_manager->setupCamera(width(), height());
+  m_input_manager->doMovement();
 
-    m_input_manager->setupCamera(width(), height());
-    m_input_manager->doMovement();
+  //////////////////////////////////////////////////////////////////////////////
+  /// gBuffer: Geometry pass
+  //////////////////////////////////////////////////////////////////////////////
+  m_gbuffer_fbo->bind();
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  m_fbo->bind();
-      loadMaterialToShader();
-      loadLightToShader();
-      loadMatrixToShader();
-      glEnable(GL_DEPTH_TEST);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    switch (m_rendering_mode) {
+    case GLWindow::XRAY:
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+      glEnable(GL_CULL_FACE);
       drawParticles();
-      if (m_draw_links) { drawLinks(); }
-      for(auto &s : m_object_list) { s->draw(); }
+      glDisable(GL_CULL_FACE);
+      glDisable(GL_BLEND);
+      break;
+    default:
+      drawParticles();
+      break;
+    }
 
+    if (m_draw_links) drawLinks();
+  m_gbuffer_fbo->release();
 
-
-  m_fbo->release();
-    //glDisable(GL_DEPTH_TEST);
+  //////////////////////////////////////////////////////////////////////////////
+  /// SSAO: Generate SSAO texture
+  //////////////////////////////////////////////////////////////////////////////
+  m_ssao_fbo->bind();
+    glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
+    m_ssao_program->bind();
+    for (size_t i = 0; i < 64; ++i)
+    {
+      std::string s = "samples[" + std::to_string(i) + "]";
+      m_ssao_program->setUniformValue(s.c_str(), m_ssao_kernel[i]);
+    }
+    m_ssao_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, m_noise_texture->textureId());
+    m_quad_vao->bind();
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    m_quad_vao->release();
+    m_ssao_program->release();
+  m_ssao_fbo->release();
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// Blur: Blur SSAO texture
+  //////////////////////////////////////////////////////////////////////////////
+  m_blur_fbo->bind();
+    glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT);
+    m_blur_program->bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_occlusion_texture->textureId());
+    m_quad_vao->bind();
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    m_quad_vao->release();
+    m_blur_program->release();
+  m_blur_fbo->release();
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Default FBO: lighting shader
+  //////////////////////////////////////////////////////////////////////////////
+  loadMaterialToShader();
+  loadLightToShader();
+
+  glClearColor(0,0,0,0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  // === Sky ===
+  switch (m_rendering_mode) {
+  case GLWindow::ADS:
     glDepthMask(GL_FALSE);
-    drawSkyBox();
+    m_skybox->draw();
     glDepthMask(GL_TRUE);
+    break;
+  case GLWindow::AO:
+    glClearColor(1,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0,0,0,0);
+    break;
+  default:
+    break;
+  }
 
 
+  m_lighting_program->bind();
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, m_world_normal_texture->textureId());
+  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
+  glActiveTexture(GL_TEXTURE4);
+  glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
+  glActiveTexture(GL_TEXTURE5);
+  glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
+  m_quad_vao->bind();
+    m_lighting_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
+    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
 
-//    if (m_activeRenderPassIndex == m_xRayIndex)
-//    {
-//      glEnable(GL_BLEND);
-//      glEnable(GL_CULL_FACE);
-//      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//      glBlendEquation(GL_MAX);
-//    }
-//    else if (m_activeRenderPassIndex == m_ADSIndex)
-//    {
-//      glDisable(GL_CULL_FACE);
-//      glDisable(GL_BLEND);
-//    }
-//    else if (m_activeRenderPassIndex == m_AOIndex)
-//    {
-//      glDisable(GL_CULL_FACE);
-//      glDisable(GL_BLEND);
-//    }
-
-
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    drawQuad();
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     glDisable(GL_BLEND);
 
 
+  m_quad_vao->release();
+  m_lighting_program->release();
 
-//    glEnable(GL_BLEND);
-//    glDisable(GL_CULL_FACE);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  for(auto &s : m_object_list) { s->draw(); }
 
-    //drawSkyBox();
-
-
-
-
-    updateParticleSystem();
+  updateParticleSystem();
 }
 
 void GLWindow::resizeGL(int _w, int _h)
 {
-  qDebug("Window resized to %d and %d", _w, _h);
+//  qDebug("Window resized to %d and %d", _w, _h);
 
-  delete m_fbo;
-  setupFBO();
+//  delete m_fbo;
+//  setupFBO();
 
-  m_input_manager->resized(_w, _h);
+//  m_input_manager->resized(_w, _h);
 
-  m_projection_matrix.setToIdentity();
-  m_projection_matrix.perspective(
-        45.0f,
-        (float)_w / (float)_h,
-        0.1f,
-        100.0f);
+//  m_projection_matrix.setToIdentity();
+//  m_projection_matrix.perspective(
+//        45.0f,
+//        (float)_w / (float)_h,
+//        0.1f,
+//        100.0f);
 
-  m_quad_program->bind();
-  m_quad_program->setUniformValue("width", _w);
-  m_quad_program->setUniformValue("height", _h);
-  m_quad_program->release();
+//  m_lighting_program->bind();
+//  m_lighting_program->setUniformValue("width", _w);
+//  m_lighting_program->setUniformValue("height", _h);
+//  m_lighting_program->release();
 }
 
-void GLWindow::initializeMatrix()
+void GLWindow::initializeMatrices()
 {
   m_projection_matrix.setToIdentity();
   m_projection_matrix.perspective(
@@ -192,63 +516,30 @@ void GLWindow::initializeMatrix()
   m_model_matrix.translate(0.0, 0.0, 0.0);
 }
 
-void GLWindow::loadMatrixToShader()
-{
-    m_quad_program->bind();
-    m_quad_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
-    m_quad_program->setUniformValue("ViewMatrix", m_view_matrix);
-    m_quad_program->setUniformValue("ModelMatrix", m_model_matrix);
-    m_quad_program->release();
-
-    m_part_program->bind();
-    m_part_program->setUniformValue("ProjectionMatrix", m_projection_matrix);
-    m_part_program->setUniformValue("ViewMatrix", m_view_matrix);
-    m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
-    m_part_program->release();
-
-}
-
-void GLWindow::loadCameraInfoToShader()
-{
-    m_quad_program->bind();
-    m_viewPos = QVector3D(0.0, 0.0, 0.0);
-    m_quad_program->setUniformValue("viewPos", m_viewPos);
-    m_quad_program->release();
-}
-
 void GLWindow::loadLightToShader()
 {
-    m_quad_program->bind();
-
-    m_lightPos = m_object_list[0]->getPosition();
-
-    m_ps.setLightPos(m_lightPos);
-
-    m_quad_program->setUniformValue("light.position", m_lightPos);
-    m_quad_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
-    m_quad_program->setUniformValue("light.diffuse", QVector3D(0.5f, 0.5f, 0.5f));
-    m_quad_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
-    m_quad_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
-    m_quad_program->setUniformValue("light.Linear", 0.09f);
-    m_quad_program->setUniformValue("light.Quadratic", 0.032f);
-
-    m_quad_program->release();
+  m_lightPos = m_object_list[0]->getPosition();
+  m_ps.setLightPos(m_lightPos);
+  m_lighting_program->bind();
+    m_lighting_program->setUniformValue("light.position", m_lightPos);
+    m_lighting_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
+    m_lighting_program->setUniformValue("light.diffuse", QVector3D(1.0f, 0.5f, 0.5f));
+    m_lighting_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
+    m_lighting_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
+    m_lighting_program->setUniformValue("light.Linear", 0.09f);
+    m_lighting_program->setUniformValue("light.Quadratic", 0.032f);
+  m_lighting_program->release();
 }
 
 void GLWindow::loadMaterialToShader()
 {
-  m_quad_program->bind();
-
-  // Phong material properties.
-  m_quad_program->setUniformValue("material.ambient", QVector3D(0.5f, 0.5f, 0.5f));
-  m_quad_program->setUniformValue("material.diffuse", QVector3D(0.3f, 0.3f, 0.3f));
-  m_quad_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
-  m_quad_program->setUniformValue("material.shininess", 32.0f);
-
-  // X-Ray Fall of to make only edges in full opacity.
-  m_quad_program->setUniformValue("material.attenuation", 0.5f);
-
-  m_quad_program->release();
+  m_lighting_program->bind();
+    m_lighting_program->setUniformValue("material.ambient", QVector3D(0.01f, 0.01f, 0.01f));
+    m_lighting_program->setUniformValue("material.diffuse", QVector3D(1.0f, 0.0f, 0.0f));
+    m_lighting_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
+    m_lighting_program->setUniformValue("material.shininess", 32.0f);
+    m_lighting_program->setUniformValue("material.attenuation", 0.5f);
+  m_lighting_program->release();
 }
 
 void GLWindow::prepareQuad()
@@ -262,32 +553,6 @@ void GLWindow::prepareQuad()
     -1.0f, -1.0f, 0.0f, 0.0f, 0.0f
   };
 
-  m_quad_program = new QOpenGLShaderProgram(this);
-  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/quad.vert");
-  m_quad_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/quad.frag");
-  m_quad_program->link();
-
-  m_quad_program->bind();
-
-  // Passing textures to shader.
-  m_quad_program->setUniformValue("tDepth"         , 0);
-  m_quad_program->setUniformValue("tPosition"      , 1);
-  m_quad_program->setUniformValue("tNormal"        , 2);
-  m_quad_program->setUniformValue("tDiffuse"       , 3);
-  m_quad_program->setUniformValue("tSSAONoise"     , 4);
-  m_quad_program->setUniformValue("tScreenNormals" , 5);
-  m_quad_program->setUniformValue("tMask"          , 6);
-  m_quad_program->setUniformValue("tLinks"         , 7);
-
-  // Subroutine ShadingPass Index.
-  m_ADSIndex    = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "ADSRender");
-  m_AOIndex     = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "AORender");
-  m_xRayIndex   = glGetSubroutineIndex(m_quad_program->programId(), GL_FRAGMENT_SHADER, "xRayRender");
-
-  // Setting the active renderpass.
-  m_activeRenderPassIndex = m_ADSIndex;
-  m_quad_program->release();
-
   m_quad_vao = new QOpenGLVertexArrayObject(this);
 
   m_quad_vao->create();
@@ -297,13 +562,13 @@ void GLWindow::prepareQuad()
   m_quad_vao->bind();
   m_quad_vbo.bind();
 
-  m_quad_vbo.allocate(quad, 5 * 6 * sizeof(GLfloat));
+  m_quad_vbo.allocate(quad, 30 * sizeof(GLfloat));
 
-  m_quad_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
-  m_quad_program->enableAttributeArray("position");
+  m_lighting_program->setAttributeBuffer("position", GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+  m_lighting_program->enableAttributeArray("position");
 
-  m_quad_program->setAttributeBuffer("uv", GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
-  m_quad_program->enableAttributeArray("uv");
+  m_lighting_program->setAttributeBuffer("uv", GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
+  m_lighting_program->enableAttributeArray("uv");
 
   m_quad_vbo.release();
   m_quad_vao->release();
@@ -311,14 +576,9 @@ void GLWindow::prepareQuad()
 
 void GLWindow::prepareParticles()
 {
-  m_part_program = new QOpenGLShaderProgram(this);
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/particles.vert");
-  m_part_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/particles.frag");
-  m_part_program->link();
-
   m_links_program = new QOpenGLShaderProgram(this);
-  m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/links.vert");
-  m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/links.frag");
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/links.vert");
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/links.frag");
   m_links_program->link();
 
   m_part_vao = new QOpenGLVertexArrayObject(this);
@@ -338,327 +598,40 @@ void GLWindow::prepareParticles()
   sendParticleDataToOpenGL();
 }
 
-void GLWindow::prepareSkyBox()
-{
-  GLfloat points[] = {
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-
-    -1.0f , -1.0f ,  1.0f ,
-    -1.0f , -1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-
-    -1.0f , -1.0f ,  1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f , -1.0f ,  1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-
-    -1.0f ,  1.0f , -1.0f ,
-     1.0f ,  1.0f , -1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-     1.0f ,  1.0f ,  1.0f ,
-    -1.0f ,  1.0f ,  1.0f ,
-    -1.0f ,  1.0f , -1.0f ,
-
-    -1.0f , -1.0f , -1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-     1.0f , -1.0f , -1.0f ,
-     1.0f , -1.0f , -1.0f ,
-    -1.0f , -1.0f ,  1.0f ,
-     1.0f , -1.0f ,  1.0f
-  };
-
-  m_skybox_program = new QOpenGLShaderProgram(this);
-  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/skybox.vert");
-  m_skybox_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/skybox.frag");
-  m_skybox_program->link();
-
-  m_skybox_vao = new QOpenGLVertexArrayObject(this);
-  m_skybox_vao->create();
-
-  m_skybox_vbo.create();
-  m_skybox_vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-
-  m_skybox_program->bind();
-
-  m_skybox_vao->bind();
-  m_skybox_vbo.bind();
-
-  m_skybox_vbo.allocate(points, 6*6*3 * sizeof(GLfloat));
-
-  m_skybox_program->enableAttributeArray("pos");
-
-  m_skybox_program->setAttributeBuffer("pos", GL_FLOAT, 0, 3);
-  m_skybox_program->setUniformValue("tSkyBox", 8);
-
-  m_skybox_vao->release();
-
-  m_skybox_program->release();
-
-  const QImage posx = QImage(":/forest_posx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posy = QImage(":/forest_posy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posz = QImage(":/forest_posz.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negx = QImage(":/forest_negx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negy = QImage(":/forest_negy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negz = QImage(":/forest_negz.jpg").convertToFormat(QImage::Format_RGB888);
-
-  m_skybox_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
-  if (posz.isNull()) qDebug("Null image");
-  qDebug("%d %d %d",posz.width(), posz.height(), posz.depth());
-
-  m_skybox_texture->create();
-  m_skybox_texture->setSize(posx.width(), posx.height(), posx.depth());
-  m_skybox_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
-  m_skybox_texture->allocateStorage();
-
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posx.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posy.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posz.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negx.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negy.constBits(),0);
-  m_skybox_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negz.constBits(),0);
-
-  m_skybox_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
-  m_skybox_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-  m_skybox_texture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
-
-  m_skybox_texture->generateMipMaps();
-}
-
-void GLWindow::drawQuad()
-{
-  // From docs: When multiple textures are attached, the return value of
-  // QOpenGLFrameBufferObject::texture() is the ID of the first one.
-  // Notice that QOpenGLFrameBufferObject::takeTexture(GLuint) cannot be used
-  // as it was created the memory leaks because under the hood in was creating
-  // a new texture and returning it, so at every paint iteration so many
-  // textures were being created.
-
-  GLuint textureID = m_fbo->texture();
-
-  glActiveTexture(GL_TEXTURE0);  // Depth (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE1);  // Position (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE2);  // Normal (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE3);  // Diffuse (RGBA)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE4);  // SSAONoise (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE5);  // ScreenNormals (RGB)
-  glBindTexture(GL_TEXTURE_2D, textureID); textureID += 1;
-  glActiveTexture(GL_TEXTURE6);  // Mask (RGBA)
-  glBindTexture(GL_TEXTURE_2D, textureID);textureID += 1;
-  glActiveTexture(GL_TEXTURE7);  // Links (RGBA)
-  glBindTexture(GL_TEXTURE_2D, textureID);
-
-  m_quad_program->bind();
-  m_quad_vao->bind();
-    m_quad_program->setUniformValue("drawLinks", true);
-    glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-  m_quad_vao->release();
-  m_quad_program->release();
-}
-
 void GLWindow::drawParticles()
 {
-  m_part_program->bind();
-  m_part_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
-  m_part_program->setUniformValue("ModelMatrix", m_model_matrix);
-  m_part_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
-
+  m_geom_program->bind();
+  m_geom_program->setUniformValue("ModelMatrix", m_model_matrix);
+  m_geom_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
+  m_geom_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
   m_part_vao->bind();
     glDrawArraysInstanced(GL_TRIANGLES, 0, m_sphere_data.size() / 3, m_ps.getSize());
   m_part_vao->release();
-
-  m_part_program->release();
+  m_geom_program->release();
 }
 
 void GLWindow::drawLinks()
 {
   m_links_program->bind();
-
   m_links_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
   m_links_program->setUniformValue("ModelMatrix", m_model_matrix);
   m_links_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
-
   m_links_vao->bind();
     glDrawElements(GL_LINES, m_links_data.size(), GL_UNSIGNED_INT, 0);
   m_links_vao->release();
-
   m_links_program->release();
-}
-
-void GLWindow::drawSkyBox()
-{
-  glActiveTexture(GL_TEXTURE8);
-  m_skybox_texture->bind();
-
-    m_skybox_program->bind();
-
-    QMatrix4x4 V = m_input_manager->getViewMatrix();
-
-    // Stay just with the rotation part of the camera view matrix
-    V = QMatrix4x4(V.row(0)[0], V.row(0)[1], V.row(0)[2], 0,
-                   V.row(1)[0], V.row(1)[1], V.row(1)[2], 0,
-                   V.row(2)[0], V.row(2)[1], V.row(2)[2], 0,
-                   0          ,           0,           0, 1);
-
-    m_skybox_program->setUniformValue("Projection", m_input_manager->getProjectionMatrix());
-    m_skybox_program->setUniformValue("View", V);
-
-    m_skybox_vao->bind();
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-    m_skybox_vao->release();
-
-    m_skybox_program->release();
-}
-
-void GLWindow::setupFBO()
-{
-
-  int maxColorAttachments;
-  glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
-  qDebug("---> %d", maxColorAttachments);
-
-  // GL_COLOR_ATTACHMENT0: Depth
-  m_fbo = new QOpenGLFramebufferObject(width(), height(), QOpenGLFramebufferObject::Depth);
-
-  m_fbo->bind();
-
-  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT1: Position
-  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT2: Normal
-  m_fbo->addColorAttachment(width(), height(), GL_RGBA);  // GL_COLOR_ATTACHMENT3: Diffuse
-  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT4: SSAONoise
-  m_fbo->addColorAttachment(width(), height(), GL_RGB);   // GL_COLOR_ATTACHMENT5: ScreenNormals
-  m_fbo->addColorAttachment(width(), height(), GL_RGBA);  // GL_COLOR_ATTACHMENT6: Mask
-  m_fbo->addColorAttachment(width(), height(), GL_RGBA);  // GL_COLOR_ATTACHMENT7: Links
-
-  const GLenum attachments[] = {
-    GL_COLOR_ATTACHMENT0,
-    GL_COLOR_ATTACHMENT1,
-    GL_COLOR_ATTACHMENT2,
-    GL_COLOR_ATTACHMENT3,
-    GL_COLOR_ATTACHMENT4,
-    GL_COLOR_ATTACHMENT5,
-    GL_COLOR_ATTACHMENT6,
-    GL_COLOR_ATTACHMENT7,
-  };
-
-  // Drawing multiple buffers.
-  glDrawBuffers(8, attachments);
-
-  // Create and attach depth buffer (renderbuffer) ===========================
-  GLuint rbo_depth;
-
-  // Generate renderbuffer object names
-  glGenRenderbuffers(1, &rbo_depth);
-
-  // Bind a named renderbuffer object
-  glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
-
-  // Establish data storage, format and dimensions of a renderbuffer object's image
-  glRenderbufferStorage(
-        GL_RENDERBUFFER,     // Target
-        GL_DEPTH_COMPONENT,  // Internal Format
-        width(), height());  // Size
-
-  // Attach a renderbuffer object to a framebuffer object
-  glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER,       // Target
-        GL_DEPTH_ATTACHMENT,  // Attachment
-        GL_RENDERBUFFER,      // Renderbuffer Target
-        rbo_depth);           // Renderbuffer
-
-  // Finally check if framebuffer is complete
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    qCritical("Framebuffer not complete!");
-
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  glViewport(0, 0, width(), height());
-  m_fbo->release();
-}
-
-void GLWindow::sampleKernel()
-{
-  std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
-  for(GLuint i = 0; i < m_ssaoKernel.size(); i++)
-  {
-    QVector3D sample(
-      randomFloats(generator) * 2.0 - 1.0,
-      randomFloats(generator) * 2.0 - 1.0,
-      randomFloats(generator)
-    );
-    sample.normalize();
-    sample *= randomFloats(generator);
-    GLfloat scale = GLfloat(i) / 64.0;
-    scale = lerp(0.1f, 1.0f, scale * scale);
-    sample *= scale;
-
-    m_ssaoKernel[i] = sample;
-
-    m_quad_program->bind();
-    char buffer [12];
-    sprintf(buffer, "samples[%d]", i);
-    m_quad_program->setUniformValue(buffer, sample);
-    m_quad_program->release();
-  }
-}
-
-void GLWindow::randomKernel()
-{
-  std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0);
-  m_ssaoNoise.clear();
-
-  for(GLuint i = 0; i < 16; i++)
-  {
-    m_ssaoNoise.push_back(randomFloats(generator) * 2.0 - 1.0);
-    m_ssaoNoise.push_back(randomFloats(generator) * 2.0 - 1.0);
-    m_ssaoNoise.push_back(0.0f);
-  }
-
-  QOpenGLTexture* ssaoNoise_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-  ssaoNoise_texture->setMinificationFilter(QOpenGLTexture::Nearest);
-  ssaoNoise_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-  ssaoNoise_texture->setWrapMode(QOpenGLTexture::Repeat);
-
-  ssaoNoise_texture->setSize(4,4);
-  ssaoNoise_texture->setFormat(QOpenGLTexture::RGB16F);
-
-  ssaoNoise_texture->allocateStorage();
-  ssaoNoise_texture->setData(0, QOpenGLTexture::RGB, QOpenGLTexture::Float32, &m_ssaoNoise[0]);
-
-  ssaoNoise_texture->bind(5);
 }
 
 void GLWindow::setupLights()
 {
   m_manipulator_program = new QOpenGLShaderProgram(this);
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/manip.vert");
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/manip.frag");
+  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/manip.vert");
+  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/manip.frag");
   m_manipulator_program->link();
 
   m_sun_program = new QOpenGLShaderProgram(this);
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sun.vert");
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/sun.frag");
+  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/sun.vert");
+  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/sun.frag");
   m_sun_program->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
@@ -686,7 +659,7 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
   m_sphere_data.clear();
 
   // Recursion subdivision algorithm from:
-  // http://www.opengl.org.ru/docs/pg/0208.html
+  // httpresources/shaders//www.opengl.org.ru/docs/pg/0208.html
 
   GLfloat X = 0.25731112119133606;
   GLfloat Z = 0.850650808352039932;
@@ -741,22 +714,22 @@ void GLWindow::sendParticleDataToOpenGL()
     // Sphere Data =============================================================
     m_sphere_vbo.bind();
     m_sphere_vbo.allocate(&m_sphere_data[0], m_sphere_data.size() * sizeof(GLfloat));
-    m_part_program->enableAttributeArray("position");
-    m_part_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
+    m_geom_program->enableAttributeArray("position");
+    m_geom_program->setAttributeBuffer("position", GL_FLOAT, 0, 3);
 
     // Instance Data ===========================================================
     m_part_vbo.bind();
     m_part_vbo.allocate(&m_particle_data[0], m_ps.getSize() * 4 * sizeof(GLfloat));
 
-    m_part_program->enableAttributeArray("instances");
-    m_part_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
+    m_geom_program->enableAttributeArray("instances");
+    m_geom_program->setAttributeBuffer("instances", GL_FLOAT, 0, 4);
 
     m_part_vbo.release();
-    glVertexAttribDivisor(m_part_program->attributeLocation("instances"), 1);
+    glVertexAttribDivisor(m_geom_program->attributeLocation("instances"), 1);
 
   m_part_vao->release();
 
-  // Link Data (on request) ====================================================
+  // Link Data (on request) =========================================23===========
   if (m_draw_links)
   {
     // Work on the links
@@ -778,7 +751,8 @@ void GLWindow::sendParticleDataToOpenGL()
 void GLWindow::updateModelMatrix()
 {
   // Insert particle system position here
-  m_model_matrix.translate(m_pointpos);
+  m_model_matrix.setToIdentity();
+  m_model_matrix.scale(1);
 }
 
 void GLWindow::keyPressEvent(QKeyEvent* ev)
@@ -794,12 +768,14 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
 
     case Qt::Key_1:
       m_activeRenderPassIndex = m_ADSIndex;
+      m_rendering_mode = GLWindow::ADS;
       emit changedShadingType(0);
       qDebug("ADS Render.");
       break;
 
     case Qt::Key_2:
-      m_activeRenderPassIndex = m_xRayIndex;
+      m_activeRenderPassIndex = m_XRayIndex;
+      m_rendering_mode = GLWindow::XRAY;
 
       emit changedShadingType(1);
       qDebug("X-Ray visualisation.");
@@ -807,6 +783,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
 
     case Qt::Key_3:
       m_activeRenderPassIndex = m_AOIndex;
+      m_rendering_mode = GLWindow::AO;
       emit changedShadingType(2);
       qDebug("Ambient Occlusion.");
       break;
@@ -901,6 +878,9 @@ void GLWindow::cancel()
 void GLWindow::showConnections(bool _state)
 {
   m_draw_links=_state;
+  m_lighting_program->bind();
+  m_lighting_program->setUniformValue("drawLinks", _state);
+  m_lighting_program->release();
   sendParticleDataToOpenGL();
 }
 
@@ -909,16 +889,22 @@ void GLWindow::setShading(QString _type)
   if (_type=="ADS")
   {
     m_activeRenderPassIndex = m_ADSIndex;
+    m_rendering_mode = GLWindow::ADS;
+    emit setConnectionState(true);
 
   }
   else if(_type=="Ambient Occlusion")
   {
     m_activeRenderPassIndex = m_AOIndex;
+    m_rendering_mode = GLWindow::AO;
+    emit setConnectionState(false);
 
   }
   else if(_type=="X Ray")
   {
-    m_activeRenderPassIndex = m_xRayIndex;
+    m_activeRenderPassIndex = m_XRayIndex;
+    m_rendering_mode = GLWindow::XRAY;
+    emit setConnectionState(false);
   }
   sendParticleDataToOpenGL();
 }
@@ -1053,4 +1039,3 @@ void GLWindow::setChildThreshold(int _amount)
 {
   m_ps.setChildThreshold(_amount);
 }
-

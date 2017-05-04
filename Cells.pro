@@ -19,6 +19,7 @@ SOURCES += \
     src/ParticleSystem.cpp \
     src/GUI.cpp \
     src/PointLight.cpp \
+    src/SkyBox.cpp \
     src/SpotLight.cpp\
 
 OBJECTS_DIR = build/obj
@@ -37,6 +38,7 @@ HEADERS += \
     include/ParticleSystem.h \
     include/GUI.h \
     include/PointLight.h \
+    include/SkyBox.h \
     include/SpotLight.h \
     include/SelectableObject.h
 
@@ -66,5 +68,5 @@ FORMS += \
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
-RESOURCES += \
-    resources.qrc
+#RESOURCES += \
+#    resources.qrc

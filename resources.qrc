@@ -18,8 +18,11 @@
         <file alias="skybox.vert">resources/shaders/skybox.vert</file>
         <file alias="sun.frag">resources/shaders/sun.frag</file>
         <file alias="sun.vert">resources/shaders/sun.vert</file>
+        <file alias="blur.frag">resources/shaders/blur.frag</file>
+        <file alias="lighting.frag">resources/shaders/lighting.frag</file>
+        <file alias="ssao.frag">resources/shaders/ssao.frag</file>
+        <file alias="ssao.vert">resources/shaders/ssao.vert</file>
+        <file alias="geom.frag">resources/shaders/geom.frag</file>
+        <file alias="geom.vert">resources/shaders/geom.vert</file>
     </qresource>
-    <qresource prefix="/shader"/>
-    <qresource prefix="/cubemaps"/>
-    <qresource prefix="/cubemaps/forest"/>
 </RCC>
