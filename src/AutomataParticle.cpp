@@ -1,19 +1,27 @@
+// Custom
 #include "AutomataParticle.h"
+
+//Native
 #include <iostream>
 #include <random>
 
+//Qt
+#include <QTime>
+
 AutomataParticle::AutomataParticle():Particle()
 {
-  m_tick = 0;
   m_alive = true;
+  m_time = QTime::currentTime();
+  m_rad = m_size*4;
 }
 
 AutomataParticle::AutomataParticle(qreal _x,
                                    qreal _y,
                                    qreal _z): Particle(_x,_y,_z)
 {
-  m_tick = 0;
   m_alive = true;
+  m_time = QTime::currentTime();
+  m_rad = m_size*4;
 }
 
 AutomataParticle::AutomataParticle(qreal _x,
@@ -21,42 +29,55 @@ AutomataParticle::AutomataParticle(qreal _x,
                                    qreal _z,
                                    std::vector<unsigned int> _connectedParticles):Particle(_x,_y,_z,_connectedParticles)
 {
-  m_tick = 0;
   m_alive = true;
+  m_time = QTime::currentTime();
+  m_rad = m_size*4;
 }
 
 void AutomataParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
 {
-  if(m_tick % 300 == 0)
+  if(m_time.elapsed() % 500 == 0)
   {
-  std::cout << "calculating automata" << std::endl;
-  std::random_device rd;
-  std::mt19937_64 gen(rd());
+    std::cout << "calculating automata" << std::endl;
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
 
-  QVector3D pos;
+    QVector3D pos;
 
-  std::vector<unsigned int> newAutoParticles;
-  newAutoParticles.push_back(m_ID);
+    std::vector<unsigned int> newAutoParticles;
+    newAutoParticles.push_back(m_ID);
 
-  std::uniform_real_distribution<float> distributionX (-6,6);
-  std::uniform_real_distribution<float> distributionY (-6,6);
-  std::uniform_real_distribution<float> distributionZ (-6,6);
+//    for(uint i=4; i<_particleList.size(); i++)
+//    {
+//      m_rad = m_size*i;
+//    }
 
-  float x= distributionX(gen);
-  float y= distributionY(gen);
-  float z= distributionZ(gen);
+    std::uniform_real_distribution<float> distributionX (-(m_rad), m_rad);
+    std::uniform_real_distribution<float> distributionY (-(m_rad), m_rad);
+    std::uniform_real_distribution<float> distributionZ (-(m_rad), m_rad);
 
-  pos[0] = x;
-  pos[1] = y;
-  pos[2] = z;
+    float x= distributionX(gen);
+    float y= distributionY(gen);
+    float z= distributionZ(gen);
 
-  _particleList.push_back(std::unique_ptr<AutomataParticle> (new AutomataParticle(x,y,z,newAutoParticles)));
+    pos[0] = x;
+    pos[1] = y;
+    pos[2] = z;
+
+    if(_particleList.size()<4)
+    {
+      for(uint i=0; i<4; i++)
+      {
+        _particleList.push_back(std::unique_ptr<AutomataParticle> (new AutomataParticle(x,y,z,newAutoParticles)));
+      }
+    }
+    else
+    {
+      _particleList.push_back(std::unique_ptr<AutomataParticle> (new AutomataParticle(x,y,z,newAutoParticles)));
+    }
   }
 
   particleRules(_particleList);
-
-  m_tick++;
-
 }
 
 std::vector<unsigned int> AutomataParticle::getNeighbours(std::vector<std::unique_ptr<Particle> > &_particleList)
@@ -73,12 +94,13 @@ std::vector<unsigned int> AutomataParticle::getNeighbours(std::vector<std::uniqu
       distance = m_pos - neighbourPos;
       float length = distance.length();
 
-      if(length <= m_size*10)
+      if(length <= m_size*2)
       {
          neighbours.push_back(_particleList[i]->getID());
       }
     }
   }
+  std::cout<<"neighbours list size: "<<neighbours.size()<<std::endl;
   return neighbours;
 }
 
@@ -94,16 +116,3 @@ void AutomataParticle::particleRules(std::vector<std::unique_ptr<Particle> > &_p
     m_alive = false;
   }
 }
-
-//void AutomataParticle::killParticles(std::vector<std::unique_ptr<Particle> > &_particleList)
-//{
-//  particleRules(_particleList);
-
-//  for(unsigned int i=0; i<_particleList.size(); i++)
-//  {
-//    if(m_alive == false)
-//    {
-//      _particleList[i]->deleteParticle(m_ID);
-//    }
-//  }
-//}

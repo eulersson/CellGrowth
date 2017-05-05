@@ -55,7 +55,7 @@ ParticleSystem::ParticleSystem(char _particleType):
   }
   else if (m_particleType=='A')
   {
-    fill(1);
+    fill(3);
   }
 
 }
@@ -131,7 +131,6 @@ void ParticleSystem::fill(unsigned int _amount)
   pos.push_back(QVector3D(-Z,X,N));
   pos.push_back(QVector3D(Z,-X,N));
   pos.push_back(QVector3D(-Z,-X,N));
-
 
   for (unsigned int i = 0; i < _amount; i++)
   {
@@ -309,20 +308,21 @@ unsigned int ParticleSystem::getNearestParticle()
 
 void ParticleSystem::deleteParticle(unsigned int _index)
 {
-  std::cout << "trying to delete particle" << _index << std::endl;
-  std::vector<unsigned int> deleteList;
-  m_particles[_index]->getConnectionsID(deleteList);
-  int ID = m_particles[_index]->getID();
-  for (unsigned int i = 0; i < deleteList.size(); i++)
+  std::cout<<"trying to delete particle"<<_index<<std::endl;
+  std::vector<unsigned int> deleteAutomata;
+
+  if(m_particles[_index]->isAlive()==false)
   {
-     for (unsigned int j = 0; j < m_particles.size(); j++)
-     {
-       if (m_particles[j]->getID() == deleteList[i])
-       {
-         m_particles[j]->deleteConnection(ID);
-         break;
-       }
-     }
+    deleteAutomata.push_back(_index);
+  }
+
+  for(uint i=0; i<deleteAutomata.size(); i++)
+  {
+    if(m_particles[_index]->getID() == deleteAutomata[i])
+    {
+     m_particles.erase(m_particles.begin()+i);
+     break;
+    }
   }
 }
 
@@ -365,7 +365,7 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
 {
   QVector3D averageDistance;
 
-  for (auto&particle : m_particles)
+  for (auto &particle : m_particles)
   {
     QVector3D particlePosition = particle->getPosition();
     QVector3D particleCentre = calculateParticleCentre();

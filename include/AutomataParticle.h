@@ -4,6 +4,9 @@
 // Project
 #include "Particle.h"
 
+//Qt
+#include <QTime>
+
 class AutomataParticle : public Particle
 {
 public :
@@ -25,13 +28,13 @@ public :
 
   void particleRules(std::vector<std::unique_ptr<Particle> > &_particleList);
 
-  void killParticles(std::vector<std::unique_ptr<Particle> > &_particleList);
-
   virtual bool isAlive(){return m_alive;}
 
 private:
 
-  int m_tick;
+  QTime m_time;
+
+  int m_rad;
 
   bool m_alive;
 
