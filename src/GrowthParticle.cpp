@@ -46,6 +46,11 @@ void GrowthParticle::bulge(QVector3D _particleCentre)
 
 }
 
+void GrowthParticle::addFood(QVector3D _particleCentre)
+{
+
+}
+
 void GrowthParticle::split(QVector3D _lightDirection, std::vector<std::unique_ptr<Particle> > &_particleList)
 {
 

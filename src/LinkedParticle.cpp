@@ -40,13 +40,13 @@ LinkedParticle::LinkedParticle(qreal _x,
 void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
 {
 
-    //std::cout<<"FoodLevelTrue:"<<m_ID<<std::endl;
 
-    std::cout<<"FoodLevelBefore:"<<m_foodLevel<<std::endl;
-    setFoodLevelTrue(m_foodLevel);
-    std::cout<<"FoodLevelAfter:"<<m_foodLevel<<std::endl;
+  unsigned int connectionCount = getConnectionCount();
+  std::vector<QVector3D> linkPosition;
 
 
+    if (m_foodLevelBool == false)
+    {
     // EQUIDISTANCE
     // Calcualtes average distance from centre
     // Encourgaes particles towards this distance from centre
@@ -83,14 +83,13 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   m_vel+=cohesion;
 
 
-
   //LOCAL COHESION
   //Calculates cohesion based on particles links
   //Finds the centre of the linked particles
   //Influences all particles towards that centre
   QVector3D connectionCentre;
-  unsigned int connectionCount = getConnectionCount();
-  std::vector<QVector3D> linkPosition;
+  //unsigned int connectionCount = getConnectionCount();
+  //std::vector<QVector3D> linkPosition;
   getPosFromConnections(linkPosition, _particleList);
 
   for(unsigned int i=0; i<connectionCount; i++)
@@ -112,14 +111,28 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   m_vel+=localCohesion;
 
 
-
   //CALCULATE UNLINKED
   //makes a call to calculate unlinked function
-  calculateUnlinked(_particleList);
 
+  calculateUnlinked(_particleList);
+  }
 
   //lightAttract(_particleList, _lightPos);
   //getHitParticles(_particleList, _lightPos);
+
+  else if (m_foodLevelBool == true)
+  {
+    QVector3D food = _particleCentre - m_pos;
+
+    if(food.length() <= m_size*3)
+    {
+        m_vel/=1.1;
+        m_foodLevelBool = false;
+    }
+    food/=1000;
+    m_vel += food;
+
+  }
 
   //PARTICLELIFE
   //Determines how long the particle has been alive
@@ -143,16 +156,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 }
 
-
-void LinkedParticle::pushRandomParticles()
-{
-
-//  if (m_foodLevel == true)
-//  {
-//    std::cout<<"FoodLevelTrue:"<<m_ID<<std::endl;
-//  }
-
-}
 
 //void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor)
 //{
@@ -284,7 +287,7 @@ void LinkedParticle::pushRandomParticles()
 //   if(distanceX > m_size || distanceX < (-(m_size)))
 //   {
 //       QVector3D hold;
-//       hold.setX(distanceX);
+//       hold.setX  //m_foodLevel=false;(distanceX);
 //       float factor = 500/fabs (distanceX);
 //       if (distanceX > 1.5 || distanceX <(-1.5))
 //       {
@@ -332,7 +335,8 @@ void LinkedParticle::pushRandomParticles()
 //    m_vel.setZ(velZ);
 //   }
 // }
-//}
+//}ffmpeg -i morphin_ncloth.%04d.png -b:v 20M morphin_ncloth
+
 
 void LinkedParticle::calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList)
 {
@@ -392,6 +396,19 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
 
     m_vel += distance;
   }
+}
+
+void LinkedParticle::addFood(QVector3D _particleCentre)
+{
+//  if (m_foodLevelBool == true)
+//  {
+//    QVector3D food = m_pos - _particleCentre;
+//   // m_vel +=;
+//  }
+
+//  std::cout<<"FoodLevelBool of "<<m_ID<<": "<<m_foodLevelBool<<std::endl;
+//  m_foodLevelBool = false;
+
 }
 
 std::vector<unsigned int> LinkedParticle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
@@ -542,7 +559,6 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
   connect(newPartID,_particleList);
 
-  //m_foodLevel=false;
 
 //  QVector3D particleCentre;
 //  QVector3D averageDistance;

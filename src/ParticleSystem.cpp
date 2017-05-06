@@ -80,7 +80,6 @@ void ParticleSystem::advance()
     {
       calculateParticleCentre();
       calculateAverageDistanceFromCentre();
-      //m_randomParticles = getRandomParticles();
       m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
     }
 
@@ -101,6 +100,23 @@ void ParticleSystem::bulge()
     m_particles[i]->advance();
   }
   calculateParticleCentre();
+}
+
+void ParticleSystem::addFood()
+{
+  for (unsigned int i=0; i<=m_particles.size()/2; i++)
+  {
+    unsigned int randomIndex = rand() % m_particleCount;
+    std::cout<<"randomIndex:"<<randomIndex<<std::endl;
+    m_particles[randomIndex]->setFoodLevelTrue();
+  }
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+    m_particles[i]->addFood(m_particleCentre);
+    m_particles[i]->advance();
+  }
+
 }
 
 void ParticleSystem::fill(unsigned int _amount)
@@ -262,7 +278,6 @@ void ParticleSystem::splitRandomParticle()
   std::uniform_int_distribution<int> distribution(0,m_particles.size()-1);
 
   uint nearestParticle = getNearestParticle();
-  std::cout<<"nearestParticle:"<<nearestParticle<<std::endl;
 
   // calling different split function based on the particle type
 
@@ -280,7 +295,6 @@ void ParticleSystem::splitRandomParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    //std::vector<unsigned int> m_randomParticles = getRandomParticles();
     m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
   }
 
@@ -305,16 +319,6 @@ unsigned int ParticleSystem::getNearestParticle()
   //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
 
   return minElementIndex;
-}
-
-void ParticleSystem::getRandomParticles()
-{
-//  for (unsigned int i=0; i<=5; i++)
-//  {
-//    unsigned int randomIndex = rand() % m_particleCount;
-//    m_particles[randomIndex]->setFoodLevelTrue();
-
-//  }
 }
 
 void ParticleSystem::deleteParticle(unsigned int _index)

@@ -20,7 +20,7 @@ Particle::Particle()
     : m_pos(QVector3D(0,0,0))
     , m_ID(m_ID_counter++)
     , m_size(0.5)
-    , m_foodLevel(false)
+    , m_foodLevelBool(false)
     , m_foodThreshold(0)
 {
   //qDebug("Particle default constructor.");
@@ -31,7 +31,7 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
     , m_size(0.5)
-    , m_foodLevel(false)
+    , m_foodLevelBool(false)
     , m_foodThreshold(100)
 {
   //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
@@ -45,7 +45,7 @@ Particle::Particle(qreal _x,
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
     , m_size(0.5)
-    , m_foodLevel(false)
+    , m_foodLevelBool(false)
     , m_foodThreshold(100)
 {
  // qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
@@ -64,6 +64,11 @@ void Particle::testForSplit()
 //    m_split=true;
 //  else
 //    m_split=false;
+}
+
+void Particle::setFoodLevelTrue()
+{
+  m_foodLevelBool = true;
 }
 
 void Particle::getPos(QVector3D &_pos)
@@ -116,13 +121,6 @@ void Particle::deleteConnection(unsigned int _ID)
 unsigned int Particle::getID()
 {
  return m_ID;
-}
-
-bool Particle::setFoodLevelTrue(bool m_foodLevel)
-{
-  m_foodLevel = true;
-  std::cout<<"in function FOOD LEVEL:"<<m_foodLevel<<std::endl;
-  return m_foodLevel;
 }
 
 

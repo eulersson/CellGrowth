@@ -63,6 +63,11 @@ public:
   void bulge(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
+  /// @brief Does not do anything for this class.
+  //////////////////////////////////////////////////////////////////////////////
+  void addFood(QVector3D _particleCentre) override;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch from that Particle.
   /// @param[in] _lightDirection Light direction.
   /// @param[in] _particleList List of all particles.
