@@ -55,7 +55,7 @@ ParticleSystem::ParticleSystem(char _particleType):
   }
   else if (m_particleType=='A')
   {
-    fill(3);
+    fill(1);
   }
 
 }
@@ -87,7 +87,8 @@ void ParticleSystem::advance()
       {
         if(m_particles[i]->isAlive() == false)
         {
-          deleteParticle(m_particles[i]->getID());
+          m_iter_id.push_back(i);
+          deleteParticle();
         }
       }
     }
@@ -97,6 +98,7 @@ void ParticleSystem::advance()
       m_particles[i]->advance();
     }
   }
+  m_iter_id.resize(0);
 }
 
 void ParticleSystem::bulge()
@@ -290,7 +292,6 @@ void ParticleSystem::splitRandomParticle()
 unsigned int ParticleSystem::getNearestParticle()
 {
   //Finds the particle nearest to the point light radius so that they may be split
-  //std::vector<unsigned int> m_nearestParticles;
   std::vector<float> m_lightDistances;
 
   for (unsigned int i=0; i<=m_particleCount-1; i++)
@@ -301,28 +302,23 @@ unsigned int ParticleSystem::getNearestParticle()
 
   std::vector<float>::iterator minElement = std::min_element (std::begin(m_lightDistances), std::end(m_lightDistances));
   unsigned int minElementIndex = std::distance(std::begin(m_lightDistances), minElement);
-  //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
 
   return minElementIndex;
 }
 
-void ParticleSystem::deleteParticle(unsigned int _index)
+void ParticleSystem::deleteParticle()
 {
-  std::cout<<"trying to delete particle"<<_index<<std::endl;
-  std::vector<unsigned int> deleteAutomata;
+  int originalArraySize = m_particles.size();
 
-  if(m_particles[_index]->isAlive()==false)
+  if(m_iter_id.size()!=0)
   {
-    deleteAutomata.push_back(_index);
-  }
-
-  for(uint i=0; i<deleteAutomata.size(); i++)
-  {
-    if(m_particles[_index]->getID() == deleteAutomata[i])
+    for(uint j=0; j<m_iter_id.size(); ++j)
     {
-     m_particles.erase(m_particles.begin()+i);
-     break;
+      m_particles.erase(m_particles.begin()+m_iter_id[j]-(j));
     }
+
+    m_particles.resize(originalArraySize - m_iter_id.size());
+    m_particleCount -= m_iter_id.size();
   }
 }
 
@@ -379,7 +375,6 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
   }
 
   averageDistance = averageDistance/(m_particles.size());
-  //std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
   return averageDistance;
 }
 
@@ -453,7 +448,6 @@ void ParticleSystem::reset(char _particleType)
   }
   else if (m_particleType == 'A')
   {
-    std::cout<<"hello"<<std::endl;
     fill(1);
   }
 }

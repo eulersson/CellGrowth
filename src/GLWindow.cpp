@@ -880,15 +880,25 @@ void GLWindow::setParticleType(int _type)
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
+    emit enableAutomataParticle(false);
     emit enableSplitType(true);
 
   }
-  else
+  else if (_type == 1)
   {
     particleType = 'G';
     emit resetSplitType(0);
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
+    emit enableAutomataParticle(false);
+    emit enableSplitType(false);
+  }
+  else if (_type == 2)
+  {
+    particleType = 'A';
+    emit enableGrowthParticle(false);
+    emit enableLinkedParticle(false);
+    emit enableAutomataParticle(true);
     emit enableSplitType(false);
   }
   m_ps.reset(particleType);
@@ -1043,7 +1053,7 @@ void GLWindow::restart()
   emit resetBranchLength(3.0);
   emit changedShadingType(0);
   emit setConnectionState(true);;
-  m_ps.reset('A');
+  m_ps.reset('L');
   // Add reset functions here
 
 }

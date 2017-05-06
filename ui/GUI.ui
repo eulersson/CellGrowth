@@ -58,7 +58,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="m_linkedParticleTab">
           <attribute name="title">
@@ -224,6 +224,11 @@
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="m_automataParticleTab">
+          <attribute name="title">
+           <string>Page</string>
+          </attribute>
+         </widget>
         </widget>
        </item>
        <item row="2" column="0" colspan="2">
@@ -355,6 +360,11 @@
             <item>
              <property name="text">
               <string>Growth Particles</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Automata Particles</string>
              </property>
             </item>
            </widget>
