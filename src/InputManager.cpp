@@ -7,15 +7,15 @@
 #include "InputManager.h"
 
 InputManager::InputManager (QOpenGLWidget *_window) :
-  m_camera(QVector3D(0.0f, 0.0f, 10.0f)),
+  m_camera(QVector3D(0.0f, 0.0f, -20.0f)),
   m_window(_window),
   m_keys{0},
   m_mousePressed(false)
 {
   m_fbo = new QOpenGLFramebufferObject(_window->width(), _window->height());
-    // Camera initialisation
-    // Must be run on start for camera to calculate its position and orientation
-    m_camera.processMouseMovement(0, 0);
+  // Camera initialisation
+  // Must be run on start for camera to calculate its position and orientation
+  m_camera.processMouseMovement(0, 0);
 }
 
 void InputManager::onHover()
@@ -47,8 +47,7 @@ void InputManager::doMovement()
   m_view = m_camera.getViewMatrix();
 }
 
-void InputManager::getUniqueColour(const int _x, const int _y,
-                                   QOpenGLShaderProgram* m_manipulatorProgram)
+void InputManager::getUniqueColour(const int _x, const int _y)
 {
   m_fbo->bind();
   // Clear colour buffer for temporary drawing
@@ -59,10 +58,8 @@ void InputManager::getUniqueColour(const int _x, const int _y,
   for(auto &s : m_objectList) { s->drawBackBuffer(); }
 
   QImage img = m_fbo->toImage();
-//  img.save("/home/i7243466/Desktop/koko.jpg");
 
   QColor col = img.pixelColor(_x, _y);
-  //qDebug("%d %d %d", col.red(), col.green(), col.blue());
 
   QVector3D pixelColour = QVector3D(col.red(), col.green(), col.blue());
   setCurrentUniqueColour(pixelColour);
@@ -77,7 +74,7 @@ void InputManager::doSelection(const int _x, const int _y)
   {
     QOpenGLShaderProgram* m_manipulatorProgram;
     s->getMainProgram(&m_manipulatorProgram);
-    getUniqueColour(_x, _y, m_manipulatorProgram);
+    getUniqueColour(_x, _y);
     s->setClicked(m_currentUniqueColour, true);
   }
 }
@@ -87,11 +84,11 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
   m_programs.push_back(_program);
 }
 
+
 void InputManager::setupCamera(int _w, int _h)
 {
   m_projection.setToIdentity();
-  m_projection.perspective(45.0f, (float)_w / (float)_h,
-                         0.1f, 10000.0f);
+  m_projection.perspective(45.0f, (float)_w / (float)_h, 0.1f, 50.0f);
 
   for(int i = 0; i < m_programs.size(); i++)
   {
@@ -100,13 +97,8 @@ void InputManager::setupCamera(int _w, int _h)
     // CAMERA SETUP
     prgrm->bind();
 
-    // Get the uniform locations
-    GLint viewLoc = prgrm->uniformLocation("view");
-    GLint projLoc = prgrm->uniformLocation("projection");
-
-    // Pass the matrices to the shader
-    prgrm->setUniformValue(viewLoc, m_view);
-    prgrm->setUniformValue(projLoc, m_projection);
+    prgrm->setUniformValue("view", m_view);
+    prgrm->setUniformValue("projection", m_projection);
     prgrm->release();
   }
 }
@@ -122,9 +114,10 @@ QVector3D InputManager::getCurrentUniqueColour()
   return m_currentUniqueColour;
 }
 
-void InputManager::setCurrentUniqueColour(QVector3D uc)
+
+void InputManager::setCurrentUniqueColour(QVector3D _uc)
 {
-  m_currentUniqueColour=uc;
+  m_currentUniqueColour=_uc;
 }
 
 QMatrix4x4 InputManager::getProjectionMatrix()
@@ -137,7 +130,12 @@ QMatrix4x4 InputManager::getViewMatrix()
   return m_view;
 }
 
-void InputManager::mouseReleaseEvent(QMouseEvent *event)
+QVector3D InputManager::getCameraPosition()
+{
+  return m_camera.getPosition();
+}
+
+void InputManager::mouseReleaseEvent(QMouseEvent *_event)
 {
   m_mousePressed=false;
   for(auto &s : m_objectList)
@@ -147,26 +145,23 @@ void InputManager::mouseReleaseEvent(QMouseEvent *event)
   }
 }
 
-void InputManager::mousePressEvent(QMouseEvent *event)
+void InputManager::mousePressEvent(QMouseEvent *_event)
 {
   m_mousePressed=true;
 
   if(m_alt_key==false)
   {
-    doSelection(event->pos().x(), event->pos().y());
+    doSelection(_event->pos().x(), _event->pos().y());
   }
 }
 
-void InputManager::mouseMoveEvent(QMouseEvent* event)
+void InputManager::mouseMoveEvent(QMouseEvent *_event)
 {
-  GLfloat xpos = event->pos().x();
-  GLfloat ypos = event->pos().y();
+  GLfloat xpos = _event->pos().x();
+  GLfloat ypos = _event->pos().y();
   GLfloat xoffset = xpos - m_lastX;
   GLfloat yoffset = m_lastY - ypos;
-
-//  qDebug("last: %f %f", m_lastX, m_lastY);
-//  qDebug("pos: %f %f", xpos, ypos);
-//  qDebug("offset: %f %f", xoffset, yoffset);
+  getUniqueColour(xpos, ypos);
 
   // Only process movement if the mouse button and alt is pressed
   if (m_mousePressed && m_alt_key==true)
@@ -185,21 +180,10 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
 
       m_clickZ=mp.z();
       GLfloat localXoffset=xoffset; // This variable should not be needed, but the program acts up without it
-
       float zoffset=xoffset;
 
-      // Reverse x and z offset if the camera is on the other side of the corresponding axis'
-      if(cp.x()>mp.x())
-      {
-        zoffset=-zoffset;
-      }
-
-      if(cp.z()>mp.z()){
-        localXoffset=-localXoffset;
-      }
-
       // Process mouse movement in light class
-      s->processMouseMovement(localXoffset, yoffset, zoffset);
+      s->processMouseMovement(localXoffset, yoffset, zoffset, cp, m_view);
     }
   }
 
@@ -210,8 +194,6 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
     {
       QOpenGLShaderProgram* m_manipulatorProgram;
       s->getMainProgram(&m_manipulatorProgram);
-      getUniqueColour(xpos, ypos, m_manipulatorProgram);
-
       onHover();
     }
   }
@@ -220,50 +202,50 @@ void InputManager::mouseMoveEvent(QMouseEvent* event)
   m_lastY = ypos;
 }
 
-void InputManager::keyPressEvent(QKeyEvent *key)
+void InputManager::keyPressEvent(QKeyEvent *_key)
 {
-  if ( (key->key() == Qt::Key_Enter)  ||
-       (key->key() == Qt::Key_W)      ||
-       (key->key() == Qt::Key_A)      ||
-       (key->key() == Qt::Key_S)      ||
-       (key->key() == Qt::Key_D)      ||
-       (key->key() == Qt::Key_Return)   )
+  if ( (_key->key() == Qt::Key_Enter)  ||
+       (_key->key() == Qt::Key_W)      ||
+       (_key->key() == Qt::Key_A)      ||
+       (_key->key() == Qt::Key_S)      ||
+       (_key->key() == Qt::Key_D)      ||
+       (_key->key() == Qt::Key_Return)   )
   {
-    m_keys[key->key()]=true;
+    m_keys[_key->key()]=true;
   }
-  else if(key->key() == Qt::Key_Alt)
+  else if(_key->key() == Qt::Key_Alt)
   {
     m_alt_key=true;
   }
-  else if(key->key() == Qt::Key_F)
+  else if(_key->key() == Qt::Key_F)
   {
     m_camera.refocus();
   }
 }
 
-void InputManager::keyReleaseEvent(QKeyEvent *key)
+void InputManager::keyReleaseEvent(QKeyEvent *_key)
 {
 
-  if ( (key->key() == Qt::Key_Enter)  ||
-       (key->key() == Qt::Key_W)      ||
-       (key->key() == Qt::Key_A)      ||
-       (key->key() == Qt::Key_S)      ||
-       (key->key() == Qt::Key_D)      ||
-       (key->key() == Qt::Key_Return)   )
+  if ( (_key->key() == Qt::Key_Enter)  ||
+       (_key->key() == Qt::Key_W)      ||
+       (_key->key() == Qt::Key_A)      ||
+       (_key->key() == Qt::Key_S)      ||
+       (_key->key() == Qt::Key_D)      ||
+       (_key->key() == Qt::Key_Return)   )
   {
      // A mapped key was pressed
-     m_keys[key->key()]=false;
+     m_keys[_key->key()]=false;
 
   }
-  else if(key->key() == Qt::Key_Alt)
+  else if(_key->key() == Qt::Key_Alt)
   {
      m_alt_key=false;
   }
 }
 
-void InputManager::wheelEvent(QWheelEvent *event)
+void InputManager::wheelEvent(QWheelEvent *_event)
 {
-  m_camera.processMouseScroll(event->delta());
+  m_camera.processMouseScroll(_event->delta());
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
 }
@@ -272,7 +254,5 @@ void InputManager::resized(int _w, int _h)
 {
   delete m_fbo;
   m_fbo = new QOpenGLFramebufferObject(_w, _h);
-
-
 }
 
