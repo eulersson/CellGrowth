@@ -18,46 +18,47 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief Struct storing the individual data for each manipulator arrow.
 ////////////////////////////////////////////////////////////////////////////////
-struct Arrow {
+struct Geo {
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Is the arrow currently clicked.
   //////////////////////////////////////////////////////////////////////////////
   bool clicked;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief What axis does the arrow originally point down.
   //////////////////////////////////////////////////////////////////////////////
   int axis;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Number of vertices that make up the arrow object.
   //////////////////////////////////////////////////////////////////////////////
-  unsigned int numberOfPoints;
+  unsigned int numberOfPoints=0;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Arrow unique colour.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D uniqueColour;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Arrow render colour. The actual colour of the arrow.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D renderColour;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Arrow VBO.
   //////////////////////////////////////////////////////////////////////////////
   QOpenGLBuffer *vbo;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief !!!MISSING
+  /// @brief Arrow VAO.
   //////////////////////////////////////////////////////////////////////////////
   QOpenGLVertexArrayObject *vao;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class Manipulator
-/// @brief !!!MISSING
+/// @brief The handles used for moving objects around in the scene. Can be
+/// used by any object that needs to be moved around.
 ////////////////////////////////////////////////////////////////////////////////
 class Manipulator
 {
@@ -86,7 +87,7 @@ public:
   /// @param[in] uColourVec Vector of unique colours to be assigned to the
   /// manipulator arrows.
   //////////////////////////////////////////////////////////////////////////////
-  void createGeometry(QOpenGLContext *context, std::vector<QVector3D> uColourVec);
+  void createGeometry(std::vector<QVector3D> _uColourVec, bool _rotatable);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draws the manipulator to the main buffer.
@@ -100,18 +101,22 @@ public:
   void drawBackBuffer();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Processes mouse movement and calculates a new light position.
+  /// @brief Processes mouse movement and calculates a new light position. Which
+  /// axis was pressed must be checked before a new position can be calculated.
+  /// This new position is then returned to the higher class.
   /// @param[in] offsetx The x offset.
   /// @param[in] offsety The y offset.
   /// @param[in] offsetz The z offset.
   /// @param[in] currentPos Current light position.
-  /// \return QVector3D New position of light.
+  /// \return QVector3D New position returned to the class owning the manipulator.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D processMouseMovement(
-      float offsetx,
-      float offsety,
-      float offsetz,
-      QVector3D currentPos);
+    float _offsetx,
+    float _offsety,
+    float _offsetz,
+    QVector3D _x,
+    QVector3D _y,
+    QVector3D _z );
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets the manipulator arrows to clicked/not clicked.
@@ -119,22 +124,49 @@ public:
   /// @param[in] state Boolean stating wether it is being run from mouse click
   /// or release. If the latter clicked should always be set to false.
   //////////////////////////////////////////////////////////////////////////////
-  void setClicked(QVector3D uColourIdentity, bool state);
+  void setClicked(QVector3D _uColourIdentity, bool _state);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Changes the colour of the manipulator arrows if the mouse is
   /// hovering over them.
   /// @param[in] axis Specifies which axis is being affected.
   //////////////////////////////////////////////////////////////////////////////
-  void setHover(int axis);
+  void setHover(int _axis);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns all arrows in the arrow vector.
   /// @param[out] _arrows Vector where to write the arrows.
   //////////////////////////////////////////////////////////////////////////////
-  void getArrows(std::vector<Arrow> &_arrows);
+  void getArrows(std::vector<Geo> &_arrows);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Returns the currently clicked arrow.
+  /// @returns The arrow/axis currently being manipulated.
+  //////////////////////////////////////////////////////////////////////////////
+  int getClickedAxis();
 
 private:
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Creates and sets up the vbo for the provided arrow object
+  /// @param[in] vertices Vertices being set to the VBO
+  /// @param[out] arrow The arrow struct after the vbo has been added to it.
+  //////////////////////////////////////////////////////////////////////////////
+  void setupRotCircleVBO(std::vector<QVector3D> _vertices,
+      Geo &_circle);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Creates and sets up the vao for the provided arrow object
+  /// @param[out] arrow The circle struct after the vbo has been added to it.
+  /// @param[in] vao The initialised vao to be set up.
+  //////////////////////////////////////////////////////////////////////////////
+  void setupRotCircleVAO(Geo &_circle, QOpenGLVertexArrayObject *_vao);
+
+
+  void createRotCircle(QOpenGLVertexArrayObject *_vao,
+                       QVector3D _uniqueColour,
+                       int _axis);
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates and sets up the vbo for the provided arrow object
   /// @param[in] vertices Vertices being set to the VBO
@@ -142,16 +174,16 @@ private:
   /// @param[out] arrow The arrow struct after the vbo has been added to it.
   //////////////////////////////////////////////////////////////////////////////
   void setupVBO(
-      std::vector<QVector3D> vertices,
-      std::vector<QVector3D> normals,
-      Arrow &arrow);
+      std::vector<QVector3D> _vertices,
+      std::vector<QVector3D> _normals,
+      Geo &_arrow);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates and sets up the vao for the provided arrow object
   /// @param[out] arrow The arrow struct after the vbo has been added to it.
   /// @param[in] vao The initialised vao to be set up.
   //////////////////////////////////////////////////////////////////////////////
-  void setupVAO(Arrow &arrow, QOpenGLVertexArrayObject *vao);
+  void setupVAO(Geo &_arrow, QOpenGLVertexArrayObject *_vao);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates an arrow. Changes the colour of the manipulator arrows if
@@ -162,10 +194,11 @@ private:
   /// @param[in] axis Axis assigned to the arrow.
   //////////////////////////////////////////////////////////////////////////////
   void createArrow(
-      QOpenGLVertexArrayObject *vao,
-      QVector3D offsetPos,
-      QVector3D uniqueColour,
-      int axis);
+      QOpenGLVertexArrayObject *_vao,
+      QVector3D _offsetPos,
+      QVector3D _uniqueColour,
+      int _axis);
+
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Manipulator shader program
@@ -180,7 +213,12 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Vector storing the arrows
   //////////////////////////////////////////////////////////////////////////////
-  std::vector<Arrow> m_arrows;
+  std::vector<Geo> m_arrows;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Vector storing the rotation circles.
+  //////////////////////////////////////////////////////////////////////////////
+  std::vector<Geo> m_circles;
 
 };
 
