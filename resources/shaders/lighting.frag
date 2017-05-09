@@ -1,4 +1,5 @@
 #version 410 core
+#extension GL_NV_shadow_samplers_cube : enable
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Inputs & Outputs
@@ -23,20 +24,22 @@ struct Light {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-    vec3 colour;
     float Linear;
     float Quadratic;
 };
 
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Textures
 ////////////////////////////////////////////////////////////////////////////////
-uniform sampler2D tWorldPosition;
-uniform sampler2D tViewPosition;
+uniform sampler2D tWorldPosition;   //Real position in 3D space
+uniform sampler2D tViewPosition;    //
 uniform sampler2D tWorldNormal;
 uniform sampler2D tViewNormal;
 uniform sampler2D tSSAO;
 uniform sampler2D tLinks;
+uniform samplerCube tSkyBox; // Cubemap
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Uniforms
@@ -45,6 +48,9 @@ uniform Material material;
 uniform Light light;
 uniform bool drawLinks;
 uniform mat4 ProjectionMatrix;
+uniform mat4 ModelMatrix;
+uniform mat4 ViewMatrix;
+uniform vec3 CameraPos;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Globals
@@ -56,12 +62,16 @@ vec3 ViewNormal  = normalize(texture( tViewNormal, vTexCoords).xyz);
 vec3 WorldNormal = normalize(texture(tWorldNormal, vTexCoords).xyz);
 float Occlusion = texture(tSSAO, vTexCoords).r;
 float Links = texture(tLinks, vTexCoords).r;
+vec3 SkyBoxTexture = textureCube(tSkyBox, WorldNormal).rgb;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Subroutine definition
 ////////////////////////////////////////////////////////////////////////////////
 subroutine vec4 RenderType();
 subroutine uniform RenderType RenderTypeSelection;
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// ADS SHADING
@@ -71,7 +81,6 @@ subroutine uniform RenderType RenderTypeSelection;
 subroutine (RenderType)
 vec4 ADSRender()
 {
-    ///! WORK HERE VAL
     vec3 lightDir = normalize(light.position - WorldPosition);
     vec3 viewDir  = normalize(-WorldPosition);
 
@@ -91,12 +100,18 @@ vec4 ADSRender()
     float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
     diffuse *= attenuation;
     specular *= attenuation;
-    
-    vec3 lighting = ambient + diffuse + specular;
 
+
+    vec3 IndirectDiffuse = max(dot(WorldNormal, SkyBoxTexture), 0.0) * SkyBoxTexture;
+
+    
+    vec3 lighting = (ambient + diffuse + specular);
     lighting *= vec3(Occlusion);
 
-    return vec4(lighting, 1.0);
+    lighting = clamp(lighting, vec3(0), vec3(1));
+
+    return vec4(SkyBoxTexture, 1.0);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,5 +158,6 @@ void main() {
 
     color *= vec4(alpha);
 
-    fColor = color;
+
+    fColor = color ;
 }

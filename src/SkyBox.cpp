@@ -2,6 +2,7 @@
 
 SkyBox::SkyBox(InputManager *_input_manager) : m_input_manager(_input_manager)
 {
+
 }
 
 SkyBox::~SkyBox()
@@ -75,18 +76,18 @@ void SkyBox::prepare()
   m_program->enableAttributeArray("pos");
 
   m_program->setAttributeBuffer("pos", GL_FLOAT, 0, 3);
-  m_program->setUniformValue("tSkyBox", 8);
+  m_program->setUniformValue("tSkyBox", 6);
 
   m_vao->release();
 
   m_program->release();
 
-  const QImage posx = QImage("resources/cubemaps/forest/posx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posy = QImage("resources/cubemaps/forest/posy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage posz = QImage("resources/cubemaps/forest/posz.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negx = QImage("resources/cubemaps/forest/negx.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negy = QImage("resources/cubemaps/forest/negy.jpg").convertToFormat(QImage::Format_RGB888);
-  const QImage negz = QImage("resources/cubemaps/forest/negz.jpg").convertToFormat(QImage::Format_RGB888);
+  const QImage posx = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_ft.png").convertToFormat(QImage::Format_RGB888);
+  const QImage posy = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_up.png").convertToFormat(QImage::Format_RGB888);
+  const QImage posz = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_rt.png").convertToFormat(QImage::Format_RGB888);
+  const QImage negx = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_bk.png").convertToFormat(QImage::Format_RGB888);
+  const QImage negy = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_dn.png").convertToFormat(QImage::Format_RGB888);
+  const QImage negz = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_lf.png").convertToFormat(QImage::Format_RGB888);
 
   m_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
   if (posz.isNull()) qDebug("Null image");
@@ -113,7 +114,7 @@ void SkyBox::prepare()
 
 void SkyBox::draw()
 {
-  glActiveTexture(GL_TEXTURE8);
+
   m_texture->bind();
 
     m_program->bind();
