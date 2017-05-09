@@ -27,8 +27,10 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_GP_branchLenght,SIGNAL(valueChanged(double)),m_gl,SLOT(setBranchLength(double)));
   connect(m_ui->m_nearestPart,SIGNAL(clicked(bool)),m_gl,SLOT(setNearestParticle(bool)));
   connect(m_ui->m_GP_growtoLight,SIGNAL(clicked(bool)),m_gl,SLOT(setGrowToLight(bool)));
-
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_ui->m_particleTab,SLOT(setCurrentIndex(int)));
+  connect(m_ui->m_RColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setRcolour(int)));
+  connect(m_ui->m_GColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setGcolour(int)));
+  connect(m_ui->m_BColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setBcolour(int)));
 
 
   connect(m_gl,SIGNAL(resetBranchLength(double)),m_ui->m_GP_branchLenght,SLOT(setValue(double)));
@@ -51,6 +53,13 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(enableLightOff(bool)),m_ui->m_LP_lightOff,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(resetNearestParticle(bool)),m_ui->m_nearestPart,SLOT(setChecked(bool)));
   connect(m_gl,SIGNAL(resetGrowToLight(bool)),m_ui->m_GP_growtoLight,SLOT(setChecked(bool)));
+  connect(m_gl,SIGNAL(resetRColour(int)),m_ui->m_RColour,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetGColour(int)),m_ui->m_GColour,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetBColour(int)),m_ui->m_BColour,SLOT(setValue(int)));
+
+
+
+
 }
 
 GUI::~GUI()

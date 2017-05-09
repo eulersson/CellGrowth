@@ -62,7 +62,15 @@ vec3 ViewNormal  = normalize(texture( tViewNormal, vTexCoords).xyz);
 vec3 WorldNormal = normalize(texture(tWorldNormal, vTexCoords).xyz);
 float Occlusion = texture(tSSAO, vTexCoords).r;
 float Links = texture(tLinks, vTexCoords).r;
-vec3 SkyBoxTexture = textureCube(tSkyBox, WorldNormal).rgb;
+vec3 SkyBoxTexture = texture(tSkyBox, WorldNormal).rgb;
+
+
+vec4 SkyBoxFixer()
+{
+    vec4 SkyBox = vec4(SkyBoxTexture, 0.5);
+
+    return SkyBox;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +78,6 @@ vec3 SkyBoxTexture = textureCube(tSkyBox, WorldNormal).rgb;
 ////////////////////////////////////////////////////////////////////////////////
 subroutine vec4 RenderType();
 subroutine uniform RenderType RenderTypeSelection;
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,18 +107,14 @@ vec4 ADSRender()
     float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
     diffuse *= attenuation;
     specular *= attenuation;
-
-
-    vec3 IndirectDiffuse = max(dot(WorldNormal, SkyBoxTexture), 0.0) * SkyBoxTexture;
-
     
     vec3 lighting = (ambient + diffuse + specular);
     lighting *= vec3(Occlusion);
 
     lighting = clamp(lighting, vec3(0), vec3(1));
 
-    return vec4(SkyBoxTexture, 1.0);
-
+    // lighting goes in to vec4 underneath.
+    return SkyBoxFixer() * vec4(1.0, 1.0, 1.0, 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,9 +133,11 @@ vec4 XRayRender()
     opacity = 1.0 - pow(opacity, EdgeFalloff);
      
     result *= opacity;
+    vec3 InvertAO = vec3(Occlusion);
 
     ///! WORK HERE VAL
     return result;
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +147,7 @@ vec4 XRayRender()
 subroutine (RenderType)
 vec4 AORender()
 {
+
     return vec4(vec3(Occlusion), 1.0);
 }
 
