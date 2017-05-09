@@ -900,21 +900,18 @@ void GLWindow::setShading(QString _type)
   {
     m_activeRenderPassIndex = m_ADSIndex;
     m_rendering_mode = GLWindow::ADS;
-    emit setConnectionState(true);
 
   }
   else if(_type=="Ambient Occlusion")
   {
     m_activeRenderPassIndex = m_AOIndex;
     m_rendering_mode = GLWindow::AO;
-    emit setConnectionState(false);
 
   }
   else if(_type=="X Ray")
   {
     m_activeRenderPassIndex = m_XRayIndex;
     m_rendering_mode = GLWindow::XRAY;
-    emit setConnectionState(false);
   }
   sendParticleDataToOpenGL();
 }
@@ -1035,6 +1032,7 @@ void GLWindow::restart()
   emit changedShadingType(0);
   emit setConnectionState(false);
   emit resetNearestParticle(true);
+  emit resetGrowToLight(true);
 
   m_ps.reset('L');
   // Add reset functions here
@@ -1051,3 +1049,7 @@ void GLWindow::setNearestParticle(bool _state)
     m_ps.setNearestParticleState(_state);
 }
 
+void GLWindow::setGrowToLight(bool _state)
+{
+  m_ps.setGrowToLight(_state);
+}

@@ -28,6 +28,7 @@ ParticleSystem::ParticleSystem() :
   m_cohesion = 30; //percent
   m_localCohesion = 30;
   m_nearestParticleState=true;
+  m_GP_growtoLight=true;
 
 
 }
@@ -272,7 +273,7 @@ void ParticleSystem::splitRandomParticle()
 
   if(m_particleType=='G')
   {
-  split=m_particles[toSplit[index]]->split(m_lightPos,m_particles,m_gen);
+  split=m_particles[toSplit[index]]->split(m_lightPos,m_particles,m_gen,m_GP_growtoLight);
   }
   else if(m_particleType=='L')
   {
@@ -458,9 +459,15 @@ void ParticleSystem::reset(char _particleType)
     m_nearestParticleState=false;
     fill(1);
   }
+  m_GP_growtoLight=true;
 }
 
 void ParticleSystem::setNearestParticleState(bool _state)
 {
     m_nearestParticleState=_state;
+}
+
+void ParticleSystem::setGrowToLight(bool _state)
+{
+  m_GP_growtoLight=_state;
 }

@@ -44,8 +44,9 @@ void GrowthParticle::bulge(QVector3D _particleCentre)
 
 }
 
-bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Particle> > &_particleList,std::mt19937_64 _gen)
+bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Particle> > &_particleList,std::mt19937_64 _gen,bool _growToLight)
 {
+
 
   //triggered by reaching the food threshold
   //checks length of linked list to see if the max particle treshold is reached
@@ -60,12 +61,34 @@ bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
     //mother ID is always the first element in the connectedParticle vector
     newConnectedParticles.push_back(m_ID);
 
+    float input0A;
+    float input0B;
+    float input1A;
+    float input1B;
+    float input2A;
+    float input2B;
+    if(_growToLight==false)
+    {
+      input0A=m_pos[0]+0.001;
+      input0B=m_pos[0]+m_pos[0];
+      input1A=m_pos[1]+0.001;
+      input1B=m_pos[1]+m_pos[1];
+      input2A=m_pos[2]+0.001;
+      input2B=m_pos[2]+m_pos[2];
+    }
+    else
+    {
+      input0A=m_pos[0]+0.001;
+      input0B=_lightPos[0];
+      input1A=m_pos[1]+0.001;
+      input1B=_lightPos[1];
+      input2A=m_pos[2]+0.001;
+      input2B=_lightPos[2];
+    }
 
-
-    std::uniform_real_distribution<float> distributionX(m_pos[0]+0.001,_lightPos[0]);
-    std::uniform_real_distribution<float> distributionY(m_pos[1]+0.001,_lightPos[1]);
-    std::uniform_real_distribution<float> distributionZ(m_pos[2]+0.001,_lightPos[2]);
-
+    std::uniform_real_distribution<float> distributionX(input0A,input0B);
+    std::uniform_real_distribution<float> distributionY(input1A,input1B);
+    std::uniform_real_distribution<float> distributionZ(input2A,input2B);
 
     //place new particle on side in  direction of light
 
@@ -84,9 +107,6 @@ bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
     y= distributionY(_gen);
     z= distributionZ(_gen);
 
-    QVector3D lightDirection;
-
-
 
     QVector3D direction;
     direction[0]=x-m_pos[0];
@@ -99,24 +119,6 @@ bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
     x=m_pos[0]+direction[0]*(m_size+m_branchLength+branchMultiplier);
     y=m_pos[1]+direction[1]*(m_size+m_branchLength+branchMultiplier);
     z=m_pos[2]+direction[2]*(m_size+m_branchLength+branchMultiplier);
-
-//    lightDirection[0]=_lightPos.x()-x;
-//    lightDirection[1]=_lightPos.y()-y;
-//    lightDirection[2]=_lightPos.z()-z;
-
-//    //calculate vector
-//    lightDirection.normalize();
-
-//    direction[0]+=lightDirection.x();
-//    direction[1]+=lightDirection.y();
-//    direction[2]+=lightDirection.z();
-
-//    direction.normalize();
-
-
-//    direction[0]*=(m_size*m_branchLength*branchMultiplier);
-//    direction[1]*=(m_size*m_branchLength*branchMultiplier);
-//    direction[2]*=(m_size*m_branchLength*branchMultiplier);
 
 
 

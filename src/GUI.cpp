@@ -26,6 +26,7 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_splitType,SIGNAL(currentIndexChanged(int)),m_gl,SLOT(setSplitType(int)));
   connect(m_ui->m_GP_branchLenght,SIGNAL(valueChanged(double)),m_gl,SLOT(setBranchLength(double)));
   connect(m_ui->m_nearestPart,SIGNAL(clicked(bool)),m_gl,SLOT(setNearestParticle(bool)));
+  connect(m_ui->m_GP_growtoLight,SIGNAL(clicked(bool)),m_gl,SLOT(setGrowToLight(bool)));
 
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_ui->m_particleTab,SLOT(setCurrentIndex(int)));
 
@@ -49,6 +50,7 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(enableLightOn(bool)),m_ui->m_LP_lightOn,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableLightOff(bool)),m_ui->m_LP_lightOff,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(resetNearestParticle(bool)),m_ui->m_nearestPart,SLOT(setChecked(bool)));
+  connect(m_gl,SIGNAL(resetGrowToLight(bool)),m_ui->m_GP_growtoLight,SLOT(setChecked(bool)));
 }
 
 GUI::~GUI()
