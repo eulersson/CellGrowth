@@ -320,6 +320,7 @@ void GLWindow::prepareSSAOPipeline()
 
 void GLWindow::initializeGL()
 {
+
   initializeOpenGLFunctions();
 
   m_input_manager = new InputManager(this);
@@ -542,7 +543,7 @@ void GLWindow::loadLightToShader()
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("light.position", m_lightPos);
     m_lighting_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
-    m_lighting_program->setUniformValue("light.diffuse", QVector3D(1.0f, 1.0f, 1.0f));
+    m_lighting_program->setUniformValue("light.diffuse", QVector3D(m_lightDiffuseR, m_lightDiffuseG, m_lightDiffuseB));
     m_lighting_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
     m_lighting_program->setUniformValue("light.Linear", 0.09f);
     m_lighting_program->setUniformValue("light.Quadratic", 0.032f);
@@ -552,8 +553,8 @@ void GLWindow::loadLightToShader()
 void GLWindow::loadMaterialToShader()
 {
   m_lighting_program->bind();
-    m_lighting_program->setUniformValue("material.ambient", QVector3D(0.01f, 0.01f, 0.01f));
-    m_lighting_program->setUniformValue("material.diffuse", QVector3D(1.0f, 0.0f, 0.0f));
+    m_lighting_program->setUniformValue("material.ambient", QVector3D(0.2f, 0.2f, 0.2f));
+    m_lighting_program->setUniformValue("material.diffuse", QVector3D(1.0f, 1.0f, 1.0f));
     m_lighting_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
     m_lighting_program->setUniformValue("material.shininess", 32.0f);
     m_lighting_program->setUniformValue("material.attenuation", 0.5f);
@@ -865,6 +866,9 @@ void GLWindow::setParticleType(int _type)
   emit resetLocalCohesion(5);
   emit resetChildrenThreshold(3);
   emit resetBranchLength(1);
+  emit resetRColour(255);
+  emit resetGColour(255);
+  emit resetBColour(255);
 
   char particleType;
   if (_type == 0)
@@ -962,7 +966,7 @@ void GLWindow::setSplitType(int _type)
   sendParticleDataToOpenGL();
   std::cout<<"splitType:"<<_type<<std::endl;
 
-  if (_type==0)
+  if (_type==0) //LIGHT IS ON
   {
     m_ambient = 1.0;
     m_specular = 1.0;
@@ -971,7 +975,7 @@ void GLWindow::setSplitType(int _type)
     emit enableLightOff(false);
   }
 
-  else if (_type==1)
+  else if (_type==1) //LIGHT IS OFF
   {
     m_ambient = 0.5;
     m_specular = 0;
@@ -991,12 +995,31 @@ void GLWindow::setCohesion(int _amount)
   sendParticleDataToOpenGL();
 }
 
+void GLWindow::setRcolour(int _rColour)
+{
+  m_lightDiffuseR = (float)_rColour/255.0f;
+}
+
+void GLWindow::setGcolour(int _gColour)
+{
+  m_lightDiffuseG = (float)_gColour/255.0f;
+}
+
+
+void GLWindow::setBcolour(int _bColour)
+{
+  m_lightDiffuseB = (float)_bColour/255.0f;
+}
+
+
 void GLWindow::bulge()
 {
   // Only for LinkedParticles
   m_ps.bulge();
   sendParticleDataToOpenGL();
 }
+
+//Might be able able to move this into function above.
 
 void GLWindow::lightOn()
 {
@@ -1053,6 +1076,9 @@ void GLWindow::restart()
 
   m_ps.reset('L');
   // Add reset functions here
+  emit resetRColour(255);
+  emit resetGColour(255);
+  emit resetBColour(255);
 
 }
 

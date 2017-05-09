@@ -110,7 +110,7 @@ vec4 ADSRender()
 
     lighting = clamp(lighting, vec3(0), vec3(1));
 
-    return vec4(SkyBoxTexture, 1.0);
+    return vec4(lighting, 1.0);
 
 }
 
