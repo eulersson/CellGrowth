@@ -55,11 +55,11 @@ uniform int height;
 out vec4 FragColor;
 
 //Setting samper2D into vec3. Easier to read code.
-vec3 Depth = texture2D(tDepth, TexCoord).rgb;
-vec3 Normals = normalize(texture2D(tNormal, TexCoord).rgb);
-vec3 Position = texture2D(tPosition, TexCoord).xyz;
-vec3 ScreenN = texture2D(tScreenNormals, TexCoord).rgb;
-vec4 Diffuse = texture2D(tDiffuse, TexCoord).rgba;
+vec3 Depth = texture(tDepth, TexCoord).rgb;
+vec3 Normals = normalize(texture(tNormal, TexCoord).rgb);
+vec3 Position = texture(tPosition, TexCoord).xyz;
+vec3 ScreenN = texture(tScreenNormals, TexCoord).rgb;
+vec4 Diffuse = texture(tDiffuse, TexCoord).rgba;
 
 ////////////////////////////////////////////////////////////////////////////////
 ///                      AMBIENT OCCLUSION SHADING
@@ -100,7 +100,7 @@ vec4 AO()
         offset.xy /= offset.w;
         offset.xy = offset.xy * 0.5 + 0.5;
 
-        float sampleDepth = texture2D(tPosition, offset.xy).z;
+        float sampleDepth = texture(tPosition, offset.xy).z;
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(FragPos.z - sampleDepth));
         occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
     }
@@ -115,7 +115,7 @@ vec4 AO()
         for (int y = -2; y < 2; ++y)
         {
             vec2 offset = vec2(float(x), float (y)) * texelSize;
-            result =+ texture2D(tMask, TexCoord + offset).r;
+            result =+ texture(tMask, TexCoord + offset).r;
         }
     }
 

@@ -19,7 +19,7 @@ unsigned int Particle::m_ID_counter(0);
 Particle::Particle()
     : m_pos(QVector3D(0,0,0))
     , m_ID(m_ID_counter++)
-    , m_size(0.5)
+    , m_size(2.0)
     , m_foodLevel(0)
     , m_foodThreshold(0)
 {
@@ -27,10 +27,10 @@ Particle::Particle()
 }
 
 
-Particle::Particle(qreal _x, qreal _y, qreal _z)
+Particle::Particle(qreal _x, qreal _y, qreal _z, float _size)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_size(0.5)
+    , m_size(_size)
     , m_foodLevel(0)
     , m_foodThreshold(100)
 {
@@ -41,10 +41,10 @@ Particle::Particle(qreal _x, qreal _y, qreal _z)
 Particle::Particle(qreal _x,
       qreal _y,
       qreal _z,
-      std::vector<unsigned int> _connectedParticles)
+      std::vector<unsigned int> _connectedParticles, float _size)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_size(0.5)
+    , m_size(_size)
     , m_foodLevel(0)
     , m_foodThreshold(100)
 {
@@ -99,7 +99,7 @@ void Particle::connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> >
 
 void Particle::deleteConnection(unsigned int _ID)
 {
-  for(size_t i;i<m_connectedParticles.size();i++)
+  for(size_t i=0;i<m_connectedParticles.size();i++)
   {
     if(m_connectedParticles[i]==_ID)
     {
