@@ -50,18 +50,20 @@ OTHER_FILES += \
     README.md
 
 DISTFILES += \
-    shaders/links.vert \
-    shaders/links.frag \
-    shaders/manip.vert \
-    shaders/manip.frag \
-    shaders/skybox.vert \
-    shaders/skybox.frag \
-    shaders/sun.vert \
-    shaders/sun.frag \
-    shaders/particles.vert \
-    shaders/particles.frag \
-    shaders/quad.vert \
-    shaders/quad.frag
+    resources/shaders/blur.frag \
+    resources/shaders/geom.vert \
+    resources/shaders/geom.frag \
+    resources/shaders/skybox.vert \
+    resources/shaders/skybox.frag \
+    resources/shaders/sun.vert \
+    resources/shaders/sun.frag \
+    resources/shaders/lighting.frag \
+    resources/shaders/links.vert \
+    resources/shaders/links.frag \
+    resources/shaders/manip.vert \
+    resources/shaders/manip.frag \
+    resources/shaders/ssao.vert \
+    resources/shaders/ssao.frag \
 
 FORMS += \
     ui/GUI.ui

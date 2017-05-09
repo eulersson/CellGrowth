@@ -13,6 +13,7 @@
 
 // Project
 #include "GLWindow.h"
+#include "SkyBox.h"
 
 // helpers
 void subdivide(float*, float*, float*, long, std::vector<GLfloat>&);
@@ -155,14 +156,6 @@ void GLWindow::prepareSSAOPipeline()
   // Create and attach depth buffer (renderbuffer) =============================
   GLuint rbo_depth;
 
-  //! VAL REVIEW
-  // glEnable(GL_DEPTH_TEST);
-  // glEnable(GL_MULTISAMPLE);
-  // glEnable(GL_LIGHTING);
-  // glEnable(GL_LIGHT0);
-  // glEnable(GL_COLOR_MATERIAL);
-  // glShadeModel(GL_SMOOTH);
-
   // Generate renderbuffer object names
   glGenRenderbuffers(1, &rbo_depth);
 
@@ -298,15 +291,19 @@ void GLWindow::prepareSSAOPipeline()
   m_lighting_program->bind();
 
     // Texture unit to use
-    m_lighting_program->setUniformValue("tWorldPosition" , 0);
+   // m_lighting_program->setUniformValue("tWorldPosition" , 0);
     m_lighting_program->setUniformValue("tViewPosition"  , 1);
     m_lighting_program->setUniformValue("tWorldNormal"   , 2);
     m_lighting_program->setUniformValue("tViewNormal"    , 3);
     m_lighting_program->setUniformValue("tSSAO"          , 4);
     m_lighting_program->setUniformValue("tLinks"         , 5);
+    m_lighting_program->setUniformValue("tSkybox"        , 6);
+
 
     // Uniforms
     m_lighting_program->setUniformValue("drawLinks", true);
+    m_lighting_program->setUniformValue("CameraPos", m_input_manager->getCameraPosition());
+
 
     // Subroutine ShadingPass Index.
     m_ADSIndex  = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "ADSRender");
@@ -377,11 +374,13 @@ void GLWindow::paintGL()
     switch (m_rendering_mode) {
     case GLWindow::XRAY:
       glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
+      glBlendEquation(GL_FUNC_ADD);
       glEnable(GL_CULL_FACE);
       drawParticles();
       glDisable(GL_CULL_FACE);
       glDisable(GL_BLEND);
+
       break;
     default:
       drawParticles();
@@ -411,7 +410,7 @@ void GLWindow::paintGL()
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, m_noise_texture->textureId());
     m_quad_vao->bind();
-      glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     m_quad_vao->release();
     m_ssao_program->release();
   m_ssao_fbo->release();
@@ -437,26 +436,30 @@ void GLWindow::paintGL()
   loadMaterialToShader();
   loadLightToShader();
 
-  glClearColor(0,0,0,0);
+  //Default colour. Dark grey.
+  glClearColor(0.25, 0.25, 0.25, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
   // === Sky ===
   switch (m_rendering_mode) {
   case GLWindow::ADS:
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
     glDepthMask(GL_FALSE);
     m_skybox->draw();
     glDepthMask(GL_TRUE);
     break;
   case GLWindow::AO:
+    //Setting background to white
     glClearColor(1,1,1,1);
     glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(0,0,0,0);
     break;
   default:
     break;
   }
 
 
+  int temp = m_skybox->GetSkyBoxTexture()->textureId();
   m_lighting_program->bind();
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
@@ -470,8 +473,15 @@ void GLWindow::paintGL()
   glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
   glActiveTexture(GL_TEXTURE5);
   glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
+  glActiveTexture(GL_TEXTURE6);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, temp);
+
+
+
   m_quad_vao->bind();
     m_lighting_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
+    m_lighting_program->setUniformValue("ModelMatrix", m_model_matrix);
+    m_lighting_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
 
     glDisable(GL_DEPTH_TEST);
@@ -531,9 +541,8 @@ void GLWindow::loadLightToShader()
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("light.position", m_lightPos);
     m_lighting_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
-    m_lighting_program->setUniformValue("light.diffuse", QVector3D(1.0f, 0.5f, 0.5f));
+    m_lighting_program->setUniformValue("light.diffuse", QVector3D(1.0f, 1.0f, 1.0f));
     m_lighting_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
-    m_lighting_program->setUniformValue("light.colour", QVector3D(0.5f, 0.2f, 1.0f));
     m_lighting_program->setUniformValue("light.Linear", 0.09f);
     m_lighting_program->setUniformValue("light.Quadratic", 0.032f);
   m_lighting_program->release();

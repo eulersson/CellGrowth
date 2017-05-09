@@ -28,6 +28,7 @@ public:
   ~SkyBox();
   void prepare();
   void draw();
+  QOpenGLTexture *GetSkyBoxTexture() {return m_texture;}
 
 private:
   InputManager *m_input_manager;
