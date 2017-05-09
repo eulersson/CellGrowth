@@ -51,8 +51,14 @@ GLWindow::GLWindow(QWidget*_parent) : QOpenGLWidget(_parent)
 
 GLWindow::~GLWindow()
 {
+  cleanup();
+}
+
+void GLWindow::cleanup()
+{
   qDebug("Cleaning up...");
 
+  // Destroy textures
   m_view_position_texture->destroy();
   m_world_position_texture->destroy();
   m_view_normal_texture->destroy();
@@ -62,6 +68,7 @@ GLWindow::~GLWindow()
   m_links_texture->destroy();
   m_noise_texture->destroy();
 
+  // Deallocate textures
   delete m_view_position_texture;
   delete m_world_position_texture;
   delete m_view_normal_texture;
@@ -70,6 +77,11 @@ GLWindow::~GLWindow()
   delete m_blurred_occlusion_texture;
   delete m_links_texture;
   delete m_noise_texture;
+
+  // Deallocate framebuffer objects
+  delete m_gbuffer_fbo;
+  delete m_ssao_fbo;
+  delete m_blur_fbo;
 }
 
 void GLWindow::prepareSSAOPipeline()
@@ -316,6 +328,12 @@ void GLWindow::prepareSSAOPipeline()
     m_rendering_mode = GLWindow::ADS;
 
   m_lighting_program->release();
+
+  // === SSAO ===
+  m_ssao_program->bind();
+    m_ssao_program->setUniformValue("width", width());
+    m_ssao_program->setUniformValue("height", height());
+  m_ssao_program->release();
 }
 
 void GLWindow::initializeGL()
@@ -357,6 +375,8 @@ void GLWindow::initializeGL()
   prepareQuad();
   prepareParticles();
   prepareSSAOPipeline();
+
+  glViewport(0, 0, width(), height());
 }
 
 void GLWindow::paintGL()
@@ -504,24 +524,17 @@ void GLWindow::paintGL()
 
 void GLWindow::resizeGL(int _w, int _h)
 {
-//  qDebug("Window resized to %d and %d", _w, _h);
+  qDebug("Window resized to %dx%d", _w, _h);
 
-//  delete m_fbo;
-//  setupFBO();
+  m_input_manager->resized(_w, _h);
+  cleanup();
+  prepareSSAOPipeline();
+  m_ssao_program->bind();
+  m_ssao_program->setUniformValue("width", _w);
+  m_ssao_program->setUniformValue("height", _h);
+  m_ssao_program->release();
+  glViewport(0, 0, width(), height());
 
-//  m_input_manager->resized(_w, _h);
-
-//  m_projection_matrix.setToIdentity();
-//  m_projection_matrix.perspective(
-//        45.0f,
-//        (float)_w / (float)_h,
-//        0.1f,
-//        100.0f);
-
-//  m_lighting_program->bind();
-//  m_lighting_program->setUniformValue("width", _w);
-//  m_lighting_program->setUniformValue("height", _h);
-//  m_lighting_program->release();
 }
 
 void GLWindow::initializeMatrices()

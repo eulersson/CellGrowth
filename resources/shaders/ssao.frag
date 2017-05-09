@@ -10,14 +10,17 @@ uniform sampler2D tTexNoise;
 
 uniform vec3 samples[64];
 uniform mat4 ProjectionMatrix;
+uniform int width;
+uniform int height;
 
 float radius = 5.0;     // uniform float radius;
 float bias = 0.025;     // uniform float bias;
 int kernelSize = 64;    // uniform int kernelSize;
 
-const vec2 noiseScale = vec2(549.0/4.0, 514.0/4.0); 
-
 void main() {
+    // Calculate noise scale to repeat
+    vec2 noiseScale = vec2(width/4.0, height/4.0); 
+
     // Get the needed inputs
     vec3 position = texture(tViewPosition, vTexCoords).rgb;
     vec3 normal = texture(tViewNormal, vTexCoords).rgb;

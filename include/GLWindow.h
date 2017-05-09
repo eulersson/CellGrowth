@@ -70,6 +70,8 @@ public:
   };
 
 private:
+  void cleanup();
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets up the shader pipeline with all the framebuffer object and
   /// textures needed for rendering all the types.

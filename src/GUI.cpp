@@ -7,7 +7,10 @@ GUI::GUI(QWidget *parent) :
 {
   m_ui->setupUi(this);
   m_gl = new GLWindow(this);
-  m_ui->MainWindow_gridLayout->addWidget(m_gl,0,0,1,1);
+  m_gl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  m_ui->mainLayout->insertWidget(0, m_gl);
+
+  setWindowTitle("Cell Growth");
 
   connect(m_ui->m_particleSize,SIGNAL(valueChanged(double)),m_gl,SLOT(setParticleSize(double)));
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_gl,SLOT(setParticleType(int)));
