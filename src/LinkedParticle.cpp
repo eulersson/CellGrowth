@@ -44,6 +44,8 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   unsigned int connectionCount = getConnectionCount();
   std::vector<QVector3D> linkPosition;
 
+  //m_foodLevelBool=true;
+
 
     if (m_foodLevelBool == false)
     {
@@ -127,11 +129,14 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
     if(food.length() <= m_size*3)
     {
         m_vel/=1.1;
-        m_foodLevelBool = false;
+        //m_foodLevelBool = false;
     }
-    food/=1000;
+    food/=3;
     m_vel += food;
-
+//    if(food.length() <= m_size)
+//    {
+//      m_foodLevelBool = false;
+//    }
   }
 
   //PARTICLELIFE

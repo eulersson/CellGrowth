@@ -316,7 +316,6 @@ unsigned int ParticleSystem::getNearestParticle()
 
   std::vector<float>::iterator minElement=std::min_element (std::begin(m_lightDistances), std::end(m_lightDistances));
   unsigned int minElementIndex = std::distance(std::begin(m_lightDistances), minElement);
-  //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
 
   return minElementIndex;
 }
