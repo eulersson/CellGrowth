@@ -9,7 +9,7 @@
 
 // Project
 #include "Manipulator.h"
-#include "SelectObject.h"
+#include "SelectableObject.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief Default position
@@ -104,7 +104,7 @@ public:
   /// @brief Returns main light shader program.
   /// @param[in] retshader Get light main shader program.
   //////////////////////////////////////////////////////////////////////////////
-  void getMainProgram(QOpenGLShaderProgram **_retshader);
+  void getMainProgram(QOpenGLShaderProgram **_retshader) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Initialises VBO/VAO of light object.

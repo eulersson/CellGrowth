@@ -20,13 +20,15 @@ SOURCES += \
     src/ParticleSystem.cpp \
     src/GUI.cpp \
     src/PointLight.cpp \
-    src/SelectObject.cpp \
+    src/SkyBox.cpp \
     src/SpotLight.cpp\
 
 OBJECTS_DIR = build/obj
 MOC_DIR = build/moc
 
 INCLUDEPATH += include
+
+
 
 HEADERS += \
     include/ArcBallCamera.h \
@@ -40,8 +42,9 @@ HEADERS += \
     include/ParticleSystem.h \
     include/GUI.h \
     include/PointLight.h \
-    include/SelectObject.h \
+    include/SkyBox.h \
     include/SpotLight.h \
+    include/SelectableObject.h
 
 win32:LIBS += opengl32.lib
 
@@ -51,23 +54,25 @@ OTHER_FILES += \
     README.md
 
 DISTFILES += \
-    shaders/links.vert \
-    shaders/links.frag \
-    shaders/manip.vert \
-    shaders/manip.frag \
-    shaders/skybox.vert \
-    shaders/skybox.frag \
-    shaders/sun.vert \
-    shaders/sun.frag \
-    shaders/particles.vert \
-    shaders/particles.frag \
-    shaders/quad.vert \
-    shaders/quad.frag
+    resources/shaders/blur.frag \
+    resources/shaders/geom.vert \
+    resources/shaders/geom.frag \
+    resources/shaders/skybox.vert \
+    resources/shaders/skybox.frag \
+    resources/shaders/sun.vert \
+    resources/shaders/sun.frag \
+    resources/shaders/lighting.frag \
+    resources/shaders/links.vert \
+    resources/shaders/links.frag \
+    resources/shaders/manip.vert \
+    resources/shaders/manip.frag \
+    resources/shaders/ssao.vert \
+    resources/shaders/ssao.frag \
 
 FORMS += \
     ui/GUI.ui
 
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
-RESOURCES += \
-    resources.qrc
+#RESOURCES += \
+#    resources.qrc

@@ -17,7 +17,7 @@ LinkedParticle::LinkedParticle():Particle()
 // Specify the location where we want to place it
 LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
-                               qreal _z):Particle(_x,_y,_z)
+                               qreal _z, float _size):Particle(_x,_y,_z, _size)
 {
    //qDebug("Linked Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
@@ -26,7 +26,7 @@ LinkedParticle::LinkedParticle(qreal _x,
 LinkedParticle::LinkedParticle(qreal _x,
                                qreal _y,
                                qreal _z,
-                               std::vector<unsigned int> _linkedParticles): Particle(_x,_y,_z,_linkedParticles)
+                               std::vector<unsigned int> _linkedParticles, float _size): Particle(_x,_y,_z,_linkedParticles, _size)
 {
 
   //qDebug("Linked Particle constructor passing in positions: %f,%f,%f and a list of"
@@ -249,13 +249,13 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
   return r;
 }
 
-void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
+bool LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
 {
   // Sanity check
   if(m_connectedParticles.size() < 2)
   {
     std::cout<<"NOT ENOUGH PARTICLES"<<std::endl;
-    return;
+    return false;
   }
   std::uniform_int_distribution<int> distribution(1, m_connectedParticles.size());
 
@@ -312,7 +312,7 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   relinkList.push_back(m_ID);
   //creating new particle
 
-  _particleList.push_back(std::unique_ptr<Particle>(new LinkedParticle(x,y,z,relinkList)));
+  _particleList.push_back(std::unique_ptr<Particle>(new LinkedParticle(x,y,z,relinkList,m_size)));
 
   //get the new particles ID
 
@@ -343,13 +343,18 @@ void LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   m_connectedParticles=keepList;
 
 
-  connect(newPartID,_particleList);
+  doubleConnect(newPartID,_particleList);
 
   m_foodLevel=0;
 
+//  QVector3D particleCentre;
+//  QVector3D averageDistance;
+//  std::vector<unsigned int> returnList;
+//  calculate(particleCentre, _particleList, averageDistance, returnList);
+  return true;
 }
 
-void LinkedParticle::connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList)
+void LinkedParticle::doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList)
 {
   m_connectedParticles.push_back(_ID);
 
@@ -365,3 +370,4 @@ void LinkedParticle::connect(unsigned int _ID, std::vector<std::unique_ptr<Parti
   }
   _particleList[_ID]->connect(m_ID,_particleList);
 }
+

@@ -86,18 +86,23 @@ public:
   virtual void getMainProgram(QOpenGLShaderProgram **retshader) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns a new single unique colour, incrementing the colour variable.
+  /// @brief Returns a new single unique colour; incrementing the colour variable.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D getNewUniqueColour(QVector3D &masterUniqueColour)
   {
-      masterUniqueColour=QVector3D(masterUniqueColour.x()+1, masterUniqueColour.y(), masterUniqueColour.z());
+      masterUniqueColour=QVector3D(
+            masterUniqueColour.x()+1,
+            masterUniqueColour.y(),
+            masterUniqueColour.z());
       return masterUniqueColour;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns multiple new unique colours, and increments the colour variable accordingly.
+  /// @brief Returns multiple new unique colours, and increments the colour
+  /// variable accordingly.
   //////////////////////////////////////////////////////////////////////////////
-  std::vector<QVector3D> getMultipleNewUniqueColour(int amount, QVector3D &masterUniqueColour)
+  std::vector<QVector3D> getMultipleNewUniqueColour(
+      int amount, QVector3D &masterUniqueColour)
   {
       std::vector<QVector3D> uColourVec;
       for(int i=0;i<amount;i++)

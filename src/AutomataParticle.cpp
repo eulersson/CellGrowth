@@ -22,7 +22,7 @@ AutomataParticle::AutomataParticle():Particle()
 
 AutomataParticle::AutomataParticle(qreal _x,
                                    qreal _y,
-                                   qreal _z): Particle(_x,_y,_z)
+                                   qreal _z): Particle(_x,_y,_z, 2.0)
 {
   m_alive = true;
   m_time = QTime::currentTime();
@@ -31,7 +31,7 @@ AutomataParticle::AutomataParticle(qreal _x,
 AutomataParticle::AutomataParticle(qreal _x,
                                    qreal _y,
                                    qreal _z,
-                                   std::vector<unsigned int> _connectedParticles):Particle(_x,_y,_z,_connectedParticles)
+                                   std::vector<unsigned int> _connectedParticles):Particle(_x,_y,_z,_connectedParticles, 2.0)
 {
   m_alive = true;
   m_time = QTime::currentTime();

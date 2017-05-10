@@ -21,7 +21,7 @@
 #include "ArcBallCamera.h"
 #include "PointLight.h"
 #include "SpotLight.h"
-#include "SelectObject.h"
+#include "SelectableObject.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class InputManager
