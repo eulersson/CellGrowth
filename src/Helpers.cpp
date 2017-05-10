@@ -2,18 +2,22 @@
 /// @file Helpers.cpp
 /// @author Ramon Blanquer
 /// @author Fanny Marstrom
+/// @author Glenn Nygard
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
 // Standard
+#include <cmath>
+#include <fstream>
+#include <iostream>
 #include <vector>
+#include <string>
 
 // Qt
 #include <QOpenGLFunctions>
 
 // Recursion subdivision algorithm from:
 // http://www.opengl.org.ru/docs/pg/0208.html
-
 void pushTriangle(float *v1, float *v2, float *v3, std::vector<GLfloat>& _data)
 {
   _data.push_back(v1[0]); _data.push_back(v1[1]); _data.push_back(v1[2]); // v1

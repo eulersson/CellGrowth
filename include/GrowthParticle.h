@@ -29,12 +29,14 @@ public:
   /// @param[in] _x x Position of the particle.
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
 
   GrowthParticle(
       qreal _x,
       qreal _y,
-      qreal _z);
+      qreal _z,
+      float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position as well as
@@ -44,13 +46,14 @@ public:
   /// @param[in] _z z Position of the particle.
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
 
-  GrowthParticle(
-      qreal _x,
+  GrowthParticle(qreal _x,
       qreal _y,
       qreal _z,
-      std::vector<unsigned int> _connectedParticles);
+      std::vector<unsigned int> _connectedParticles,
+      float _size, float _branchLength);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Does not do anything for this class.
@@ -72,29 +75,21 @@ public:
   /// @param[in] _lightDirection Light direction.
   /// @param[in] _particleList List of all particles.
   //////////////////////////////////////////////////////////////////////////////
-  void split(
-      QVector3D _lightDirection,
-      std::vector<std::unique_ptr<Particle>> &_particleList) override;
+  bool split(QVector3D _lightPos,
+      std::vector<std::unique_ptr<Particle>> &_particleList, std::mt19937_64 _gen,bool _growToLight) override;
 
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold
   /// @param[in] _amount amount of children allowed per branch.
   //////////////////////////////////////////////////////////////////////////////
-  void setChildThreshold(int _amount);
+  void setChildThreshold(int _amount) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the branch length of a branch.
   /// @param[in] _value length of the branch.
   //////////////////////////////////////////////////////////////////////////////
-  void setBranchLength(float _value);
-
-
-
-
-
-
-
+  void setBranchLength(float _value) override;
 
 private:
   //////////////////////////////////////////////////////////////////////////////
@@ -133,6 +128,7 @@ private:
   bool recursiveCollision(
       QVector3D _particle,
       std::vector<std::unique_ptr<Particle>> &_particleList) override;
+
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Length of a branches connecting to the particle

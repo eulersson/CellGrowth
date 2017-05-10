@@ -13,7 +13,7 @@
 #include <vector>
 
 // Qt
-#include<QVector3D>
+#include <QVector3D>
 
 // Custom
 #include "PointLight.h"
@@ -37,11 +37,13 @@ public:
   /// @param[in] _x x Position of the particle.
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
   Particle(
       qreal _x,
       qreal _y,
-      qreal _z);
+      qreal _z,
+      float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position as well as
@@ -51,17 +53,28 @@ public:
   /// @param[in] _z z Position of the particle.
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
   Particle(
       qreal _x,
       qreal _y,
       qreal _z,
-      std::vector<unsigned int> _connectedParticles);
+      std::vector<unsigned int> _connectedParticles,
+      float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Default constructor.
   //////////////////////////////////////////////////////////////////////////////
   ~Particle() = default;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Constant enumerator for the type.
+  //////////////////////////////////////////////////////////////////////////////
+  enum ParticleType
+  {
+    LINKED = 0,
+    GROWTH = 1
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Adds the velocity to the position, could be overwritten if
@@ -116,14 +129,15 @@ public:
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(QVector3D, std::vector<std::unique_ptr<Particle>>&) {}
+  virtual bool split(QVector3D ,
+                     std::vector<std::unique_ptr<Particle>> &_particleList, std::mt19937_64 _gen,bool _growToLight) {return false;}
 
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {}
+  virtual bool split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {return false;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Checks the current particle and its children recursively to see if
@@ -180,7 +194,7 @@ public:
   /// @param[in] _ID ID of the particle that is to be connected to the current
   /// particle.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void connect(unsigned int _ID,std::vector<std::unique_ptr<Particle>> &_particleList);
+  void connect(unsigned int _ID,std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Deletes an ID from the connection list. In other words, it breaks
@@ -224,7 +238,7 @@ public:
   static void resetIDCounter();
 
   void setFoodLevelTrue();
-
+  virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){}
 
 
 protected:

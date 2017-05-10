@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="forest_negx.jpg">resources/cubemaps/forest/negx.jpg</file>
+        <file alias="forest_negy.jpg">resources/cubemaps/forest/negy.jpg</file>
+        <file alias="forest_negz.jpg">resources/cubemaps/forest/negz.jpg</file>
+        <file alias="forest_posx.jpg">resources/cubemaps/forest/posx.jpg</file>
+        <file alias="forest_posy.jpg">resources/cubemaps/forest/posy.jpg</file>
+        <file alias="forest_posz.jpg">resources/cubemaps/forest/posz.jpg</file>
+        <file alias="links.frag">resources/shaders/links.frag</file>
+        <file alias="links.vert">resources/shaders/links.vert</file>
+        <file alias="manip.frag">resources/shaders/manip.frag</file>
+        <file alias="manip.vert">resources/shaders/manip.vert</file>
+        <file alias="particles.frag">resources/shaders/particles.frag</file>
+        <file alias="particles.vert">resources/shaders/particles.vert</file>
+        <file alias="quad.frag">resources/shaders/quad.frag</file>
+        <file alias="quad.vert">resources/shaders/quad.vert</file>
+        <file alias="skybox.frag">resources/shaders/skybox.frag</file>
+        <file alias="skybox.vert">resources/shaders/skybox.vert</file>
+        <file alias="sun.frag">resources/shaders/sun.frag</file>
+        <file alias="sun.vert">resources/shaders/sun.vert</file>
+        <file alias="blur.frag">resources/shaders/blur.frag</file>
+        <file alias="lighting.frag">resources/shaders/lighting.frag</file>
+        <file alias="ssao.frag">resources/shaders/ssao.frag</file>
+        <file alias="ssao.vert">resources/shaders/ssao.vert</file>
+        <file alias="geom.frag">resources/shaders/geom.frag</file>
+        <file alias="geom.vert">resources/shaders/geom.vert</file>
+    </qresource>
+</RCC>

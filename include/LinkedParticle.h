@@ -31,10 +31,12 @@ public:
   /// @param[in] _x x Position of the particle.
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
   LinkedParticle(qreal _x,
                  qreal _y,
-                 qreal _z);
+                 qreal _z,
+                 float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position as well as
@@ -43,13 +45,14 @@ public:
   /// @param[in] _y y Position of the particle.
   /// @param[in] _z z Position of the particle.
   /// @param[in] _linkedParticles List of particle IDs to be connected to
-
   /// the newly generated particle.
+  /// @param[in] _size size of particle
   //////////////////////////////////////////////////////////////////////////////
   LinkedParticle(qreal _x,
                  qreal _y,
                  qreal _z,
-                 std::vector<unsigned int> _linkedParticles);
+                 std::vector<unsigned int> _linkedParticles,
+                 float _size);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the particle new position based on Forces.
@@ -107,7 +110,7 @@ public:
   /// are linked to the new and which to the old particle.
   /// @param[in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
-  void split(std::vector<std::unique_ptr<Particle> > &_particleList, std::mt19937_64 _gen) override;
+  bool split(std::vector<std::unique_ptr<Particle> > &_particleList, std::mt19937_64 _gen) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Double checks that all links go both ways, and if not, creates new
@@ -115,8 +118,8 @@ public:
   /// @param[in] _ID Holds the unique ID of the particle.
   /// @param[in] _particleList List of all particles
   //////////////////////////////////////////////////////////////////////////////
-  void connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList) override;
 
+  void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList) override;
 private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Tests for position relative to a plane.
