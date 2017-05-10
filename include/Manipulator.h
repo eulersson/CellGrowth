@@ -2,6 +2,9 @@
 /// @file Manipulator.h
 /// @author Glenn Nygard
 /// @version 0.0.1
+/// @brief Class responsible for createing and displaying the object
+/// manipulator. Universal class that can be used with any object in the scene
+/// that needs 3d movement and rotation.
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef MANIPULATOR_H
@@ -9,11 +12,19 @@
 
 // Qt
 #include <QVector3D>
+#include <QtMath>
 
 // OpenGL
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
+
+
+const int DIRECTION_X = 0;
+const int DIRECTION_Y = 1;
+const int DIRECTION_Z = 2;
+const int ROTATION_Y = 3;
+const int ROTATION_Z = 4;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief Struct storing the individual data for each manipulator arrow.
@@ -83,11 +94,11 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates the manipulator geometry.
-  /// @param[in] context QOpenGL scene context.
   /// @param[in] uColourVec Vector of unique colours to be assigned to the
   /// manipulator arrows.
   //////////////////////////////////////////////////////////////////////////////
-  void createGeometry(std::vector<QVector3D> _uColourVec, bool _rotatable);
+  void createGeometry(std::vector<QVector3D> _uColourVec,
+                      GLfloat _coneangle);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draws the manipulator to the main buffer.
@@ -100,23 +111,6 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void drawBackBuffer();
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Processes mouse movement and calculates a new light position. Which
-  /// axis was pressed must be checked before a new position can be calculated.
-  /// This new position is then returned to the higher class.
-  /// @param[in] offsetx The x offset.
-  /// @param[in] offsety The y offset.
-  /// @param[in] offsetz The z offset.
-  /// @param[in] currentPos Current light position.
-  /// \return QVector3D New position returned to the class owning the manipulator.
-  //////////////////////////////////////////////////////////////////////////////
-  QVector3D processMouseMovement(
-    float _offsetx,
-    float _offsety,
-    float _offsetz,
-    QVector3D _x,
-    QVector3D _y,
-    QVector3D _z );
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets the manipulator arrows to clicked/not clicked.
@@ -147,6 +141,8 @@ public:
 
 private:
 
+
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates and sets up the vbo for the provided arrow object
   /// @param[in] vertices Vertices being set to the VBO
@@ -163,9 +159,28 @@ private:
   void setupRotCircleVAO(Geo &_circle, QOpenGLVertexArrayObject *_vao);
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Function to create the geometry for the rotation circles.
+  /// @param[in] *_vao Circle VAO.
+  /// @param[in] _uniqueColour A unique colour to identify the new circle when
+  /// when calculating click detection.
+  /// @param[in] _axis The axis of the circle to be created
+  /// (rotate around the Y or Z axis).
+  //////////////////////////////////////////////////////////////////////////////
   void createRotCircle(QOpenGLVertexArrayObject *_vao,
                        QVector3D _uniqueColour,
                        int _axis);
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Function to create the geometry for the light cone, and add it to
+  /// a new VAO and VBO. This logic is kept as one function because of its
+  /// relatively short length.
+  /// @param[in] _coneangle The size of the area to be affected by the light
+  /// in degrees.
+  //////////////////////////////////////////////////////////////////////////////
+  void createLightConeCircle(GLfloat _coneangle);
+
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates and sets up the vbo for the provided arrow object
@@ -200,6 +215,7 @@ private:
       int _axis);
 
 
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Manipulator shader program
   //////////////////////////////////////////////////////////////////////////////
@@ -219,6 +235,12 @@ private:
   /// @brief Vector storing the rotation circles.
   //////////////////////////////////////////////////////////////////////////////
   std::vector<Geo> m_circles;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Struct storing the cone light circle. This represents the max
+  /// light angle.
+  //////////////////////////////////////////////////////////////////////////////
+  Geo m_coneCircle;
 
 };
 

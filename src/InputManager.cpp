@@ -58,8 +58,10 @@ void InputManager::getUniqueColour(const int _x, const int _y)
   for(auto &s : m_objectList) { s->drawBackBuffer(); }
 
   QImage img = m_fbo->toImage();
+//  img.save("/home/i7243466/Desktop/koko.jpg");
 
   QColor col = img.pixelColor(_x, _y);
+  //qDebug("%d %d %d", col.red(), col.green(), col.blue());
 
   QVector3D pixelColour = QVector3D(col.red(), col.green(), col.blue());
   setCurrentUniqueColour(pixelColour);
@@ -88,7 +90,8 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
 void InputManager::setupCamera(int _w, int _h)
 {
   m_projection.setToIdentity();
-  m_projection.perspective(45.0f, (float)_w / (float)_h, 0.1f, 500.0f);
+  m_projection.perspective(45.0f, (float)_w / (float)_h,
+                         0.1f, 10000.0f);
 
   for(int i = 0; i < m_programs.size(); i++)
   {
@@ -174,8 +177,7 @@ void InputManager::mouseMoveEvent(QMouseEvent *_event)
   {
     for(auto &s : m_objectList)
     {
-      // Get camera and manipulator positions
-      QVector3D cp = m_camera.getPosition();
+      // Get manipulator positions
       QVector3D mp = s->getPosition();
 
       m_clickZ=mp.z();
@@ -183,7 +185,7 @@ void InputManager::mouseMoveEvent(QMouseEvent *_event)
       float zoffset=xoffset;
 
       // Process mouse movement in light class
-      s->processMouseMovement(localXoffset, yoffset, zoffset, cp, m_view);
+      s->processMouseMovement(localXoffset, yoffset, zoffset, m_view);
     }
   }
 
