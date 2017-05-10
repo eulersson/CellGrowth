@@ -26,6 +26,8 @@ ParticleSystem::ParticleSystem() :
   m_particleDeath = false;
   m_cohesion = 30; //percent
   m_localCohesion = 30;
+  m_automataRadius = 4;
+  m_automataTime = 200;
 
 }
 
@@ -56,6 +58,8 @@ ParticleSystem::ParticleSystem(char _particleType):
   else if (m_particleType=='A')
   {
     fill(1);
+    m_automataRadius = 4;
+    m_automataTime = 200;
   }
 
 }
@@ -82,12 +86,13 @@ void ParticleSystem::advance()
   {
     for (unsigned int i = 0; i < m_particleCount; ++i)
     {
-      m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
+      m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount,
+                                m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
       if(m_particleType == 'A')
       {
         if(m_particles[i]->isAlive() == false)
         {
-          m_iter_id.push_back(i);
+          m_iterID.push_back(i);
           deleteParticle();
         }
       }
@@ -98,7 +103,7 @@ void ParticleSystem::advance()
       m_particles[i]->advance();
     }
   }
-  m_iter_id.resize(0);
+  m_iterID.resize(0);
 }
 
 void ParticleSystem::bulge()
@@ -310,15 +315,15 @@ void ParticleSystem::deleteParticle()
 {
   int originalArraySize = m_particles.size();
 
-  if(m_iter_id.size()!=0)
+  if(m_iterID.size()!=0)
   {
-    for(uint j=0; j<m_iter_id.size(); ++j)
+    for(uint j=0; j<m_iterID.size(); ++j)
     {
-      m_particles.erase(m_particles.begin()+m_iter_id[j]-(j));
+      m_particles.erase(m_particles.begin()+m_iterID[j]-(j));
     }
 
-    m_particles.resize(originalArraySize - m_iter_id.size());
-    m_particleCount -= m_iter_id.size();
+    m_particles.resize(originalArraySize - m_iterID.size());
+    m_particleCount -= m_iterID.size();
   }
 }
 
@@ -406,6 +411,16 @@ void ParticleSystem::setLocalCohesion(int _amount)
   m_localCohesion = 100 - (_amount);
 }
 
+void ParticleSystem::setAutomataRadius(int _amount)
+{
+  m_automataRadius = _amount;
+}
+
+void ParticleSystem::setAutomataTime(int _amount)
+{
+  m_automataTime = _amount;
+}
+
 void ParticleSystem::setBranchLength(float _amount)
 {
   for(unsigned int i=0;i< m_particles.size();i++)
@@ -449,6 +464,8 @@ void ParticleSystem::reset(char _particleType)
   else if (m_particleType == 'A')
   {
     fill(1);
+    m_automataRadius = 4;
+    m_automataTime = 200;
   }
 }
 

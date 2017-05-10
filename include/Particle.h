@@ -78,7 +78,9 @@ public:
   /// @param [in] _particleCount Total number of particles in the system
   /// @param [in] _lightPos Holds the position of the point light
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath) {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance,
+                         unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
+                         bool _particleDeath, int _automataRadius, int _automataTime) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.

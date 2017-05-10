@@ -21,6 +21,8 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_LP_lightOn,SIGNAL(released()),m_gl,SLOT(lightOn()));
   connect(m_ui->m_LP_lightOff,SIGNAL(released()),m_gl,SLOT(lightOff()));
   connect(m_ui->m_LP_localCohesion,SIGNAL(valueChanged(int)),m_gl,SLOT(setLocalCohesion(int)));
+  connect(m_ui->m_AP_radius,SIGNAL(valueChanged(int)),m_gl,SLOT(setAutomataRadius(int)));
+  connect(m_ui->m_AP_time,SIGNAL(valueChanged(int)),m_gl,SLOT(setAutomataTime(int)));
   connect(m_ui->m_GP_children,SIGNAL(valueChanged(int)),m_gl,SLOT(setChildThreshold(int)));
   connect(m_ui->m_GP_growRadius,SIGNAL(valueChanged(int)),m_gl,SLOT(setGrowthRadius(int)));
   connect(m_ui->m_restart,SIGNAL(pressed()),m_gl,SLOT(restart()));
@@ -40,12 +42,14 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(resetLocalCohesion(int)),m_ui->m_LP_localCohesion,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(enableGrowthParticle(bool)),m_ui->m_growthParticleTab,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableLinkedParticle(bool)),m_ui->m_linkedParticleTab,SLOT(setEnabled(bool)));
+  connect(m_gl,SIGNAL(enableAutomataParticle(bool)),m_ui->m_automataParticleTab,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableSplitType(bool)),m_ui->m_splitTypeBox,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(changedShadingType(int)),m_ui->m_shadingType,SLOT(setCurrentIndex(int)));
   connect(m_gl,SIGNAL(setConnectionState(bool)),m_ui->m_showConnections,SLOT(setChecked(bool)));
   connect(m_gl,SIGNAL(enableBulge(bool)),m_ui->LP_bulge,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableLightOn(bool)),m_ui->m_LP_lightOn,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableLightOff(bool)),m_ui->m_LP_lightOff,SLOT(setEnabled(bool)));
+  connect(m_gl,SIGNAL(enableConnections(bool)),m_ui->m_showConnections,SLOT(setEnabled(bool)));
 }
 
 GUI::~GUI()

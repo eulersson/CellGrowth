@@ -152,9 +152,6 @@ void GLWindow::paintGL()
 
     //drawSkyBox();
 
-
-
-
     updateParticleSystem();
 }
 
@@ -882,6 +879,7 @@ void GLWindow::setParticleType(int _type)
     emit enableLinkedParticle(true);
     emit enableAutomataParticle(false);
     emit enableSplitType(true);
+    emit enableConnections(true);
 
   }
   else if (_type == 1)
@@ -892,6 +890,7 @@ void GLWindow::setParticleType(int _type)
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(false);
     emit enableSplitType(false);
+    emit enableConnections(true);
   }
   else if (_type == 2)
   {
@@ -900,6 +899,8 @@ void GLWindow::setParticleType(int _type)
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(true);
     emit enableSplitType(false);
+    emit enableConnections(false);
+    showConnections(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
@@ -1021,6 +1022,20 @@ void GLWindow::lightOff()
 void GLWindow::setLocalCohesion(int _amount)
 {
   m_ps.setLocalCohesion(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setAutomataRadius(int _amount)
+{
+  //Only for AutomataParticles
+  m_ps.setAutomataRadius(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setAutomataTime(int _amount)
+{
+  //Only for AutomataParticles
+  m_ps.setAutomataTime(_amount);
   sendParticleDataToOpenGL();
 }
 

@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////
+/// @file AutomataParticle.cpp
+/// @author Lydia Kenton
+/// @version 0.0.1
+////////////////////////////////////////////////////////////////////////////////
+
 // Custom
 #include "AutomataParticle.h"
 
@@ -12,7 +18,6 @@ AutomataParticle::AutomataParticle():Particle()
 {
   m_alive = true;
   m_time = QTime::currentTime();
-  m_rad = m_size*6;
 }
 
 AutomataParticle::AutomataParticle(qreal _x,
@@ -21,7 +26,6 @@ AutomataParticle::AutomataParticle(qreal _x,
 {
   m_alive = true;
   m_time = QTime::currentTime();
-  m_rad = m_size*6;
 }
 
 AutomataParticle::AutomataParticle(qreal _x,
@@ -31,12 +35,13 @@ AutomataParticle::AutomataParticle(qreal _x,
 {
   m_alive = true;
   m_time = QTime::currentTime();
-  m_rad = m_size*6;
 }
 
-void AutomataParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
+void AutomataParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance,
+                                 unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
+                                 bool _particleDeath, int _automataRadius, int _automataTime)
 {
-  if(m_time.elapsed() % 500 == 0)
+  if(m_time.elapsed() % _automataTime == 0)
   {
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -46,9 +51,11 @@ void AutomataParticle::calculate(QVector3D _particleCentre, std::vector<std::uni
     std::vector<unsigned int> newAutoParticles;
     newAutoParticles.push_back(m_ID);
 
-    std::uniform_real_distribution<float> distributionX (-(m_rad), m_rad);
-    std::uniform_real_distribution<float> distributionY (-(m_rad), m_rad);
-    std::uniform_real_distribution<float> distributionZ (-(m_rad), m_rad);
+    int rad = m_size*_automataRadius;
+
+    std::uniform_real_distribution<float> distributionX (-(rad), rad);
+    std::uniform_real_distribution<float> distributionY (-(rad), rad);
+    std::uniform_real_distribution<float> distributionZ (-(rad), rad);
 
     float x= distributionX(gen);
     float y= distributionY(gen);
@@ -95,22 +102,18 @@ void AutomataParticle::particleRules(std::vector<std::unique_ptr<Particle> > &_p
   unsigned int neighbourCount = neighbours.size();
   unsigned int particleCount = _particleList.size();
 
-  if(particleCount>1)
+  if(m_time.elapsed() <= 3000)
   {
     if(neighbourCount>3)
     {
       m_alive = false;
     }
   }
-  else if (particleCount>15)
+  else if(particleCount>10)
   {
     if(neighbourCount <2 || neighbourCount>3)
     {
       m_alive = false;
     }
-  }
-  else if(m_alive==false && neighbourCount==3)
-  {
-    m_alive = true;
   }
 }
