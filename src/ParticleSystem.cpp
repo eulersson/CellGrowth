@@ -104,7 +104,7 @@ void ParticleSystem::bulge()
 
 void ParticleSystem::addFood()
 {
-  for (unsigned int i=0; i<=m_particles.size()/2; i++)
+  for (unsigned int i=0; i<=m_particles.size()/3; i++)
   {
     unsigned int randomIndex = rand() % m_particleCount;
     std::cout<<"randomIndex:"<<randomIndex<<std::endl;

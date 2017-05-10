@@ -47,8 +47,9 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   //m_foodLevelBool=true;
 
 
-    if (m_foodLevelBool == false)
-    {
+    //if (m_foodLevelBool == false)
+
+
     // EQUIDISTANCE
     // Calcualtes average distance from centre
     // Encourgaes particles towards this distance from centre
@@ -117,26 +118,35 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   //makes a call to calculate unlinked function
 
   calculateUnlinked(_particleList);
-  }
+
 
   //lightAttract(_particleList, _lightPos);
   //getHitParticles(_particleList, _lightPos);
 
-  else if (m_foodLevelBool == true)
+
+  if (m_foodLevelBool == true)
   {
+
+    life++;
     QVector3D food = _particleCentre - m_pos;
 
-    if(food.length() <= m_size*3)
+    if(food.length() <= m_size*2)
     {
         m_vel/=1.1;
         //m_foodLevelBool = false;
     }
-    food/=3;
+    food/=4;
     m_vel += food;
+
+    if (life >= 50)
+    {
+      m_foodLevelBool = false;
+    }
 //    if(food.length() <= m_size)
 //    {
 //      m_foodLevelBool = false;
 //    }
+
   }
 
   //PARTICLELIFE
