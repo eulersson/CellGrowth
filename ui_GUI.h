@@ -54,7 +54,6 @@ public:
     QLabel *label_4;
     QPushButton *LP_bulge;
     QCheckBox *m_LP_particleDeath;
-    QPushButton *m_LP_addFood;
     QWidget *m_growthParticleTab;
     QGridLayout *gridLayout_3;
     QLabel *label_6;
@@ -189,11 +188,6 @@ public:
         m_LP_particleDeath->setObjectName(QStringLiteral("m_LP_particleDeath"));
 
         gridLayout_5->addWidget(m_LP_particleDeath, 0, 0, 1, 1);
-
-        m_LP_addFood = new QPushButton(m_LP_forces);
-        m_LP_addFood->setObjectName(QStringLiteral("m_LP_addFood"));
-
-        gridLayout_5->addWidget(m_LP_addFood, 4, 0, 1, 2);
 
 
         gridLayout_7->addWidget(m_LP_forces, 0, 0, 1, 1);
@@ -483,7 +477,6 @@ public:
         label_4->setText(QApplication::translate("GUI", "Local Cohesion", 0));
         LP_bulge->setText(QApplication::translate("GUI", "Bulge", 0));
         m_LP_particleDeath->setText(QApplication::translate("GUI", "Particle Death", 0));
-        m_LP_addFood->setText(QApplication::translate("GUI", "Add Food", 0));
         m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", 0));
         label_6->setText(QApplication::translate("GUI", "Branches per particle", 0));
         label_5->setText(QApplication::translate("GUI", "Branch Length", 0));

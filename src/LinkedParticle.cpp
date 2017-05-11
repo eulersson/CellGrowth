@@ -35,19 +35,12 @@ LinkedParticle::LinkedParticle(qreal _x,
 }
 
 
-
-// All the force calculation should happen in here
 void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
 {
 
 
   unsigned int connectionCount = getConnectionCount();
   std::vector<QVector3D> linkPosition;
-
-  //m_foodLevelBool=true;
-
-
-    //if (m_foodLevelBool == false)
 
 
     // EQUIDISTANCE
@@ -115,40 +108,10 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 
   //CALCULATE UNLINKED
-  //makes a call to calculate unlinked function
+  //Makes a call to calculate unlinked function
 
   calculateUnlinked(_particleList);
 
-
-  //lightAttract(_particleList, _lightPos);
-  //getHitParticles(_particleList, _lightPos);
-
-
-  if (m_foodLevelBool == true)
-  {
-
-    life++;
-    QVector3D food = _particleCentre - m_pos;
-
-    if(food.length() <= m_size*2)
-    {
-        m_vel/=1.1;
-        //m_foodLevelBool = false;
-    }
-    food/=4;
-    m_vel += food;
-
-    std::cout<<"life:"<<life<<std::endl;
-    if (life >= 10)
-    {
-      m_foodLevelBool = false;
-    }
-//    if(food.length() <= m_size)
-//    {
-//      m_foodLevelBool = false;
-//    }
-
-  }
 
   //PARTICLELIFE
   //Determines how long the particle has been alive
@@ -171,187 +134,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   };
 
 }
-
-
-//void LinkedParticle::spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor)
-//{
-
-//  QVector3D spring;
-//  QVector3D hold;
-//  QVector3D linkedPos;
-//  std::vector<unsigned int> connectedParticles; //IDs of all the linked particles
-
-//  getConnectionsID(connectedParticles);
-
-  //SPRING AND HOLD #2
-//  for(unsigned int i=0; i<connectedParticles.size(); i++)
-//  {
-//    linkedPos = _particleList[i]->getPosition();
-//    spring = linkedPos - m_pos;
-//    float springLength = spring.length();
-//    if(springLength>=m_size*2)
-//    {
-//      float springDist = m_size-(springLength/2);
-//      spring.normalize();
-//      spring*=(springDist/(_springFactor*3.3f));
-//      m_vel+=spring;
-//    }
-
-//    hold = m_pos - linkedPos;
-//    float holdLength = hold.length();
-//    if(holdLength<=m_size)
-//    {
-//      float holdDist = m_size-(holdLength/2);
-//      hold.normalize();
-//      hold*=holdDist;
-//      m_vel+=hold;
-//    }
-//  }
-
-//  float distanceY = 0;
-//  float distanceX = 0;
-//  float distanceZ = 0;
-
-//  unsigned int connectionCount = getConnectionCount(); //gets number of connected particles
-
-//  std::vector<QVector3D> linkPosition;
-//  getPosFromConnections(linkPosition, _particleList);
-
-  //SPRING AND HOLD #2
-//  for(unsigned int i=0; i<connectionCount; i++)
-//  {
-//   distanceY = linkPosition[i].y() - m_pos.y();
-//   if(distanceY < m_size && distanceY > (-(m_size)))
-//   {
-//       QVector3D spring;
-//       spring.setY(spring.y() - distanceY);
-//       float factor = 10/fabs (distanceY);
-//       spring/=10;
-//       m_vel += spring;
-//   }
-//   else
-//   {
-//     float velY = m_vel.y();
-//     velY /= 1.5;
-//     m_vel.setY(velY);
-//   }
-
-//   distanceX = linkPosition[i].x() - m_pos.x();
-//   if(distanceX < m_size && distanceX > (-(m_size)))
-//   {
-//       QVector3D spring;
-//       spring.setX(spring.x() - distanceX);
-//       spring/=10;  //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
-//       m_vel += spring;
-//   }
-
-//   else
-//   {
-//     float velX = m_vel.x();
-//     velX /= 1.5;
-//     m_vel.setX(velX);
-//   }
-
-//   distanceZ = linkPosition[i].z() - m_pos.z();
-//   if(distanceZ < m_size && distanceZ > (-(m_size)))
-//   {
-//       QVector3D spring;
-//       spring.setZ(spring.z() - distanceZ);
-//       spring/=10;
-//       m_vel += spring;
-//   }
-//   else
-//   {
-//     float velZ = m_vel.z();
-//     velZ /= 1.5;
-//     m_vel.setZ(velZ);
-//   }
-
-//  }
-
-//  //HOLD
-//  //sends particles that are too far away towards each other
-
-// for(unsigned int i=0; i<connectionCount; i++)
-// {
-//   distanceY = linkPosition[i].y() - m_pos.y();
-//   if(distanceY > m_size || distanceY < (-(m_size)))
-//   {
-//       QVector3D hold;
-//       hold.setY(distanceY);
-//       float factor = 500/fabs (distanceY);
-//       if (distanceY > 1.5 || distanceY <(-1.5))
-//       {
-//         hold/=(factor/2);
-//         m_vel+=hold;
-
-//       }
-//       else
-//       {
-//         hold/=factor;
-//         m_vel+=hold;
-//       }
-//   }
-//   else
-//   {
-//     float velY = m_vel.y();
-//     velY /= 1.5;
-//     m_vel.setY(velY);
-//   }
-
-//   distanceX = linkPosition[i].x() - m_pos.x();
-//   if(distanceX > m_size || distanceX < (-(m_size)))
-//   {
-//       QVector3D hold;
-//       hold.setX  //m_foodLevel=false;(distanceX);
-//       float factor = 500/fabs (distanceX);
-//       if (distanceX > 1.5 || distanceX <(-1.5))
-//       {
-//         hold/=(factor/2);
-//         m_vel+=hold;
-
-//       }
-//       else
-//       {
-//         hold/=factor;
-//         m_vel+=hold;
-//       }
-//   }
-
-//   else
-//   {
-//     float velX = m_vel.x();
-//     velX /= 1.5;
-//     m_vel.setX(velX);
-//   }
-
-//   distanceZ = linkPosition[i].z() - m_pos.z();
-//   if(distanceZ > m_size || distanceZ < (-(m_size)))
-//   {
-//       QVector3D hold;
-//       hold.setZ(distanceZ);
-//       float factor = 500/fabs (distanceZ);
-//       if (distanceZ > 1.5 || distanceZ <(-1.5))
-//       {
-//         hold/=(factor/2);
-//         m_vel+=hold;
-
-//       }
-//       else
-//       {
-//         hold/=factor;
-//         m_vel+=hold;
-//       }
-
-//   }
-//   else
-//   {
-//     float velZ = m_vel.z();
-//     velZ /= 1.5;
-//    m_vel.setZ(velZ);
-//   }
-// }
-//}ffmpeg -i morphin_ncloth.%04d.png -b:v 20M morphin_ncloth
 
 
 void LinkedParticle::calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList)
@@ -416,15 +198,31 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
 
 void LinkedParticle::addFood(QVector3D _particleCentre)
 {
-//  if (m_foodLevelBool == true)
-//  {
-//    QVector3D food = m_pos - _particleCentre;
-//   // m_vel +=;
-//  }
 
-//  std::cout<<"FoodLevelBool of "<<m_ID<<": "<<m_foodLevelBool<<std::endl;
-//  m_foodLevelBool = false;
+  //FOOD LEVEL
+  //Changes food level of random particles and sends them inwards
 
+  if (m_foodLevel == true)
+  {
+
+    life++;
+    QVector3D food = _particleCentre - m_pos;
+
+    if(food.length() <= m_size*2)
+    {
+        m_vel/=1.1;
+
+    }
+    food/=4;
+    m_vel += food;
+
+    std::cout<<"life:"<<life<<std::endl;
+    if (life >= 10)
+    {
+      m_foodLevel = false;
+    }
+
+  }
 }
 
 std::vector<unsigned int> LinkedParticle::getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)

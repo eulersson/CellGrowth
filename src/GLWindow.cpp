@@ -967,12 +967,10 @@ void GLWindow::toggleParticleDeath(bool _state)
   if(_state==true)
   {
     emit enableBulge(false);
-    emit enableAddFood(false);
   }
   else if (_state==false)
   {
     emit enableBulge(true);
-    emit enableAddFood(true);
   }
 }
 
@@ -1035,12 +1033,6 @@ void GLWindow::bulge()
   sendParticleDataToOpenGL();
 }
 
-void GLWindow::addFood()
-{
-  //Only for LinkedParticles
-  m_ps.addFood();
-  sendParticleDataToOpenGL();
-}
 
 void GLWindow::lightOn()
 {

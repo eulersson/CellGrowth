@@ -21,7 +21,6 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_LP_particleDeath,SIGNAL(toggled(bool)),m_gl,SLOT(toggleParticleDeath(bool)));
   connect(m_ui->m_LP_cohesion,SIGNAL(valueChanged(int)),m_gl,SLOT(setCohesion(int)));
   connect(m_ui->LP_bulge,SIGNAL(released()),m_gl,SLOT(bulge()));
-  connect(m_ui->m_LP_addFood,SIGNAL(released()),m_gl,SLOT(addFood()));
   connect(m_ui->m_LP_lightOn,SIGNAL(released()),m_gl,SLOT(lightOn()));
   connect(m_ui->m_LP_lightOff,SIGNAL(released()),m_gl,SLOT(lightOff()));
   connect(m_ui->m_LP_localCohesion,SIGNAL(valueChanged(int)),m_gl,SLOT(setLocalCohesion(int)));
@@ -53,7 +52,6 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(changedShadingType(int)),m_ui->m_shadingType,SLOT(setCurrentIndex(int)));
   connect(m_gl,SIGNAL(setConnectionState(bool)),m_ui->m_showConnections,SLOT(setChecked(bool)));
   connect(m_gl,SIGNAL(enableBulge(bool)),m_ui->LP_bulge,SLOT(setEnabled(bool)));
-  connect(m_gl,SIGNAL(enableAddFood(bool)),m_ui->m_LP_addFood,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableLightOn(bool)),m_ui->m_LP_lightOn,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableLightOff(bool)),m_ui->m_LP_lightOff,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(resetNearestParticle(bool)),m_ui->m_nearestPart,SLOT(setChecked(bool)));

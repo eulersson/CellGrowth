@@ -238,6 +238,7 @@ public:
   static void resetIDCounter();
 
   void setFoodLevelTrue();
+
   virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){}
 
 
@@ -281,7 +282,7 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Food level, increses when the particle is hit by light.
   //////////////////////////////////////////////////////////////////////////////
-  bool m_foodLevelBool;
+  bool m_foodLevel;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Food threshold, when reached particle is split.

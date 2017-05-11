@@ -19,7 +19,7 @@ unsigned int Particle::m_ID_counter(0);
 Particle::Particle()
     : m_pos(QVector3D(0,0,0))
     , m_ID(m_ID_counter++)
-    , m_foodLevelBool(false)
+    , m_foodLevel(false)
     , m_size(2.0)
     , m_foodThreshold(0)
 {
@@ -30,7 +30,7 @@ Particle::Particle()
 Particle::Particle(qreal _x, qreal _y, qreal _z, float _size)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_foodLevelBool(false)
+    , m_foodLevel(false)
     , m_size(_size)
     , m_foodThreshold(100)
 {
@@ -44,7 +44,7 @@ Particle::Particle(qreal _x,
       std::vector<unsigned int> _connectedParticles, float _size)
     : m_pos(QVector3D(_x, _y, _z))
     , m_ID(m_ID_counter++)
-    , m_foodLevelBool(false)
+    , m_foodLevel(false)
     , m_size(_size)
     , m_foodThreshold(100)
 {
@@ -68,7 +68,7 @@ void Particle::testForSplit()
 
 void Particle::setFoodLevelTrue()
 {
-  m_foodLevelBool = true;
+  m_foodLevel = true;
 }
 
 void Particle::getPos(QVector3D &_pos)
