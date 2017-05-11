@@ -1102,7 +1102,7 @@ void GLWindow::restart()
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetSplitType(0);
-  emit resetParticleTap(0);
+  emit resetParticleTab(0);
   emit resetForces(true);
   emit resetParticleDeath(false);
   emit resetCohesion(5);

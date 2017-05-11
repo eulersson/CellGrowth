@@ -659,7 +659,7 @@ signals:
   /// @brief Singal emits when particle tap needs to be reset
   /// @param[in] index index of tap.
   //////////////////////////////////////////////////////////////////////////////
-  void resetParticleTap(int index);
+  void resetParticleTab(int index);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Singal emits when forces needs to be reset
