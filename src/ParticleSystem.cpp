@@ -79,11 +79,12 @@ void ParticleSystem::advance()
 //    }
   }
 
-  //calcuting the forces
+  //calculating the forces
   if (m_forces==true)
   {
     for (unsigned int i = 0; i < m_particleCount; ++i)
     {
+
       m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath);
     }
 
@@ -104,6 +105,22 @@ void ParticleSystem::bulge()
     m_particles[i]->advance();
   }
   calculateParticleCentre();
+}
+
+void ParticleSystem::addFood()
+{
+  for (unsigned int i=0; i<=m_particles.size()/3; i++)
+  {
+    unsigned int randomIndex = rand() % m_particleCount;
+    m_particles[randomIndex]->setFoodLevelTrue();
+  }
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+
+    m_particles[i]->advance();
+  }
+
 }
 
 void ParticleSystem::fill(unsigned int _amount)
@@ -142,7 +159,7 @@ void ParticleSystem::fill(unsigned int _amount)
     else if(m_particleType=='L')
     {
       m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z(),m_currentParticleSize)));
-      //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+
     }
     m_particleCount++;
   }
@@ -184,10 +201,11 @@ void ParticleSystem::fill(unsigned int _amount)
    }
   }
 
-//  else
-//  {
-//    qDebug("To many particles to link");
-//  }
+  else
+  {
+    qDebug("To many particles to link");
+  }
+
 }
 
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
@@ -313,7 +331,6 @@ unsigned int ParticleSystem::getNearestParticle(std::vector<uint> _toSplit)
 
   std::vector<float>::iterator minElement=std::min_element (std::begin(m_lightDistances), std::end(m_lightDistances));
   unsigned int minElementIndex = std::distance(std::begin(m_lightDistances), minElement);
-  //std::cout<<"minElementIndex:"<<minElementIndex<<std::endl;
 
   return minElementIndex;
 }
@@ -371,8 +388,6 @@ QVector3D ParticleSystem::calculateParticleCentre()
 
 QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
 {
-  QVector3D averageDistance;
-
   for (auto&particle : m_particles)
   {
     QVector3D particlePosition = particle->getPosition();
@@ -383,12 +398,12 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
     fabsDistance.setY(fabs (distance.y()));
     fabsDistance.setZ(fabs(distance.z()));
 
-    averageDistance += fabsDistance;
+    m_averageDistance += fabsDistance;
   }
 
-  averageDistance = averageDistance/(m_particles.size());
+  m_averageDistance = m_averageDistance/(m_particles.size());
   //std::cout<<"averagedistance:"<<averageDistance.x()<<std::endl;
-  return averageDistance;
+  return m_averageDistance;
 }
 
 void ParticleSystem::setParticleSize(double _size)

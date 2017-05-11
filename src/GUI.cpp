@@ -48,7 +48,7 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(resetLocalCohesion(int)),m_ui->m_LP_localCohesion,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(enableGrowthParticle(bool)),m_ui->m_growthParticleTab,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(enableLinkedParticle(bool)),m_ui->m_linkedParticleTab,SLOT(setEnabled(bool)));
-  connect(m_gl,SIGNAL(enableSplitType(bool)),m_ui->m_splitTypeBox,SLOT(setEnabled(bool)));
+  //connect(m_gl,SIGNAL(enableSplitType(bool)),m_ui->m_splitTypeBox,SLOT(setEnabled(bool)));
   connect(m_gl,SIGNAL(changedShadingType(int)),m_ui->m_shadingType,SLOT(setCurrentIndex(int)));
   connect(m_gl,SIGNAL(setConnectionState(bool)),m_ui->m_showConnections,SLOT(setChecked(bool)));
   connect(m_gl,SIGNAL(enableBulge(bool)),m_ui->LP_bulge,SLOT(setEnabled(bool)));

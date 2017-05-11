@@ -86,6 +86,11 @@ public:
   void bulge(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
+  /// @brief Adds food to random particles to create interesting effects..
+  //////////////////////////////////////////////////////////////////////////////
+  void addFood(QVector3D _particleCentre) override;
+
+  //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles being hit by light towards the point light
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
@@ -129,6 +134,8 @@ private:
   /// @brief Increases with time, to check how long the particle has been alive.
   //////////////////////////////////////////////////////////////////////////////
   int particleLife;
+
+  int life;
 
 };
 

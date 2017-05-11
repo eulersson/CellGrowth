@@ -490,10 +490,8 @@
             </item>
            </layout>
            <zorder>particlesBox</zorder>
-           <zorder>particlesBox</zorder>
            <zorder>m_particleTab</zorder>
            <zorder>m_splitTypeBox</zorder>
-           <zorder></zorder>
            <zorder>verticalSpacer</zorder>
           </widget>
           <widget class="QWidget" name="tab_2">
@@ -660,7 +658,6 @@
             </item>
            </layout>
            <zorder>displayBox</zorder>
-           <zorder>displayBox</zorder>
            <zorder>verticalSpacer_4</zorder>
           </widget>
          </widget>
@@ -670,10 +667,6 @@
      </layout>
     </item>
    </layout>
-   <zorder>tabWidget</zorder>
-   <zorder>m_cancel</zorder>
-   <zorder>m_restart</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
   </widget>
   <action name="actionfff">
    <property name="text">

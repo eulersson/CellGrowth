@@ -892,12 +892,12 @@ void GLWindow::setParticleType(int _type)
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
-    emit enableSplitType(true);
+
+    // emit enableSplitType(true);  //! WHY DID ESME COMMENTED IT?
     emit setConnectionState(false);
     setShading("ADS");
     emit changedShadingType(0);
     emit resetNearestParticle(true);
-
   }
   else
   {
@@ -905,7 +905,7 @@ void GLWindow::setParticleType(int _type)
     //emit resetSplitType(0);
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
-    emit enableSplitType(true);
+    //emit enableSplitType(true);  //! WHY DID ESME COMMENTED IT?
     emit setConnectionState(true);
     setShading("X Ray");
     emit changedShadingType(1);
@@ -1033,7 +1033,6 @@ void GLWindow::bulge()
   sendParticleDataToOpenGL();
 }
 
-//Might be able able to move this into function above.
 
 void GLWindow::lightOn()
 {
