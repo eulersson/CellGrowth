@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'GUI.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -54,6 +54,7 @@ public:
     QLabel *label_4;
     QPushButton *LP_bulge;
     QCheckBox *m_LP_particleDeath;
+    QPushButton *m_LP_addFood;
     QWidget *m_growthParticleTab;
     QGridLayout *gridLayout_3;
     QLabel *label_6;
@@ -188,6 +189,11 @@ public:
         m_LP_particleDeath->setObjectName(QStringLiteral("m_LP_particleDeath"));
 
         gridLayout_5->addWidget(m_LP_particleDeath, 0, 0, 1, 1);
+
+        m_LP_addFood = new QPushButton(m_LP_forces);
+        m_LP_addFood->setObjectName(QStringLiteral("m_LP_addFood"));
+
+        gridLayout_5->addWidget(m_LP_addFood, 4, 0, 1, 2);
 
 
         gridLayout_7->addWidget(m_LP_forces, 0, 0, 1, 1);
@@ -361,7 +367,6 @@ public:
 
         tabWidget->addTab(tab, QString());
         particlesBox->raise();
-        particlesBox->raise();
         m_particleTab->raise();
         m_splitTypeBox->raise();
         tab_2 = new QWidget();
@@ -448,7 +453,6 @@ public:
 
         tabWidget->addTab(tab_2, QString());
         displayBox->raise();
-        displayBox->raise();
 
         verticalLayout_6->addWidget(tabWidget);
 
@@ -459,9 +463,6 @@ public:
         horizontalLayout_5->addLayout(mainLayout);
 
         GUI->setCentralWidget(centralwidget);
-        tabWidget->raise();
-        m_cancel->raise();
-        m_restart->raise();
 
         retranslateUi(GUI);
 
@@ -475,53 +476,54 @@ public:
 
     void retranslateUi(QMainWindow *GUI)
     {
-        GUI->setWindowTitle(QApplication::translate("GUI", "MainWindow", Q_NULLPTR));
-        actionfff->setText(QApplication::translate("GUI", "fff", Q_NULLPTR));
-        m_LP_forces->setTitle(QApplication::translate("GUI", "Forces", Q_NULLPTR));
-        label_3->setText(QApplication::translate("GUI", "Cohesion", Q_NULLPTR));
-        label_4->setText(QApplication::translate("GUI", "Local Cohesion", Q_NULLPTR));
-        LP_bulge->setText(QApplication::translate("GUI", "Bulge", Q_NULLPTR));
-        m_LP_particleDeath->setText(QApplication::translate("GUI", "Particle Death", Q_NULLPTR));
-        m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", Q_NULLPTR));
-        label_6->setText(QApplication::translate("GUI", "Branches per particle", Q_NULLPTR));
-        label_5->setText(QApplication::translate("GUI", "Branch Length", Q_NULLPTR));
-        m_nearestPart->setText(QApplication::translate("GUI", "Nearest Particle to Light", Q_NULLPTR));
-        m_GP_growtoLight->setText(QApplication::translate("GUI", "Grow Towards Light", Q_NULLPTR));
-        m_particleTab->setTabText(m_particleTab->indexOf(m_growthParticleTab), QApplication::translate("GUI", "Growth Particles", Q_NULLPTR));
-        particlesBox->setTitle(QApplication::translate("GUI", "Particle", Q_NULLPTR));
-        label->setText(QApplication::translate("GUI", "Particle Type", Q_NULLPTR));
+        GUI->setWindowTitle(QApplication::translate("GUI", "MainWindow", 0));
+        actionfff->setText(QApplication::translate("GUI", "fff", 0));
+        m_LP_forces->setTitle(QApplication::translate("GUI", "Forces", 0));
+        label_3->setText(QApplication::translate("GUI", "Cohesion", 0));
+        label_4->setText(QApplication::translate("GUI", "Local Cohesion", 0));
+        LP_bulge->setText(QApplication::translate("GUI", "Bulge", 0));
+        m_LP_particleDeath->setText(QApplication::translate("GUI", "Particle Death", 0));
+        m_LP_addFood->setText(QApplication::translate("GUI", "Add Food", 0));
+        m_particleTab->setTabText(m_particleTab->indexOf(m_linkedParticleTab), QApplication::translate("GUI", "Linked Particles", 0));
+        label_6->setText(QApplication::translate("GUI", "Branches per particle", 0));
+        label_5->setText(QApplication::translate("GUI", "Branch Length", 0));
+        m_nearestPart->setText(QApplication::translate("GUI", "Nearest Particle to Light", 0));
+        m_GP_growtoLight->setText(QApplication::translate("GUI", "Grow Towards Light", 0));
+        m_particleTab->setTabText(m_particleTab->indexOf(m_growthParticleTab), QApplication::translate("GUI", "Growth Particles", 0));
+        particlesBox->setTitle(QApplication::translate("GUI", "Particle", 0));
+        label->setText(QApplication::translate("GUI", "Particle Type", 0));
         m_particleType->clear();
         m_particleType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "Linked Particles", Q_NULLPTR)
-         << QApplication::translate("GUI", "Growth Particles", Q_NULLPTR)
+         << QApplication::translate("GUI", "Linked Particles", 0)
+         << QApplication::translate("GUI", "Growth Particles", 0)
         );
-        label_2->setText(QApplication::translate("GUI", "Particle Size", Q_NULLPTR));
-        m_splitTypeBox->setTitle(QApplication::translate("GUI", "Splitting", Q_NULLPTR));
+        label_2->setText(QApplication::translate("GUI", "Particle Size", 0));
+        m_splitTypeBox->setTitle(QApplication::translate("GUI", "Splitting", 0));
         m_splitType->clear();
         m_splitType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "Controlled by Space Bar", Q_NULLPTR)
-         << QApplication::translate("GUI", "Controlled by Light On/Off", Q_NULLPTR)
+         << QApplication::translate("GUI", "Controlled by Space Bar", 0)
+         << QApplication::translate("GUI", "Controlled by Light On/Off", 0)
         );
-        m_LP_lightOff->setText(QApplication::translate("GUI", "Light Off", Q_NULLPTR));
-        m_LP_lightOn->setText(QApplication::translate("GUI", "Light On", Q_NULLPTR));
-        label_8->setText(QApplication::translate("GUI", "Split Type", Q_NULLPTR));
-        m_restart->setText(QApplication::translate("GUI", "Restart", Q_NULLPTR));
-        m_cancel->setText(QApplication::translate("GUI", "Cancel", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("GUI", "Particles", Q_NULLPTR));
-        displayBox->setTitle(QApplication::translate("GUI", "Display", Q_NULLPTR));
-        m_showConnections->setText(QApplication::translate("GUI", "Show connections", Q_NULLPTR));
+        m_LP_lightOff->setText(QApplication::translate("GUI", "Light Off", 0));
+        m_LP_lightOn->setText(QApplication::translate("GUI", "Light On", 0));
+        label_8->setText(QApplication::translate("GUI", "Split Type", 0));
+        m_restart->setText(QApplication::translate("GUI", "Restart", 0));
+        m_cancel->setText(QApplication::translate("GUI", "Cancel", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("GUI", "Particles", 0));
+        displayBox->setTitle(QApplication::translate("GUI", "Display", 0));
+        m_showConnections->setText(QApplication::translate("GUI", "Show connections", 0));
         m_shadingType->clear();
         m_shadingType->insertItems(0, QStringList()
-         << QApplication::translate("GUI", "ADS", Q_NULLPTR)
-         << QApplication::translate("GUI", "X Ray", Q_NULLPTR)
-         << QApplication::translate("GUI", "Ambient Occlusion", Q_NULLPTR)
+         << QApplication::translate("GUI", "ADS", 0)
+         << QApplication::translate("GUI", "X Ray", 0)
+         << QApplication::translate("GUI", "Ambient Occlusion", 0)
         );
-        m_shadingType->setCurrentText(QApplication::translate("GUI", "ADS", Q_NULLPTR));
-        label_9->setText(QApplication::translate("GUI", "Type of Shading", Q_NULLPTR));
-        label_7->setText(QApplication::translate("GUI", "Red", Q_NULLPTR));
-        label_10->setText(QApplication::translate("GUI", "Blue", Q_NULLPTR));
-        label_11->setText(QApplication::translate("GUI", "Green", Q_NULLPTR));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("GUI", "Display", Q_NULLPTR));
+        m_shadingType->setCurrentText(QApplication::translate("GUI", "ADS", 0));
+        label_9->setText(QApplication::translate("GUI", "Type of Shading", 0));
+        label_7->setText(QApplication::translate("GUI", "Red", 0));
+        label_10->setText(QApplication::translate("GUI", "Blue", 0));
+        label_11->setText(QApplication::translate("GUI", "Green", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("GUI", "Display", 0));
     } // retranslateUi
 
 };

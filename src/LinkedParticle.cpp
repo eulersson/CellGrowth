@@ -51,8 +51,8 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
 
 
     // EQUIDISTANCE
-    // Calcualtes average distance from centre
-    // Encourgaes particles towards this distance from centre
+    // Calculates average distance from centre
+    // Encourages particles towards this distance from centre
     // Stops the particles from wanting to get too close to the middle
     QVector3D distance = _particleCentre - m_pos;
     //std::cout<<"averageDistance"<<_averageDistance.x()<<_averageDistance.y()<<_averageDistance.z()<<std::endl;
@@ -138,7 +138,8 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
     food/=4;
     m_vel += food;
 
-    if (life >= 50)
+    std::cout<<"life:"<<life<<std::endl;
+    if (life >= 10)
     {
       m_foodLevelBool = false;
     }

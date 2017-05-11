@@ -162,6 +162,13 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="4" column="0" colspan="2">
+                    <widget class="QPushButton" name="m_LP_addFood">
+                     <property name="text">
+                      <string>Add Food</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -490,10 +497,8 @@
             </item>
            </layout>
            <zorder>particlesBox</zorder>
-           <zorder>particlesBox</zorder>
            <zorder>m_particleTab</zorder>
            <zorder>m_splitTypeBox</zorder>
-           <zorder></zorder>
            <zorder>verticalSpacer</zorder>
           </widget>
           <widget class="QWidget" name="tab_2">
@@ -660,7 +665,6 @@
             </item>
            </layout>
            <zorder>displayBox</zorder>
-           <zorder>displayBox</zorder>
            <zorder>verticalSpacer_4</zorder>
           </widget>
          </widget>
@@ -670,10 +674,6 @@
      </layout>
     </item>
    </layout>
-   <zorder>tabWidget</zorder>
-   <zorder>m_cancel</zorder>
-   <zorder>m_restart</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
   </widget>
   <action name="actionfff">
    <property name="text">
