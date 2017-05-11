@@ -1,11 +1,9 @@
 #version 410 core
-#extension GL_NV_shadow_samplers_cube : enable
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Inputs & Outputs
 ////////////////////////////////////////////////////////////////////////////////
 out vec4 fColor;
-
 in vec2 vTexCoords;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,9 +31,7 @@ struct Light {
 /// Textures
 ////////////////////////////////////////////////////////////////////////////////
 uniform sampler2D tWorldPosition;   //Real position in 3D space
-uniform sampler2D tViewPosition;    //
 uniform sampler2D tWorldNormal;
-uniform sampler2D tViewNormal;
 uniform sampler2D tSSAO;
 uniform sampler2D tLinks;
 uniform samplerCube tSkyBox; // Cubemap
@@ -52,25 +48,39 @@ uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
 uniform vec3 CameraPos;
 
+
+////////////////////////////////////////////////////////////////////////////////
+///Matricies
+////////////////////////////////////////////////////////////////////////////////
+mat3 normalMatrix = transpose(inverse(mat3(ViewMatrix * ModelMatrix)));
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Globals
 ////////////////////////////////////////////////////////////////////////////////
-vec3 ViewPosition  = texture( tViewPosition, vTexCoords).xyz;
 vec3 WorldPosition = texture(tWorldPosition, vTexCoords).xyz;
-float Depth = texture(tViewPosition, vTexCoords).z;
-vec3 ViewNormal  = normalize(texture( tViewNormal, vTexCoords).xyz);
+vec3 ViewPosition  = vec3(ViewMatrix * ModelMatrix * vec4(WorldPosition, 1.0)).xyz;
 vec3 WorldNormal = normalize(texture(tWorldNormal, vTexCoords).xyz);
+vec3 ViewNormal  = normalize(normalMatrix * WorldNormal);
 float Occlusion = texture(tSSAO, vTexCoords).r;
 float Links = texture(tLinks, vTexCoords).r;
-vec3 SkyBoxTexture = texture(tSkyBox, WorldNormal).rgb;
+float Depth = -ViewPosition.z;
 
 
 vec4 SkyBoxFixer()
 {
-    vec4 SkyBox = vec4(SkyBoxTexture, 0.5);
+    vec4 SkyBox = texture(tSkyBox, WorldNormal);
 
     return SkyBox;
 }
+
+//float linDepth()
+//{
+//    float zDepth = Depth;
+//    float near = 2.5f;
+//    float far = 9.0f;
+//    return ((2.0 * near) / (far + near - zDepth*(far - near)));
+//}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,12 +119,12 @@ vec4 ADSRender()
     specular *= attenuation;
     
     vec3 lighting = (ambient + diffuse + specular);
-    lighting *= vec3(Occlusion);
+    //lighting *= vec3(Occlusion);
 
     lighting = clamp(lighting, vec3(0), vec3(1));
 
     // lighting goes in to vec4 underneath.
-    return SkyBoxFixer() * vec4(1.0, 1.0, 1.0, 1.0);
+    return vec4(lighting, 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,8 +162,11 @@ vec4 AORender()
 }
 
 void main() {
+
+    float newDepth = clamp(-Depth, 1.0, 2.0);
+
     vec4 color = RenderTypeSelection();
-    float alpha = length(ViewPosition) == 0.0 ? 0.0 : 1.0;
+    float alpha = WorldPosition.r == 0.0 ? 0.0 : 1.0;
 
     // Composite the links on top if needed
     if (drawLinks)
