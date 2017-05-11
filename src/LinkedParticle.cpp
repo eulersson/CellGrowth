@@ -47,6 +47,7 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
     // Calculates average distance from centre
     // Encourages particles towards this distance from centre
     // Stops the particles from wanting to get too close to the middle
+
     QVector3D distance = _particleCentre - m_pos;
     //std::cout<<"averageDistance"<<_averageDistance.x()<<_averageDistance.y()<<_averageDistance.z()<<std::endl;
     QVector3D m_averageDistance = _averageDistance;
