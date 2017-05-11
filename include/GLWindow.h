@@ -70,6 +70,8 @@ public:
   };
 
 private:
+  void cleanup();
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Sets up the shader pipeline with all the framebuffer object and
   /// textures needed for rendering all the types.
@@ -746,9 +748,8 @@ signals:
   //////////////////////////////////////////////////////////////////////////////
   void enableLightOff(bool value);
 
-
   //esme needs to comment here
-  void enableSplitType(bool value);
+  // void enableSplitType(bool value); //! WHY DID ESME COMMENT OUT THIS ONE
 
 
   //////////////////////////////////////////////////////////////////////////////
