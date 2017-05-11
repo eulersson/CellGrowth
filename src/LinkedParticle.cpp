@@ -88,8 +88,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   cohesion*=(cohesionDist/(_cohesionFactor*3.3f));
   m_vel+=cohesion;
 
-
-
   //LOCAL COHESION
   //Calculates cohesion based on particles links
   //Finds the centre of the linked particles
@@ -117,15 +115,9 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   localCohesion*=(localCohesionDist/(_localCohesionFactor));
   m_vel+=localCohesion;
 
-
-
   //CALCULATE UNLINKED
   //makes a call to calculate unlinked function
   calculateUnlinked(_particleList);
-
-
-  //getHitParticles(_particleList, _lightPos);
-  //lightAttract(_particleList, _lightPos);
 
   //PARTICLELIFE
   //Determines how long the particle has been alive
@@ -208,37 +200,6 @@ void LinkedParticle::bulge(QVector3D _particleCentre)
     m_vel += distance;
   }
 }
-
-//void LinkedParticle::lightAttract(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos)
-//{
-//  getHitParticles(_particleList, _lightPos);
-
-//  getFallOff(_particleList, _lightPos);
-
-//  QVector3D lightDist;
-
-//  for(unsigned int i=0; i<=_particleList.size(); i++)
-//  {
-//    for(unsigned int j=0; j<m_hitParticles.size(); j++)
-//    {
-//      if(i==j)
-//      {
-//        lightDist = _lightPos - m_pos;
-//        lightDist /= 1500;
-//        m_vel += lightDist;
-//      }
-//    }
-//    for(unsigned int k=0; k<m_fallOff.size(); k++)
-//    {
-//      if(i==k)
-//      {
-//        lightDist = _lightPos - m_pos;
-//        lightDist /= 2000;
-//        m_vel += lightDist;
-//      }
-//    }
-//  }
-//}
 
 int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVector3D _testPoint)
 {
@@ -347,10 +308,6 @@ bool LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
 
   m_foodLevel=0;
 
-//  QVector3D particleCentre;
-//  QVector3D averageDistance;
-//  std::vector<unsigned int> returnList;
-//  calculate(particleCentre, _particleList, averageDistance, returnList);
   return true;
 }
 

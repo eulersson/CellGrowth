@@ -274,11 +274,9 @@ void ParticleSystem::splitRandomParticle()
 
   for(uint i=0;i<m_particles.size();i++)
   {
-      toSplit.push_back(i);
+    toSplit.push_back(i);
   }
 
-  while(split==false)
-  {
   std::uniform_int_distribution<int> distribution(0,toSplit.size()-1);
 
   uint nearestParticle = getNearestParticle(toSplit);
@@ -293,11 +291,11 @@ void ParticleSystem::splitRandomParticle()
 
   if(m_particleType=='G')
   {
-  split=m_particles[toSplit[index]]->split(m_lightPos,m_particles,m_gen,m_GP_growtoLight);
+    split=m_particles[toSplit[index]]->split(m_lightPos,m_particles,m_gen,m_GP_growtoLight);
   }
   else if(m_particleType=='L')
   {
-  split=m_particles[toSplit[index]]->split(m_particles,m_gen);
+    split=m_particles[toSplit[index]]->split(m_particles,m_gen);
   }
 
 
@@ -307,14 +305,12 @@ void ParticleSystem::splitRandomParticle()
   {
     toSplit.erase(toSplit.begin()+index);
   }
-  }
-
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount, m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
+    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount,
+                              m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
   }
-
 
   qDebug("Particles: %d", m_particleCount);
 
@@ -351,7 +347,6 @@ void ParticleSystem::deleteParticle()
     m_particles.resize(originalArraySize - m_iterID.size());
     m_particleCount -= m_iterID.size();
   }
-
 }
 
 void ParticleSystem::packageDataForDrawing(std::vector<float> &_packagedData)
@@ -465,8 +460,6 @@ void ParticleSystem::setChildThreshold(int _value)
   }
 }
 
-
-
 void ParticleSystem::reset(char _particleType)
 {
   m_particles.clear();
@@ -499,7 +492,7 @@ void ParticleSystem::reset(char _particleType)
 
 void ParticleSystem::setNearestParticleState(bool _state)
 {
-    m_nearestParticleState=_state;
+  m_nearestParticleState=_state;
 }
 
 void ParticleSystem::setGrowToLight(bool _state)

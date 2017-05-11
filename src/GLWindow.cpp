@@ -1043,7 +1043,7 @@ void GLWindow::setBcolour(int _bColour)
 
 void GLWindow::bulge()
 {
-  // Only for LinkedParticles
+  //Only for LinkedParticles
   m_ps.bulge();
   sendParticleDataToOpenGL();
 }
