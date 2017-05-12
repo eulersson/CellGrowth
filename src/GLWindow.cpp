@@ -338,6 +338,9 @@ void GLWindow::prepareSSAOPipeline()
 void GLWindow::initializeGL()
 {
 
+    qDebug("Light Position length: %d", m_lightPos.length());
+    qDebug("Fill Light Position length: %d", m_fillLightPos.length());
+
   initializeOpenGLFunctions();
 
   m_input_manager = new InputManager(this);
@@ -376,13 +379,16 @@ void GLWindow::initializeGL()
   prepareSSAOPipeline();
 
   glViewport(0, 0, width(), height());
+
+  //setUpCamera(fov, width, height, zNear, zFar);
+  m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 250.f);
+
 }
 
 void GLWindow::paintGL()
 {
   updateModelMatrix();
 
-  m_input_manager->setupCamera(width(), height());
   m_input_manager->doMovement(-m_ps.calculateParticleCentre());
 
   //////////////////////////////////////////////////////////////////////////////
@@ -394,8 +400,6 @@ void GLWindow::paintGL()
 
     switch (m_rendering_mode) {
     case GLWindow::XRAY:
-      glClearColor(0, 0, 0, 0);
-
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
       glBlendEquation(GL_FUNC_ADD);
@@ -405,6 +409,7 @@ void GLWindow::paintGL()
       glDisable(GL_BLEND);
 
       break;
+
     default:
       drawParticles();
       break;
@@ -426,12 +431,9 @@ void GLWindow::paintGL()
       m_ssao_program->setUniformValue(s.c_str(), m_ssao_kernel[i]);
     }
     m_ssao_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, m_noise_texture->textureId());
+    m_view_position_texture->bind(0);
+    m_view_normal_texture->bind(1);
+    m_noise_texture->bind(2);
     m_quad_vao->bind();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     m_quad_vao->release();
@@ -445,8 +447,7 @@ void GLWindow::paintGL()
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
     m_blur_program->bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_occlusion_texture->textureId());
+    m_occlusion_texture->bind(0);
     m_quad_vao->bind();
       glDrawArrays(GL_TRIANGLES, 0, 6);
     m_quad_vao->release();
@@ -471,10 +472,9 @@ void GLWindow::paintGL()
     m_skybox->draw();
     glDepthMask(GL_TRUE);
     break;
+
+  //Ambient Occlusion render pass.
   case GLWindow::AO:
-    //Setting background to white
-   // glClearColor(1,1,1,1);
-   // glClear(GL_COLOR_BUFFER_BIT);
     break;
   default:
     break;
@@ -484,19 +484,14 @@ void GLWindow::paintGL()
   /// Quad
   //////////////////////////////////////////////////////////////////////////////
   m_lighting_program->bind();
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, m_world_normal_texture->textureId());
-  glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
-  glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
+  m_world_position_texture->bind(0);
+  m_world_normal_texture->bind(1);
+  m_blurred_occlusion_texture->bind(2);
+  m_links_texture->bind(3);
   m_skybox->GetSkyBoxTexture()->bind(4);
 
 
   m_quad_vao->bind();
-    m_lighting_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
     m_lighting_program->setUniformValue("ModelMatrix", m_model_matrix);
     m_lighting_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
@@ -532,7 +527,6 @@ void GLWindow::paintGL()
   // Bring it back to previous state
   glDisable(GL_DEPTH_TEST);
 
-
   updateParticleSystem();
 }
 
@@ -558,7 +552,7 @@ void GLWindow::initializeMatrices()
         45.0f,
         (float)width() / (float)height(),
         0.1f,
-        100.0f);
+        250.0f);
 
   m_model_matrix.setToIdentity();
   m_model_matrix.translate(0.0, 0.0, 0.0);
@@ -570,6 +564,7 @@ void GLWindow::loadLightToShader()
   m_fillLightPos = m_object_list[1]->getPosition();
   m_ps.setLightPos(m_lightPos);
   m_ps.setLightPos(m_fillLightPos);
+
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("light.position", m_lightPos);
     m_lighting_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
@@ -577,6 +572,11 @@ void GLWindow::loadLightToShader()
     m_lighting_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
     m_lighting_program->setUniformValue("light.Linear", 0.09f);
     m_lighting_program->setUniformValue("light.Quadratic", 0.032f);
+
+    m_lighting_program->setUniformValue("light2.position", m_fillLightPos);
+    m_lighting_program->setUniformValue("light2.ambient", QVector3D(1.0, 1.0, 1.0));
+    m_lighting_program->setUniformValue("light2.diffuse", QVector3D(1.0, 1.0, 1.0));
+    m_lighting_program->setUniformValue("light2.specular", QVector3D(1.0, 1.0, 1.0));
   m_lighting_program->release();
 }
 
@@ -691,7 +691,6 @@ void GLWindow::setupLights()
 
   PointLight *pointlight = new PointLight(QVector3D(4,0,0), m_manipulator_program, m_sun_program);
   pointlight->createGeometry(masterUniqueColour);
-
   m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
 
   m_input_manager->addShaderProgram(m_manipulator_program);
@@ -856,6 +855,7 @@ void GLWindow::mouseMoveEvent(QMouseEvent* event)
   makeCurrent();
   setFocus();
   m_input_manager->mouseMoveEvent(event);
+
 }
 
 void GLWindow::mousePressEvent(QMouseEvent *event)
@@ -870,6 +870,11 @@ void GLWindow::mouseReleaseEvent(QMouseEvent *event)
   makeCurrent();
   setFocus();
   m_input_manager->mouseReleaseEvent(event);
+
+  qDebug("Light Position length: %d", m_lightPos.length());
+  qDebug("Fill Light Position length: %d", m_fillLightPos.length());
+
+
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
