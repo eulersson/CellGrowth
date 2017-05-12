@@ -76,7 +76,7 @@ void ParticleSystem::advance()
   {
     for (unsigned int i = 0; i < m_particleCount; ++i)
     {
-      m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount,
+      m_particles[i]->calculate(m_particles, m_averageDistance, m_particleCount,
                                 m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
       if(m_particleType == 'A')
       {
@@ -302,7 +302,7 @@ void ParticleSystem::splitRandomParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particleCentre, m_particles, m_averageDistance, m_particleCount,
+    m_particles[i]->calculate(m_particles, m_averageDistance, m_particleCount,
                               m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
   }
   qDebug("Particles: %d", m_particleCount);

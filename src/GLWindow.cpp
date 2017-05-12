@@ -480,6 +480,9 @@ void GLWindow::paintGL()
     break;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// Quad
+  //////////////////////////////////////////////////////////////////////////////
   m_lighting_program->bind();
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
@@ -508,7 +511,37 @@ void GLWindow::paintGL()
   m_quad_vao->release();
   m_lighting_program->release();
 
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Manipulators
+  //////////////////////////////////////////////////////////////////////////////
+  // Flush the depth values
+  glClear(GL_DEPTH_BUFFER_BIT);
+  // Don't draw color, just depth
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  // Enable depth testing so manipulators / particles are tested
+  glEnable(GL_DEPTH_TEST);
+  // Draw the particles depth values
+  drawParticles();
+  // Enable back colour so we can paint manipulators
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  // Draw manipulators
   for(auto &s : m_object_list) { s->draw(); }
+  // Bring it back to previous state
+  glDisable(GL_DEPTH_TEST);
+
+
+
+
+
+
+
+
+
+
+
+
 
   updateParticleSystem();
 }
