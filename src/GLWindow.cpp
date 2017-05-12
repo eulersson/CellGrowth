@@ -383,7 +383,7 @@ void GLWindow::paintGL()
   updateModelMatrix();
 
   m_input_manager->setupCamera(width(), height());
-  m_input_manager->doMovement();
+  m_input_manager->doMovement(-m_ps.calculateParticleCentre());
 
   //////////////////////////////////////////////////////////////////////////////
   /// gBuffer: Geometry pass
@@ -527,20 +527,10 @@ void GLWindow::paintGL()
   // Enable back colour so we can paint manipulators
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   // Draw manipulators
+
   for(auto &s : m_object_list) { s->draw(); }
   // Bring it back to previous state
   glDisable(GL_DEPTH_TEST);
-
-
-
-
-
-
-
-
-
-
-
 
 
   updateParticleSystem();

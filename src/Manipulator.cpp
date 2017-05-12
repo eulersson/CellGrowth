@@ -7,16 +7,6 @@
 // Defines
 #define M_PI 3.14159265358979323846
 
-const int DIRECTION_X = 0;
-const int DIRECTION_Y = 1;
-const int DIRECTION_Z = 2;
-
-const int ROTATION_Y = 3;
-const int ROTATION_Z = 4;
-
-// Manipulator move sensitivity
-const GLfloat SENSITIVITY = 0.04f;  // --> this could be a static member maybe? @Glenn
-
 Manipulator::Manipulator(
       QVector3D _position,
       QOpenGLShaderProgram *_lightProgram)
@@ -28,7 +18,7 @@ Manipulator::Manipulator(
 Manipulator::~Manipulator()
 {
   for (auto& arrow: m_arrows) {
-    delete arrow.vao;  // Free memory for VAO, we could be using smart pointers!
+    delete arrow.vao;
   }
 }
 
@@ -52,7 +42,8 @@ int Manipulator::compareUniqueColour(QVector3D _colour)
   return -1;
 }
 
-void Manipulator::createGeometry(std::vector<QVector3D> _uColourVec, bool _rotatable)
+void Manipulator::createGeometry(std::vector<QVector3D> _uColourVec,
+                                 GLfloat _coneangle)
 {
   // X ARROW
   QOpenGLVertexArrayObject *vao_x = new QOpenGLVertexArrayObject();
@@ -66,7 +57,9 @@ void Manipulator::createGeometry(std::vector<QVector3D> _uColourVec, bool _rotat
   QOpenGLVertexArrayObject *vao_z = new QOpenGLVertexArrayObject();
   createArrow(vao_z, QVector3D(0, 0, 1.2), _uColourVec[2], DIRECTION_Z);
 
-  if(!_rotatable) {return;}
+  // Check to see if the light has a restricted angle and
+  // therefore needs to rotate.
+  if(_coneangle<0) {return;}
   // ROT AROUND Y
   QOpenGLVertexArrayObject *vao_rot_y = new QOpenGLVertexArrayObject();
   createRotCircle(vao_rot_y, _uColourVec[3], ROTATION_Y);
@@ -74,6 +67,9 @@ void Manipulator::createGeometry(std::vector<QVector3D> _uColourVec, bool _rotat
   // ROT AROUND Z
   QOpenGLVertexArrayObject *vao_rot_z = new QOpenGLVertexArrayObject();
   createRotCircle(vao_rot_z, _uColourVec[4], ROTATION_Z);
+
+  // LIGHT CONE
+  createLightConeCircle(_coneangle);
 
 }
 
@@ -83,6 +79,8 @@ void Manipulator::draw()
   m_manipshaderp->bind();
   m_manipshaderp->setUniformValue("backRender", false);
 
+
+  // MANIPULATOR MOVE ARROWS
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
     Geo arrow= m_arrows[i];
@@ -90,7 +88,6 @@ void Manipulator::draw()
     m_manipshaderp->setUniformValue("renderColour", {arrow.renderColour.x(),
                                                      arrow.renderColour.y(),
                                                      arrow.renderColour.z()});
-
     switch(arrow.axis)
     {
       case DIRECTION_X:
@@ -114,7 +111,7 @@ void Manipulator::draw()
   }
 
 
-
+  // MANIPULATOR ROTATION CIRCLES
   for(size_t i = 0; i < m_circles.size(); i++)
   {
       Geo circle= m_circles[i];
@@ -135,9 +132,26 @@ void Manipulator::draw()
       m_manipshaderp->setUniformValue("baseColour", baseColour);
 
       circle.vao->bind();
-      glDrawArrays(GL_TRIANGLES, 0, circle.numberOfPoints); // Previously GL_POINTS
+      glDrawArrays(GL_TRIANGLES, 0, circle.numberOfPoints);
       circle.vao->release();
   }
+
+  // MANIPULATOR EFFECT CONE
+  if(m_coneCircle.numberOfPoints>0)
+  {
+
+    m_manipshaderp->setUniformValue("flatRender", true);
+    m_manipshaderp->setUniformValue("backRender", false);
+
+    m_coneCircle.vao->bind();
+    glDrawArrays(GL_TRIANGLES, 0, m_coneCircle.numberOfPoints);
+    m_coneCircle.vao->release();
+    m_manipshaderp->setUniformValue("flatRender", false);
+  }
+
+
+
+
   m_manipshaderp->release();
 }
 
@@ -152,7 +166,7 @@ void Manipulator::drawBackBuffer()
     Geo arrow= m_arrows[i];
     arrow.vao->bind();
     m_manipshaderp->setUniformValue("baseColour", arrow.uniqueColour);
-    glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints); // Previously GL_POINTS
+    glDrawArrays(GL_TRIANGLES, 0, arrow.numberOfPoints);
     arrow.vao->release();
   }
 
@@ -165,38 +179,6 @@ void Manipulator::drawBackBuffer()
       glDrawArrays(GL_TRIANGLES, 0, circle.numberOfPoints);
       circle.vao->release();
   }
-}
-
-QVector3D Manipulator::processMouseMovement(float _offsetx,
-    float _offsety,
-    float _offsetz,
-    QVector3D _x,
-    QVector3D _y,
-    QVector3D _z )
-{
-  QVector3D returnVec;
-  for(size_t i = 0; i < m_arrows.size(); i++)
-  {
-    if(m_arrows[i].clicked)
-    {
-      switch(m_arrows[i].axis)
-      {
-        case DIRECTION_X:
-          returnVec = _offsetx*SENSITIVITY*_x;
-          break;
-
-        case DIRECTION_Y:
-          returnVec = _offsety*SENSITIVITY*_y;
-          break;
-
-        case DIRECTION_Z:
-          returnVec = _offsetz*SENSITIVITY*_z;
-          break;
-      }
-    }
-  }
-
-  return returnVec;
 }
 
 int Manipulator::getClickedAxis()
@@ -316,6 +298,7 @@ void Manipulator::setupRotCircleVBO(
 
 }
 
+
 void Manipulator::createRotCircle(QOpenGLVertexArrayObject *_vao,
                      QVector3D _uniqueColour,
                      int _axis)
@@ -401,6 +384,9 @@ void Manipulator::createRotCircle(QOpenGLVertexArrayObject *_vao,
 
 }
 
+
+
+
 void Manipulator::setupVBO(
     std::vector<QVector3D> _vertices,
     std::vector<QVector3D> _normals,
@@ -444,7 +430,8 @@ void Manipulator::setupVAO(Geo &_arrow, QOpenGLVertexArrayObject *_vao)
   m_manipshaderp->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3, 6 * sizeof(GL_FLOAT));
   m_manipshaderp->enableAttributeArray("posAttr");
 
-  m_manipshaderp->setAttributeBuffer("normAttr", GL_FLOAT, 3 * sizeof(GLfloat), 3, 6 * sizeof(GL_FLOAT));
+  m_manipshaderp->setAttributeBuffer("normAttr", GL_FLOAT, 3 *
+                                     sizeof(GLfloat), 3, 6 * sizeof(GL_FLOAT));
   m_manipshaderp->enableAttributeArray("normAttr");
 
   _vao->release();
@@ -459,6 +446,7 @@ QVector3D calculateNormal(QVector3D _v1, QVector3D _v2, QVector3D _v3)
   n.normalize();
   return  n;
 }
+
 
 void Manipulator::createArrow(QOpenGLVertexArrayObject *_vao,
     QVector3D _offsetPos,
@@ -549,4 +537,80 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *_vao,
   setupVAO(arrow, _vao);
 
   m_arrows.push_back(arrow);
+}
+
+
+
+
+
+void Manipulator::createLightConeCircle(GLfloat _coneangle)
+{
+  float coneangle=90-_coneangle/2.0f;
+
+  // Create geometry
+  std::vector<QVector3D> vertices;
+  unsigned int segments = 20;
+  float amt=(2*M_PI)/segments;
+  float r = _coneangle/90.0f;
+  float thickness=0.04f; thickness++;
+  float length = 3.0f*sin(qDegreesToRadians(coneangle));
+  QVector3D op(length,0,0);
+
+  QVector3D lastPoint = QVector3D(op.x(),op.y(),op.z());
+  for(size_t i=0; i<=segments;i++)
+  {
+    float angle = amt*i;
+
+    float x=0;
+    float z=r*cos(angle);
+    float y=r*sin(angle);
+    float lx=1;
+    float lz=thickness;
+    float ly=thickness;
+
+    if(lastPoint==QVector3D(op.x(),op.y(),op.z()))
+    {
+      lastPoint=QVector3D(x,y,z);
+      continue;
+    }
+    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(lastPoint+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
+
+    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
+    vertices.push_back(QVector3D(x*lx, y*ly, z*lz)+QVector3D(op.x(),op.y(),op.z()));
+
+    lastPoint=QVector3D(x,y,z);
+
+
+  }
+
+  // Make geometry OpenGL readable
+  std::vector<GLfloat> pointPosArray;
+  unsigned int m_numberOfPoints = vertices.size();
+  for (size_t i = 0; i < m_numberOfPoints; i++)
+  {
+    pointPosArray.push_back(vertices[i].x());
+    pointPosArray.push_back(vertices[i].y());
+    pointPosArray.push_back(vertices[i].z());
+  }
+
+  // VAO / VBO
+  m_coneCircle.vao = new QOpenGLVertexArrayObject();
+  m_coneCircle.vao->create();
+  m_coneCircle.vao->bind();
+  m_coneCircle.vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+  m_coneCircle.vbo->create();
+  m_coneCircle.vbo->bind();
+  m_coneCircle.vbo->setUsagePattern(QOpenGLBuffer::StaticDraw); //Previoulsy DynamicDraw
+  m_coneCircle.vbo->allocate(&pointPosArray[0], 3*m_numberOfPoints* sizeof(GLfloat));
+  // Set shader attributes
+  m_manipshaderp->setAttributeBuffer("posAttr", GL_FLOAT, 0, 3);
+  m_manipshaderp->enableAttributeArray("posAttr");
+  m_coneCircle.vao->release();
+
+  m_coneCircle.numberOfPoints = m_numberOfPoints;
+
+
 }

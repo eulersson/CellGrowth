@@ -60,7 +60,6 @@ public:
   virtual void processMouseMovement(float _offsetx,
                                     float _offsety,
                                     float _offsetz,
-                                    QVector3D _campos,
                                     QMatrix4x4 _view) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
