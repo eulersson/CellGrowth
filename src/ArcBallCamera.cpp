@@ -141,7 +141,7 @@ void ArcBallCamera::refocus()
   // Get the axis we need to rotate around
   QVector3D rotAxis = QVector3D::crossProduct(front,forwardVector);
   rotAxis.normalize();
-  // Create quaternion using absolute angle. This is a normal look at, so no rotation is being done.
+  // Create quaternion using absolute angle.
   QQuaternion rotq=create_from_angle(rotAxis.x(), rotAxis.y(), rotAxis.z(), -rotAngle);
 
   qDebug()<<rotAngle;
@@ -151,22 +151,6 @@ void ArcBallCamera::refocus()
   m_view.rotate(rotq);
   m_view.translate(pos);
 
-//  m_view(0,0)=rotmat(0,0);
-//  m_view(0,1)=rotmat(0,1);
-//  m_view(0,2)=rotmat(0,2);
-
-//  m_view(1,0)=rotmat(1,0);
-//  m_view(1,1)=rotmat(1,1);
-//  m_view(1,2)=rotmat(1,2);
-
-//  m_view(2,0)=rotmat(2,0);
-//  m_view(2,1)=rotmat(2,1);
-//  m_view(2,2)=rotmat(2,2);
-
-//  m_view(0,3)=0;
-//  m_view(1,3)=0;
-//  m_view(2,3)=0;
-//  m_view.translate(pos);
 
   // Update camera orientation vectors
   m_right.setX(-rotmat(0,0));
