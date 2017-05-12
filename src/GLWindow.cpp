@@ -506,34 +506,26 @@ void GLWindow::paintGL()
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glDisable(GL_BLEND);
 
-
   m_quad_vao->release();
   m_lighting_program->release();
-
-
 
   //////////////////////////////////////////////////////////////////////////////
   /// Manipulators
   //////////////////////////////////////////////////////////////////////////////
+  // Flush the depth values
   glClear(GL_DEPTH_BUFFER_BIT);
+  // Don't draw color, just depth
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-  glEnable(GL_DEPTH_TEST);
+  // Draw just the depth of the particles
   drawParticles();
+  // Enable color drawing again
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  // Test against existing depth values we just drawn
+  glEnable(GL_DEPTH_TEST);
+  // Draw manipulators
   for(auto &s : m_object_list) { s->draw(); }
+  // Move state back to what it was
   glDisable(GL_DEPTH_TEST);
-
-
-
-
-
-
-
-
-
-
-
-
 
   updateParticleSystem();
 }
