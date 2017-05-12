@@ -13,7 +13,7 @@
 #include <vector>
 
 // Qt
-#include<QVector3D>
+#include <QVector3D>
 
 // Custom
 #include "PointLight.h"
@@ -91,7 +91,9 @@ public:
   /// @param [in] _particleCount Total number of particles in the system
   /// @param [in] _lightPos Holds the position of the point light
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath) {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance,
+                         unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
+                         bool _particleDeath, int _automataRadius, int _automataTime) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.
@@ -100,10 +102,16 @@ public:
   virtual void bulge(QVector3D _particleCentre) {}
 
   //////////////////////////////////////////////////////////////////////////////
+  /// @brief Adds food to random particles to create interesting visuals.
+  //////////////////////////////////////////////////////////////////////////////
+  virtual void addFood(QVector3D _particleCentre) {}
+
+  //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns a list containing all particles closest to the light.
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
   /////////////////////////////////////////////////////////////////////////////
+
  //virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
 
   //////////////////////////////////////////////////////////////////////////////
@@ -158,6 +166,8 @@ public:
   /// @brief Returns the position of the particle.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D getPosition(){return m_pos;}
+
+  virtual bool isAlive(){return true;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the Particles position
@@ -232,7 +242,10 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   static void resetIDCounter();
 
+  void setFoodLevelTrue();
+
   virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){}
+
 
 protected:
   //////////////////////////////////////////////////////////////////////////////
@@ -274,18 +287,12 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Food level, increses when the particle is hit by light.
   //////////////////////////////////////////////////////////////////////////////
-  unsigned int m_foodLevel;
+  bool m_foodLevel;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Food threshold, when reached particle is split.
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_foodThreshold;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Vector holding the IDs of all the particles being hit by light.
-  //////////////////////////////////////////////////////////////////////////////
-  //std::vector<unsigned int> m_hitParticles;
-
 };
 
 #endif // PARTICLE_H

@@ -56,15 +56,18 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the particle new position based on Forces.
-  /// @param [in] _particleCentre Position of the average centre of all particles
-  /// @param [in] _particleList List of all particles
-  /// @param [in] _averageDistance Average distance between particles
-  /// @param [in] _particleCount Total number of particles in the system
-  /// @param [in] _lightPos Holds the position of the point light
+  /// @param [in] _particleCentre Position of the average centre of all particles.
+  /// @param [in] _particleList List of all particles.
+  /// @param [in] _averageDistance Average distance between particles.
+  /// @param [in] _particleCount Total number of particles in the system.
+  /// @param [in] _lightPos Holds the position of the point light.
   /// @param [in] _cohesionFactor Holds the amount of cohesion taken from the slider.
   /// @param [in] _localCohesionFactor Holds the amount of local cohesion taken from the slider.
+  /// @param [in] _automataRadius Holds the radius to control the automata particles' radius.
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath) override;
+  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance,
+                 unsigned int _particleCount,QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
+                 bool _particleDeath, int _automataRadius, int _automataTime) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Repulses the particles which aren't connected by links to
@@ -74,16 +77,15 @@ public:
   void calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Calculates the spring and hold functions between linked particles.
-  /// @param [in] _particleList List of all particles
-  //////////////////////////////////////////////////////////////////////////////
-  //void spring(std::vector<std::unique_ptr<Particle>> &_particleList, int _springFactor);
-
-  //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.
   /// @param [in] _particleCentre Position of the average centre of all particles
   //////////////////////////////////////////////////////////////////////////////
   void bulge(QVector3D _particleCentre) override;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Adds food to random particles to create interesting effects..
+  //////////////////////////////////////////////////////////////////////////////
+  void addFood(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles being hit by light towards the point light
@@ -129,6 +131,8 @@ private:
   /// @brief Increases with time, to check how long the particle has been alive.
   //////////////////////////////////////////////////////////////////////////////
   int particleLife;
+
+  int life;
 
 };
 
