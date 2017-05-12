@@ -14,7 +14,6 @@ GUI::GUI(QWidget *parent) :
 
   connect(m_ui->m_particleSize,SIGNAL(valueChanged(double)),m_gl,SLOT(setParticleSize(double)));
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_gl,SLOT(setParticleType(int)));
-  connect(m_ui->m_cancel,SIGNAL(pressed()),m_gl,SLOT(cancel()));
   connect(m_ui->m_showConnections,SIGNAL(toggled(bool)),m_gl,SLOT(showConnections(bool)));
   connect(m_ui->m_shadingType,SIGNAL(currentIndexChanged(QString)),m_gl,SLOT(setShading(QString)));
   connect(m_ui->m_LP_forces,SIGNAL(toggled(bool)),m_gl,SLOT(toggleForces(bool)));
