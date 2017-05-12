@@ -27,7 +27,7 @@ void InputManager::onHover()
   }
 }
 
-void InputManager::doMovement()
+void InputManager::doMovement(QVector3D _rp)
 {
   // DeltaTime is simply one for now
   // Will implement when needed
@@ -45,6 +45,8 @@ void InputManager::doMovement()
 
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
+
+  m_camera.setRotationPoint(_rp);
 }
 
 void InputManager::getUniqueColour(const int _x, const int _y)
@@ -92,6 +94,8 @@ void InputManager::setupCamera(int _w, int _h)
   m_projection.setToIdentity();
   m_projection.perspective(45.0f, (float)_w / (float)_h,
                          0.1f, 10000.0f);
+
+
 
   for(int i = 0; i < m_programs.size(); i++)
   {
@@ -250,6 +254,7 @@ void InputManager::wheelEvent(QWheelEvent *_event)
   m_camera.processMouseScroll(_event->delta());
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
+
 }
 
 void InputManager::resized(int _w, int _h)

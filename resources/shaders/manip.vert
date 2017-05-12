@@ -17,6 +17,13 @@ void main()
     vNorm=normAttr;
     vPos=posAttr;
 
-    gl_Position = projection * view * model * vec4(posAttr, 1.0f);
+
+    float reciprScaleOnscreen = 0.1; // change value to match resolution.    = (2 * ObjectSizeOnscreenInPixels / ScreenWidthInPixels)
+
+    float w = (projection * view * model * vec4(0,0,0,1)).w;
+    w *= reciprScaleOnscreen;
+
+
+    gl_Position = projection * view * model * vec4(posAttr*0.3*w, 1.0f);
 
 }

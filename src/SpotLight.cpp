@@ -12,9 +12,6 @@ SpotLight::SpotLight(
   m_position=_position;
   m_sunshaderp=_sunshaderp;
   m_manipshaderp=_manipshaderp;
-  // Set light representation position (single point)
-//    m_points[0]=_position.x(); m_points[1]=_position.y(); m_points[2]=_position.z();
-  m_points[0]=0; m_points[1]=0; m_points[2]=0;
   m_worldUp=QVector3D(0,1,0);
 
   m_x=QVector3D(1,0,0);
@@ -38,9 +35,9 @@ void SpotLight::createGeometry(QVector3D &_masterUniqueColour)
                             m_coneangle);
 }
 
+
 void SpotLight::draw()
 {
-
   // MANIPULATOR
   m_manipshaderp->bind();
   m_manipshaderp->setUniformValue("model", m_model);
@@ -61,6 +58,7 @@ void SpotLight::drawBackBuffer()
   m_manipshaderp->setUniformValue("backRender", false);
   m_manipshaderp->release();
 }
+
 
 void SpotLight::processMouseMovement(float _offsetx,
                                      float _offsety,
@@ -116,7 +114,7 @@ void SpotLight::processMouseMovement(float _offsetx,
   m_position+=movement;
   updateModelMatrix();
 
-  rotate(_offsetx, _offsety, _offsetz);
+  rotate(_offsetx, _offsety);
 }
 
 QQuaternion SpotLight::create_from_angle(const double &xx, const double &yy, const double &zz, const double &a)
@@ -137,7 +135,7 @@ QQuaternion SpotLight::create_from_angle(const double &xx, const double &yy, con
     return ret;
 }
 
-void SpotLight::rotate(float _offsetx, float _offsety, float _offsetz)
+void SpotLight::rotate(float _offsetx, float _offsety)
 {
 
   float rotm_sensitivity=0.5f;

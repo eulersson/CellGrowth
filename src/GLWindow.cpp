@@ -384,7 +384,8 @@ void GLWindow::paintGL()
   updateModelMatrix();
 
   m_input_manager->setupCamera(width(), height());
-  m_input_manager->doMovement();
+//  m_input_manager->doMovement(m_ps.calculateParticleCentre());
+  m_input_manager->doMovement(QVector3D(0,0,0));
 
   //////////////////////////////////////////////////////////////////////////////
   /// gBuffer: Geometry pass
@@ -516,7 +517,6 @@ void GLWindow::paintGL()
 
   m_quad_vao->release();
   m_lighting_program->release();
-
   for(auto &s : m_object_list) { s->draw(); }
 
   updateParticleSystem();
