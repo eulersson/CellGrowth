@@ -19,9 +19,13 @@ QMatrix4x4 ArcBallCamera::getViewMatrix()
 
 QVector3D ArcBallCamera::getPosition()
 {
-  QVector4D position = QVector4D (m_view(0,3), m_view(1,3), m_view(2,3), 1);
-  position=position*m_view;
-  qDebug("%f, %f, %f", position.x(), position.y(), position.z());
+  return getPosition(m_view);
+}
+
+QVector3D ArcBallCamera::getPosition(QMatrix4x4 _mat)
+{
+  QVector4D position = QVector4D (_mat(0,3), _mat(1,3), _mat(2,3), 1);
+  position=position*_mat;
   return QVector3D(position.x(), position.y(), position.z());
 }
 
@@ -112,9 +116,6 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
   m_front.setZ(-m_view(2,2));
 
 
-//  qDebug("%f, %f, %f",position.x(), position.y(), position.z());
-//  qDebug("%f, %f, %f", m_view(0,3), m_view(1,3), m_view(2,3));
-
 }
 
 
@@ -122,9 +123,7 @@ void ArcBallCamera::refocus()
 {
   // Played on f-press
   QVector3D front=QVector3D(0,0,1);
-
   QVector3D pos = getPosition();
-
   QVector3D forwardVector = m_rotationPoint-pos;
   forwardVector.normalize();
 
@@ -170,7 +169,7 @@ void ArcBallCamera::processMouseScroll(int steps)
 {
   QVector3D currpos=getPosition();
 
-  GLfloat offset=-(steps*.8);
+  GLfloat offset=-(steps);
   QVector3D dir=currpos-m_rotationPoint;
   dir.normalize();
   QVector3D velocity = m_scrollSpeed * offset * dir;
@@ -179,14 +178,12 @@ void ArcBallCamera::processMouseScroll(int steps)
 
 void ArcBallCamera::move(QVector3D velocity)
 {
-//  QMatrix4x4 tm;
-//  tm=m_view;
-//  tm.translate(velocity);
-
-  float dist = getPosition().length();
+  QMatrix4x4 tm=m_view;
+  tm.translate(velocity);
+  float dist = getPosition(tm).length()-m_rotationPoint.length();
 
 
-  if(dist>2)
+  if(dist>6.0)
   {
     m_view.translate(velocity);
 
