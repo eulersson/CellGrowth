@@ -111,10 +111,7 @@ void Particle::deleteConnection(unsigned int _ID)
       m_connectedParticles.erase(m_connectedParticles.begin() +i);
       break;
     }
-
   }
-
-
 }
 
 

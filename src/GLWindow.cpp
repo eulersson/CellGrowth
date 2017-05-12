@@ -665,6 +665,7 @@ void GLWindow::setupLights()
 
   PointLight *pointlight = new PointLight(QVector3D(4,0,0), m_manipulator_program, m_sun_program);
   pointlight->createGeometry(masterUniqueColour);
+
   m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
 
   m_input_manager->addShaderProgram(m_manipulator_program);
@@ -712,8 +713,8 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
 void GLWindow::updateParticleSystem()
 {
   m_ps.setLightPos(m_lightPos);
-  //std::cout<<"light pos: "<<m_lightPos.x()<<" "<<m_lightPos.y()<<" "<<m_lightPos.z()<<std::endl;
-  if (m_lightON == true)
+
+  if(m_lightON == true)
   {
     m_ps.splitRandomParticle();
     qInfo("%d", m_ps.getSize());
@@ -882,24 +883,37 @@ void GLWindow::setParticleType(int _type)
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
-
-    // emit enableSplitType(true);  //! WHY DID ESME COMMENTED IT?
+    emit enableAutomataParticle(false);
+    emit enableSplitType(true);
+    emit enableConnections(true);
     emit setConnectionState(false);
     setShading("ADS");
     emit changedShadingType(0);
     emit resetNearestParticle(true);
   }
-  else
+  else if (_type == 1)
   {
     particleType = 'G';
     //emit resetSplitType(0);
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
-    //emit enableSplitType(true);  //! WHY DID ESME COMMENTED IT?
+    emit enableAutomataParticle(false);
+    emit enableSplitType(false);
+    emit enableConnections(true);
     emit setConnectionState(true);
     setShading("X Ray");
     emit changedShadingType(1);
     emit resetNearestParticle(false);
+  }
+  else if (_type == 2)
+  {
+    particleType = 'A';
+    emit enableGrowthParticle(false);
+    emit enableLinkedParticle(false);
+    emit enableAutomataParticle(true);
+    emit enableSplitType(false);
+    emit enableConnections(false);
+    showConnections(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
@@ -1018,7 +1032,7 @@ void GLWindow::setBcolour(int _bColour)
 
 void GLWindow::bulge()
 {
-  // Only for LinkedParticles
+  //Only for LinkedParticles
   m_ps.bulge();
   sendParticleDataToOpenGL();
 }
@@ -1042,12 +1056,23 @@ void GLWindow::lightOff()
   sendParticleDataToOpenGL();
 }
 
-
-
 void GLWindow::setLocalCohesion(int _amount)
 {
-  // Only for LinkedParticles
   m_ps.setLocalCohesion(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setAutomataRadius(int _amount)
+{
+  //Only for AutomataParticles
+  m_ps.setAutomataRadius(_amount);
+  sendParticleDataToOpenGL();
+}
+
+void GLWindow::setAutomataTime(int _amount)
+{
+  //Only for AutomataParticles
+  m_ps.setAutomataTime(_amount);
   sendParticleDataToOpenGL();
 }
 
@@ -1065,7 +1090,7 @@ void GLWindow::restart()
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetSplitType(0);
-  emit resetParticleTap(0);
+  emit resetParticleTab(0);
   emit resetForces(true);
   emit resetParticleDeath(false);
   emit resetCohesion(5);

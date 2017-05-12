@@ -91,7 +91,9 @@ public:
   /// @param [in] _particleCount Total number of particles in the system
   /// @param [in] _lightPos Holds the position of the point light
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath) {}
+  virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance,
+                         unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
+                         bool _particleDeath, int _automataRadius, int _automataTime) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.
@@ -109,6 +111,7 @@ public:
   /// @param [in] _particleList List of all particles
   /// @param [in] _lightPos Holds the position of the point light
   /////////////////////////////////////////////////////////////////////////////
+
  //virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
 
   //////////////////////////////////////////////////////////////////////////////
@@ -163,6 +166,8 @@ public:
   /// @brief Returns the position of the particle.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D getPosition(){return m_pos;}
+
+  virtual bool isAlive(){return true;}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the Particles position
@@ -288,12 +293,6 @@ protected:
   /// @brief Food threshold, when reached particle is split.
   //////////////////////////////////////////////////////////////////////////////
   unsigned int m_foodThreshold;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Vector holding the IDs of all the particles being hit by light.
-  //////////////////////////////////////////////////////////////////////////////
-  //std::vector<unsigned int> m_hitParticles;
-
 };
 
 #endif // PARTICLE_H
