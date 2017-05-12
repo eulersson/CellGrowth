@@ -383,7 +383,6 @@ void GLWindow::paintGL()
 
   m_input_manager->setupCamera(width(), height());
   m_input_manager->doMovement(-m_ps.calculateParticleCentre());
-//  m_input_manager->doMovement(QVector3D(0,0,0));
 
   //////////////////////////////////////////////////////////////////////////////
   /// gBuffer: Geometry pass

@@ -145,7 +145,6 @@ void ArcBallCamera::refocus()
   QQuaternion rotq=create_from_angle(rotAxis.x(), rotAxis.y(), rotAxis.z(), -rotAngle);
 
   qDebug()<<rotAngle;
-
   QMatrix3x3 rotmat=rotq.toRotationMatrix();
 
   m_view.setToIdentity();
