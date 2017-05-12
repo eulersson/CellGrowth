@@ -479,6 +479,9 @@ void GLWindow::paintGL()
     break;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// Quad
+  //////////////////////////////////////////////////////////////////////////////
   m_lighting_program->bind();
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
@@ -507,7 +510,30 @@ void GLWindow::paintGL()
   m_quad_vao->release();
   m_lighting_program->release();
 
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// Manipulators
+  //////////////////////////////////////////////////////////////////////////////
+  glClear(GL_DEPTH_BUFFER_BIT);
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glEnable(GL_DEPTH_TEST);
+  drawParticles();
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   for(auto &s : m_object_list) { s->draw(); }
+  glDisable(GL_DEPTH_TEST);
+
+
+
+
+
+
+
+
+
+
+
+
 
   updateParticleSystem();
 }
