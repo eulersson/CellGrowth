@@ -85,6 +85,11 @@ public:
   void setupCamera(float _fov, int _w, int _h, float _near, float _far);
 
   //////////////////////////////////////////////////////////////////////////////
+  /// @brief Load projection and view matrix to shader.
+  //////////////////////////////////////////////////////////////////////////////
+  void loadLightMatricesToShader();
+
+  //////////////////////////////////////////////////////////////////////////////
   /// @brief Load the list of objects to the InputManager. These are the
   /// objects that will be considered for the InputManager calculations.
   /// @param[in] _objectList Object list to set.

@@ -91,23 +91,28 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
 
 void InputManager::setupCamera(float _fov, int _w, int _h, float _near, float _far)
 {
+  //////////////////////////////////////////////////////////////////////////////
+  /// CAMERA SETUP
+  //////////////////////////////////////////////////////////////////////////////
   m_projection.setToIdentity();
   m_projection.perspective(_fov, (float)_w / (float)_h,
                          _near, _far);
+}
 
-
-
+void InputManager::loadLightMatricesToShader()
+{
   for(int i = 0; i < m_programs.size(); i++)
   {
     QOpenGLShaderProgram *prgrm = m_programs[i];
-
-    // CAMERA SETUP
     prgrm->bind();
 
     prgrm->setUniformValue("view", m_view);
+    // Projection matrix only has to be set once, but it makes more
+    // sense to have all the setup here.
     prgrm->setUniformValue("projection", m_projection);
     prgrm->release();
   }
+
 }
 
 void InputManager::setObjectList(

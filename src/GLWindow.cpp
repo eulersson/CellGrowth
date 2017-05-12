@@ -382,7 +382,6 @@ void GLWindow::initializeGL()
 
   glViewport(0, 0, width(), height());
 
-  //setUpCamera(fov, width, height, zNear, zFar);
   m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 250.f);
 
   //Initializing SSAO uniform values used i GUI.
@@ -400,6 +399,7 @@ void GLWindow::paintGL()
 {
   updateModelMatrix();
 
+  m_input_manager->loadLightMatricesToShader();
   m_input_manager->doMovement(-m_ps.calculateParticleCentre());
 
   //////////////////////////////////////////////////////////////////////////////
@@ -586,7 +586,7 @@ void GLWindow::loadLightToShader()
 
     m_lighting_program->setUniformValue("light2.position", m_fillLightPos);
     m_lighting_program->setUniformValue("light2.ambient", QVector3D(1.0, 1.0, 1.0));
-    m_lighting_program->setUniformValue("light2.diffuse", QVector3D(1.0, 1.0, 1.0));
+    m_lighting_program->setUniformValue("light2.diffuse", QVector3D(3.0, 3.0, 3.0));
     m_lighting_program->setUniformValue("light2.specular", QVector3D(1.0, 1.0, 1.0));
   m_lighting_program->release();
 }

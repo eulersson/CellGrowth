@@ -120,15 +120,15 @@ private:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates a new rotation quaternion.
-  /// @param[in] _xx The rotation axis x value.
-  /// @param[in] _yy The rotation axis y value.
-  /// @param[in] _zz The rotation axis z value.
-  /// @param[in] _a  Rotation offset. Amount to be rotated.
+  /// @param[in] _vx The rotation axis x value.
+  /// @param[in] _vy The rotation axis y value.
+  /// @param[in] _vz The rotation axis z value.
+  /// @param[in] _offset  Rotation offset. Amount to be rotated.
   //////////////////////////////////////////////////////////////////////////////
-  QQuaternion create_from_angle(const double &_xx,
-                                const double &_yy,
-                                const double &_zz,
-                                const double &_a);
+  QQuaternion createFromAngle(const double _vx,
+                                const double _vy,
+                                const double _vz,
+                                const double _offset);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Camera front vector. The facing direction of the camera.
@@ -155,11 +155,6 @@ private:
   /// rotation focus is.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D m_rotationPoint;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Distance from the focus point.
-  //////////////////////////////////////////////////////////////////////////////
-  QVector3D m_dir;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief View matrix.

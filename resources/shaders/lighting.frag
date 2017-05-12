@@ -94,19 +94,21 @@ subroutine uniform RenderType RenderTypeSelection;
 subroutine (RenderType)
 vec4 ADSRender()
 {
+  vec3 finalLight;
+  {
     vec3 lightDir = normalize(light.position - WorldPosition);
     vec3 viewDir  = normalize(-WorldPosition);
 
     // Ambient
-    vec3 ambient = light.ambient * material.ambient * light2.ambient;
+    vec3 ambient = material.ambient * light.ambient;
 
     // Diffuse
-    vec3 diffuse = max(dot(WorldNormal, lightDir), 0.0) * material.diffuse * light.diffuse * light2.diffuse;
+    vec3 diffuse = max(dot(WorldNormal, lightDir), 0.0) * material.diffuse * light.diffuse;
 
     // Specular
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(WorldNormal, halfwayDir), 0.0), 8.0);
-    vec3 specular = light.specular * spec * light2.specular;
+    vec3 specular = spec * light.specular;
 
     // Attenuation
     float distance = length(light.position - WorldPosition);
@@ -117,8 +119,38 @@ vec4 ADSRender()
     vec3 lighting = (ambient + diffuse + specular);
 
     lighting = clamp(lighting, vec3(0), vec3(1));
+    finalLight+=lighting;
+  }
 
-    return vec4(lighting, 1.0);
+  {
+    vec3 lightDir = normalize(light2.position - WorldPosition);
+    vec3 viewDir  = normalize(-WorldPosition);
+
+    // Ambient
+    vec3 ambient = material.ambient * light2.ambient;
+
+    // Diffuse
+    vec3 diffuse = max(dot(WorldNormal, lightDir), 0.0) * material.diffuse * light2.diffuse;
+
+    // Specular
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(WorldNormal, halfwayDir), 0.0), 8.0);
+    vec3 specular = spec * light2.specular;
+
+    // Attenuation
+    float distance = length(light.position - WorldPosition);
+    float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance); // ISSUE light.Linear is not set for light2
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    vec3 lighting = (ambient + diffuse + specular);
+
+    lighting = clamp(lighting, vec3(0), vec3(1));
+    finalLight+=lighting;
+  }
+
+  finalLight = clamp(finalLight, vec3(0), vec3(1));
+  return vec4(finalLight, 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

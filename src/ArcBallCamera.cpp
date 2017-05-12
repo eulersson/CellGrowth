@@ -62,20 +62,17 @@ void ArcBallCamera::processKeyboard(ARCCamera_Movement _direction, GLfloat _delt
 }
 
 
-QQuaternion ArcBallCamera::create_from_angle(
-    const double &_xx, const double &_yy,
-    const double &_zz, const double &_a)
+QQuaternion ArcBallCamera::createFromAngle(
+    const double _vx, const double _vy,
+    const double _vz, const double _offset)
 {
-    // Here we calculate the sin( theta / 2) once for optimization
-    double factor = sin( _a * .5 );
+    double factor = sin( _offset * .5 );
 
-    // Calculate the x, y and z of the quaternion
-    double x = _xx * factor;
-    double y = _yy * factor;
-    double z = _zz * factor;
+    double x = _vx * factor;
+    double y = _vy * factor;
+    double z = _vz * factor;
 
-    // Calcualte the w value by cos( theta / 2 )
-    double w = cos( _a * .5 );
+    double w = cos( _offset * .5 );
 
     QQuaternion ret = QQuaternion(w, x, y, z);
     ret.normalize();
@@ -88,15 +85,14 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
   _xoffset =  _xoffset*m_mouseSensitivity;
   _yoffset =  _yoffset*m_mouseSensitivity;
 
-
   // Translate rotation point to origin to rotate about arbitrary point.
   m_view.translate(-m_rotationPoint);
 
   QQuaternion rotq;
-  rotq=create_from_angle(0,1,0,qDegreesToRadians(_xoffset));
+  rotq=createFromAngle(0,1,0,qDegreesToRadians(_xoffset));
 
   m_view.rotate(rotq);
-  rotq=create_from_angle(m_right.x(), m_right.y(), m_right.z(),qDegreesToRadians(_yoffset));
+  rotq=createFromAngle(m_right.x(), m_right.y(), m_right.z(),qDegreesToRadians(_yoffset));
   m_view.rotate(rotq);
 
   // Translate rotation point back.
@@ -141,7 +137,7 @@ void ArcBallCamera::refocus()
   QVector3D rotAxis = QVector3D::crossProduct(front,forwardVector);
   rotAxis.normalize();
   // Create quaternion using absolute angle.
-  QQuaternion rotq=create_from_angle(rotAxis.x(), rotAxis.y(), rotAxis.z(), -rotAngle);
+  QQuaternion rotq=createFromAngle(rotAxis.x(), rotAxis.y(), rotAxis.z(), -rotAngle);
 
   qDebug()<<rotAngle;
   QMatrix3x3 rotmat=rotq.toRotationMatrix();
