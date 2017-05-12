@@ -26,6 +26,12 @@ struct Light {
     float Quadratic;
 };
 
+struct FillLight {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Textures
@@ -42,17 +48,16 @@ uniform samplerCube tSkyBox; // Cubemap
 ////////////////////////////////////////////////////////////////////////////////
 uniform Material material;
 uniform Light light;
+uniform FillLight light2;
 uniform bool drawLinks;
-uniform mat4 ProjectionMatrix;
-uniform mat4 ModelMatrix;
-uniform mat4 ViewMatrix;
-uniform vec3 CameraPos;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ///Matricies
 ////////////////////////////////////////////////////////////////////////////////
+uniform mat4 ModelMatrix;
+uniform mat4 ViewMatrix;
 mat3 normalMatrix = transpose(inverse(mat3(ViewMatrix * ModelMatrix)));
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,23 +69,7 @@ vec3 WorldNormal = normalize(texture(tWorldNormal, vTexCoords).xyz);
 vec3 ViewNormal  = normalize(normalMatrix * WorldNormal);
 float Occlusion = texture(tSSAO, vTexCoords).r;
 float Links = texture(tLinks, vTexCoords).r;
-float Depth = -ViewPosition.z;
-
-
-vec4 SkyBoxFixer()
-{
-    vec4 SkyBox = texture(tSkyBox, WorldNormal);
-
-    return SkyBox;
-}
-
-//float linDepth()
-//{
-//    float zDepth = Depth;
-//    float near = 2.5f;
-//    float far = 9.0f;
-//    return ((2.0 * near) / (far + near - zDepth*(far - near)));
-//}
+vec4 SkyBox = texture(tSkyBox, WorldNormal);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -92,8 +81,15 @@ subroutine uniform RenderType RenderTypeSelection;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// ADS SHADING
-/// Source: https://learnopengl.com/#!Lighting/Basic-Lighting
-/// Source: https://learnopengl.com/#!Lighting/Materials
+///
+/// Source:
+/// Anon, n.d.  Learn OpenGL, extensive tutorial resource for learning Modern OpenGL.
+/// [online] Learnopengl.com. Available from:
+/// https://learnopengl.com/#!Lighting/Basic-Lighting [Accessed 21 Feb. 2017].
+///
+/// Anon, n.d. Learn OpenGL, extensive tutorial resource for learning Modern OpenGL.
+/// [online] Learnopengl.com. Available from:
+/// https://learnopengl.com/#!Lighting/Materials [Accessed 21 Feb. 2017].
 ////////////////////////////////////////////////////////////////////////////////
 subroutine (RenderType)
 vec4 ADSRender()
@@ -102,15 +98,15 @@ vec4 ADSRender()
     vec3 viewDir  = normalize(-WorldPosition);
 
     // Ambient
-    vec3 ambient = light.ambient * material.ambient;
+    vec3 ambient = light.ambient * material.ambient * light2.ambient;
 
     // Diffuse
-    vec3 diffuse = max(dot(WorldNormal, lightDir), 0.0) * material.diffuse * light.diffuse;
+    vec3 diffuse = max(dot(WorldNormal, lightDir), 0.0) * material.diffuse * light.diffuse * light2.diffuse;
 
     // Specular
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(WorldNormal, halfwayDir), 0.0), 8.0);
-    vec3 specular = light.specular * spec;
+    vec3 specular = light.specular * spec * light2.specular;
 
     // Attenuation
     float distance = length(light.position - WorldPosition);
@@ -119,11 +115,9 @@ vec4 ADSRender()
     specular *= attenuation;
     
     vec3 lighting = (ambient + diffuse + specular);
-    //lighting *= vec3(Occlusion);
 
     lighting = clamp(lighting, vec3(0), vec3(1));
 
-    // lighting goes in to vec4 underneath.
     return vec4(lighting, 1.0);
 }
 
@@ -135,7 +129,7 @@ vec4 ADSRender()
 subroutine (RenderType)
 vec4 XRayRender()
 {
-    vec4 result = vec4(1.0);
+    vec4 result = vec4(1.0, 1.0, 1.0, 1.0);
     
     float EdgeFalloff = 2.3;
     float opacity = dot(normalize(ViewNormal), normalize(-ViewPosition));
@@ -143,16 +137,21 @@ vec4 XRayRender()
     opacity = 1.0 - pow(opacity, EdgeFalloff);
      
     result *= opacity;
-    vec3 InvertAO = vec3(Occlusion);
 
-    ///! WORK HERE VAL
-    return result;
+    //Inverted occlusion for more shadow
+    float Alpha = 0.5;
+
+    vec4 InvertAO = vec4(vec3(1.0, 1.0, 1.0) - vec3(Occlusion, Occlusion, Occlusion), Alpha);
+
+    return result * InvertAO;
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// AMBIENT OCCLUSION
-/// Source: https://learnopengl.com/#!Advanced-Lighting/SSAO
+/// Source: Anon, n.d. Learn OpenGL, extensive tutorial resource for learning
+/// Modern OpenGL. [online] Learnopengl.com. Available from:
+/// https://learnopengl.com/#!Advanced-Lighting/SSAO [Accessed 21 Feb. 2017].
 ////////////////////////////////////////////////////////////////////////////////
 subroutine (RenderType)
 vec4 AORender()
@@ -162,8 +161,6 @@ vec4 AORender()
 }
 
 void main() {
-
-    float newDepth = clamp(-Depth, 1.0, 2.0);
 
     vec4 color = RenderTypeSelection();
     float alpha = WorldPosition.r == 0.0 ? 0.0 : 1.0;

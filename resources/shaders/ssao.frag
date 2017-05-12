@@ -13,9 +13,9 @@ uniform mat4 ProjectionMatrix;
 uniform int width;
 uniform int height;
 
-float radius = 5.0;     // uniform float radius;
-float bias = 0.025;     // uniform float bias;
-int kernelSize = 64;    // uniform int kernelSize;
+uniform float Radius;
+uniform float Bias;
+int KernelSize = 64;
 
 void main() {
     // Calculate noise scale to repeat
@@ -33,11 +33,11 @@ void main() {
 
     // Iterate over sample kernel and calculate occlusion factor
     float occlusion = 0.0;
-    for (int i = 0; i < kernelSize; ++i)
+    for (int i = 0; i < KernelSize; ++i)
     {
         // Get sample position
         vec3 _sample = TBN * samples[i];
-        _sample = position + _sample * radius;
+        _sample = position + _sample * Radius;
 
         // Project sample position (to sample texture) (to get position on screen/texture)
         vec4 offset = vec4(_sample, 1.0);
@@ -49,10 +49,10 @@ void main() {
         float sampleDepth = texture(tViewPosition, offset.xy).z;
 
         // Range check and accumulate
-        float rangeCheck = smoothstep(0.0, 1.0, radius / abs(position.z - sampleDepth));
-        occlusion += (sampleDepth >= _sample.z + bias ? 1.0 : 0.0) * rangeCheck;
+        float rangeCheck = smoothstep(0.0, 1.0, Radius / abs(position.z - sampleDepth));
+        occlusion += (sampleDepth >= _sample.z + Bias ? 1.0 : 0.0) * rangeCheck;
     }
 
-    occlusion = 1.0 - (occlusion / kernelSize);
+    occlusion = 1.0 - (occlusion / KernelSize);
     fColor = occlusion;
 }

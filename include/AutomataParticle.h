@@ -105,4 +105,4 @@ private:
 
 };
 
-#endif AUTOMATAPARTICLE_H
+#endif
