@@ -1,15 +1,9 @@
 #include "PointLight.h"
 
-const int DIRECTION_X = 0;
-const int DIRECTION_Y = 1;
-const int DIRECTION_Z = 2;
-
-const int ROTATION_Y = 3;
-const int ROTATION_Z = 4;
-
-const GLfloat SENSITIVITY = 0.04f;
-
-PointLight::PointLight(QVector3D _position, QOpenGLShaderProgram *_manipshaderp, QOpenGLShaderProgram *_sunshaderp) :
+PointLight::PointLight(
+    QVector3D _position,
+    QOpenGLShaderProgram *_manipshaderp,
+    QOpenGLShaderProgram *_sunshaderp) :
     m_manip(_position, _manipshaderp)
 {
     m_position=_position;
@@ -33,7 +27,9 @@ void PointLight::createGeometry(QVector3D &_masterUniqueColour)
   setupObject();
   // Setup manipulator geometry
   int amountOfColours=5;
-  m_manip.createGeometry(getMultipleNewUniqueColour(amountOfColours, _masterUniqueColour), false);
+  // Passing -1 to indicate the light is non-rotatable.
+  m_manip.createGeometry(getMultipleNewUniqueColour(amountOfColours, _masterUniqueColour),
+                         -1);
 }
 
 void PointLight::draw()
@@ -71,7 +67,10 @@ void PointLight::drawBackBuffer()
   m_manip.drawBackBuffer();
 }
 
-void PointLight::processMouseMovement(float _offsetx, float _offsety, float _offsetz, QVector3D _campos, QMatrix4x4 _view)
+void PointLight::processMouseMovement(float _offsetx,
+                                      float _offsety,
+                                      float _offsetz,
+                                      QMatrix4x4 _view)
 {
 
   QVector3D camRight=QVector3D(_view(0,0), _view(0,1), _view(0,2));
@@ -91,7 +90,7 @@ void PointLight::processMouseMovement(float _offsetx, float _offsety, float _off
         float dotprodz = QVector3D::dotProduct(right, camFront);
         float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
 
-        movement = offset*SENSITIVITY*right;
+        movement = offset*m_sensitivity*right;
         break;
       }
 
@@ -104,7 +103,7 @@ void PointLight::processMouseMovement(float _offsetx, float _offsety, float _off
         float dotprodz = QVector3D::dotProduct(up, camFront);
         float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
 
-        movement = offset*SENSITIVITY*up;
+        movement = offset*m_sensitivity*up;
         break;
       }
 
@@ -117,7 +116,7 @@ void PointLight::processMouseMovement(float _offsetx, float _offsety, float _off
         float dotprodz = QVector3D::dotProduct(front, camFront);
         float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
 
-        movement = offset*SENSITIVITY*front;
+        movement = offset*m_sensitivity*front;
         break;
       }
   }

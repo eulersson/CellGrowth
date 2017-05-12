@@ -4,6 +4,7 @@
 /// @author Fanny Marstrom
 /// @author Carola Gille
 /// @author Esme Prior
+/// @author Lydia Kenton
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
@@ -382,7 +383,7 @@ void GLWindow::paintGL()
   updateModelMatrix();
 
   m_input_manager->setupCamera(width(), height());
-  m_input_manager->doMovement();
+  m_input_manager->doMovement(-m_ps.calculateParticleCentre());
 
   //////////////////////////////////////////////////////////////////////////////
   /// gBuffer: Geometry pass
@@ -526,20 +527,10 @@ void GLWindow::paintGL()
   // Enable back colour so we can paint manipulators
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   // Draw manipulators
+
   for(auto &s : m_object_list) { s->draw(); }
   // Bring it back to previous state
   glDisable(GL_DEPTH_TEST);
-
-
-
-
-
-
-
-
-
-
-
 
 
   updateParticleSystem();
@@ -888,7 +879,6 @@ void GLWindow::wheelEvent(QWheelEvent *event)
   m_input_manager->wheelEvent(event);
 }
 
-
 // Slots
 void GLWindow::setParticleSize(double _size)
 {
@@ -915,8 +905,7 @@ void GLWindow::setParticleType(int _type)
   char particleType;
   if (_type == 0)
   {
-    particleType = 'L';
-
+    particleType = 'L'; //Linked particle
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
@@ -930,8 +919,8 @@ void GLWindow::setParticleType(int _type)
   }
   else if (_type == 1)
   {
-    particleType = 'G';
-    //emit resetSplitType(0);
+    particleType = 'G'; //Growth particle
+
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(false);
@@ -944,21 +933,19 @@ void GLWindow::setParticleType(int _type)
   }
   else if (_type == 2)
   {
-    particleType = 'A';
+    particleType = 'A'; //Automata particle
+
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(true);
     emit enableSplitType(false);
     emit enableConnections(false);
+    setShading("Ambient Occlusion");
+    emit changedShadingType(2);
     showConnections(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
-}
-
-void GLWindow::cancel()
-{
-
 }
 
 void GLWindow::showConnections(bool _state)
@@ -1017,7 +1004,6 @@ void GLWindow::toggleParticleDeath(bool _state)
 
 void GLWindow::setSplitType(int _type)
 {
-  //m_ps.setSplitType(_type);
   sendParticleDataToOpenGL();
   std::cout<<"splitType:"<<_type<<std::endl;
 
@@ -1038,15 +1024,12 @@ void GLWindow::setSplitType(int _type)
     emit enableLightOn(true);
     emit enableLightOff(true);
   }
-
-  //m_ps.reset(particleType);
   sendParticleDataToOpenGL();
-
 }
 
 void GLWindow::setCohesion(int _amount)
 {
-  // Only for LinkedParticles
+  //Only for LinkedParticles
   m_ps.setCohesion(_amount);
   sendParticleDataToOpenGL();
 }
@@ -1103,7 +1086,6 @@ void GLWindow::bulge()
   sendParticleDataToOpenGL();
 }
 
-
 void GLWindow::lightOn()
 {
   //Only for LinkedParticles
@@ -1149,10 +1131,8 @@ void GLWindow::setBranchLength(double _amount)
   sendParticleDataToOpenGL();
 }
 
-
 void GLWindow::restart()
 {
-
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetSplitType(0);
@@ -1175,7 +1155,6 @@ void GLWindow::restart()
   emit resetBColour(255);
   emit resetAmbientLight(100);
   emit resetSpecularLight(100);
-
 }
 
 void GLWindow::setChildThreshold(int _amount)
@@ -1191,4 +1170,9 @@ void GLWindow::setNearestParticle(bool _state)
 void GLWindow::setGrowToLight(bool _state)
 {
   m_ps.setGrowToLight(_state);
+}
+
+void GLWindow::cancel()
+{
+
 }
