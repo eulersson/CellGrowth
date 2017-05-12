@@ -90,6 +90,11 @@ public:
   /// @param [in] _averageDistance Average distance between particles
   /// @param [in] _particleCount Total number of particles in the system
   /// @param [in] _lightPos Holds the position of the point light
+  /// @param [in] _cohesionFactor Controls the strength of cohesion
+  /// @param [in] _localCohesionFactor Controls the strength of local cohesion
+  /// @param [in] _particleDeath Toggles whether or not particle death is true
+  /// @param [in] _automataRadius Controls the radius in which automata are created
+  /// @param [in] _automataTime Controls the speed at which automata are created
   //////////////////////////////////////////////////////////////////////////////
   virtual void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance,
                          unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
@@ -105,14 +110,6 @@ public:
   /// @brief Adds food to random particles to create interesting visuals.
   //////////////////////////////////////////////////////////////////////////////
   virtual void addFood(QVector3D _particleCentre) {}
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns a list containing all particles closest to the light.
-  /// @param [in] _particleList List of all particles
-  /// @param [in] _lightPos Holds the position of the point light
-  /////////////////////////////////////////////////////////////////////////////
-
- //virtual std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold.
@@ -135,7 +132,6 @@ public:
   virtual bool split(QVector3D ,
                      std::vector<std::unique_ptr<Particle>> &_particleList, std::mt19937_64 _gen,bool _growToLight) {return false;}
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle dependent function for splitting, needs to be overwritten
   /// on subclasses. Each type of particle will have a different one.
@@ -151,12 +147,6 @@ public:
       std::vector<std::unique_ptr<Particle>>&) { return false; }
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief checks if the particle has reached its food threshold and therefore
-  /// needs to be split.
-  //////////////////////////////////////////////////////////////////////////////
-  void testForSplit();
-
-  //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle position getter. Sets the vector passed in.
   /// @param[out] _pos Will hold the particles position
   //////////////////////////////////////////////////////////////////////////////
@@ -167,6 +157,9 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   QVector3D getPosition(){return m_pos;}
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Boolean to toggle whether or not particle is alive.
+  //////////////////////////////////////////////////////////////////////////////
   virtual bool isAlive(){return true;}
 
   //////////////////////////////////////////////////////////////////////////////
@@ -236,18 +229,27 @@ public:
       std::vector<QVector3D> &_linkPos,
       std::vector<std::unique_ptr<Particle>> &_particleList);
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief static function that resets the m_ID_counter to 0.
   //////////////////////////////////////////////////////////////////////////////
   static void resetIDCounter();
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Function to set the food level to true.
+  //////////////////////////////////////////////////////////////////////////////
   void setFoodLevelTrue();
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Function to handle how the links are connected.
+  /// @param[in] _particleList List from the particle system holding all
+  /// the particles
+  /// @param[in] _ID Holds the particle IDs
+  //////////////////////////////////////////////////////////////////////////////
   virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){}
 
 
 protected:
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle position.
   //////////////////////////////////////////////////////////////////////////////

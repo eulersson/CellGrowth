@@ -41,8 +41,10 @@ void AutomataParticle::calculate(QVector3D _particleCentre, std::vector<std::uni
                                  unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
                                  bool _particleDeath, int _automataRadius, int _automataTime)
 {
+  //Generates a new particle at every time interval
   if(m_time.elapsed() % _automataTime == 0)
   {
+    //Particles are randomly created on the screen within a set radius
     std::random_device rd;
     std::mt19937_64 gen(rd());
 
@@ -65,14 +67,17 @@ void AutomataParticle::calculate(QVector3D _particleCentre, std::vector<std::uni
     pos[1] = y;
     pos[2] = z;
 
+    //Adds a particle to the particle system
     _particleList.push_back(std::unique_ptr<AutomataParticle> (new AutomataParticle(x,y,z,newAutoParticles)));
   }
 
+  //Function call to particleRules
   particleRules(_particleList);
 }
 
 std::vector<unsigned int> AutomataParticle::getNeighbours(std::vector<std::unique_ptr<Particle> > &_particleList)
 {
+  //Finds the number of neighbours for the current particle
   QVector3D neighbourPos;
   QVector3D distance;
   std::vector<unsigned int> neighbours;
@@ -91,17 +96,22 @@ std::vector<unsigned int> AutomataParticle::getNeighbours(std::vector<std::uniqu
       }
     }
   }
+  //Returns a vector of neighbour IDs
   return neighbours;
 }
 
 void AutomataParticle::particleRules(std::vector<std::unique_ptr<Particle> > &_particleList)
 {
   std::vector<unsigned int> neighbours;
+  //Function call to getNeighbours
   neighbours = getNeighbours(_particleList);
 
   unsigned int neighbourCount = neighbours.size();
   unsigned int particleCount = _particleList.size();
 
+  //Rules to imitate Conway's Game of Life algorithm
+
+  //Applies before a certain time as to avoid beginning the algorithm with less than three cells
   if(m_time.elapsed() <= 3000)
   {
     if(neighbourCount>3)

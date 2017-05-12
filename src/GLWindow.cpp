@@ -4,6 +4,7 @@
 /// @author Fanny Marstrom
 /// @author Carola Gille
 /// @author Esme Prior
+/// @author Lydia Kenton
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
@@ -853,7 +854,6 @@ void GLWindow::wheelEvent(QWheelEvent *event)
   m_input_manager->wheelEvent(event);
 }
 
-
 // Slots
 void GLWindow::setParticleSize(double _size)
 {
@@ -878,8 +878,7 @@ void GLWindow::setParticleType(int _type)
   char particleType;
   if (_type == 0)
   {
-    particleType = 'L';
-
+    particleType = 'L'; //Linked particle
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
@@ -893,8 +892,8 @@ void GLWindow::setParticleType(int _type)
   }
   else if (_type == 1)
   {
-    particleType = 'G';
-    //emit resetSplitType(0);
+    particleType = 'G'; //Growth particle
+
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(false);
@@ -907,21 +906,18 @@ void GLWindow::setParticleType(int _type)
   }
   else if (_type == 2)
   {
-    particleType = 'A';
+    particleType = 'A'; //Automata particle
+
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(true);
     emit enableSplitType(false);
     emit enableConnections(false);
+    setShading("Ambient Occlusion");
     showConnections(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
-}
-
-void GLWindow::cancel()
-{
-
 }
 
 void GLWindow::showConnections(bool _state)
@@ -980,7 +976,6 @@ void GLWindow::toggleParticleDeath(bool _state)
 
 void GLWindow::setSplitType(int _type)
 {
-  //m_ps.setSplitType(_type);
   sendParticleDataToOpenGL();
   std::cout<<"splitType:"<<_type<<std::endl;
 
@@ -1000,15 +995,12 @@ void GLWindow::setSplitType(int _type)
     emit enableLightOn(true);
     emit enableLightOff(true);
   }
-
-  //m_ps.reset(particleType);
   sendParticleDataToOpenGL();
-
 }
 
 void GLWindow::setCohesion(int _amount)
 {
-  // Only for LinkedParticles
+  //Only for LinkedParticles
   m_ps.setCohesion(_amount);
   sendParticleDataToOpenGL();
 }
@@ -1029,14 +1021,12 @@ void GLWindow::setBcolour(int _bColour)
   m_lightDiffuseB = (float)_bColour/255.0f;
 }
 
-
 void GLWindow::bulge()
 {
   //Only for LinkedParticles
   m_ps.bulge();
   sendParticleDataToOpenGL();
 }
-
 
 void GLWindow::lightOn()
 {
@@ -1083,10 +1073,8 @@ void GLWindow::setBranchLength(double _amount)
   sendParticleDataToOpenGL();
 }
 
-
 void GLWindow::restart()
 {
-
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetSplitType(0);
@@ -1107,7 +1095,6 @@ void GLWindow::restart()
   emit resetRColour(255);
   emit resetGColour(255);
   emit resetBColour(255);
-
 }
 
 void GLWindow::setChildThreshold(int _amount)
@@ -1123,4 +1110,9 @@ void GLWindow::setNearestParticle(bool _state)
 void GLWindow::setGrowToLight(bool _state)
 {
   m_ps.setGrowToLight(_state);
+}
+
+void GLWindow::cancel()
+{
+
 }

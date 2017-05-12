@@ -2,6 +2,8 @@
 /// @file LinkedParticle.h
 /// @author Carola Gille
 /// @author Ramon Blanquer
+/// @author Esme Prior
+/// @author Lydia Kenton
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -55,15 +57,18 @@ public:
                  float _size);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Calculates the particle new position based on Forces.
-  /// @param [in] _particleCentre Position of the average centre of all particles.
-  /// @param [in] _particleList List of all particles.
-  /// @param [in] _averageDistance Average distance between particles.
-  /// @param [in] _particleCount Total number of particles in the system.
-  /// @param [in] _lightPos Holds the position of the point light.
-  /// @param [in] _cohesionFactor Holds the amount of cohesion taken from the slider.
-  /// @param [in] _localCohesionFactor Holds the amount of local cohesion taken from the slider.
-  /// @param [in] _automataRadius Holds the radius to control the automata particles' radius.
+  /// @brief Calculates the new velocity of the particle based on the forces
+  /// that act on it.
+  /// @param _particleCentre Position of the average centre of all particles
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _averageDistance Average distance between particles
+  /// @param [in] _particleCount Total number of particles in the system
+  /// @param [in] _lightPos Holds the position of the point light
+  /// @param [in] _cohesionFactor Controls the strength of cohesion
+  /// @param [in] _localCohesionFactor Controls the strength of local cohesion
+  /// @param [in] _particleDeath Toggles whether or not particle death is true
+  /// @param [in] _automataRadius Controls the radius in which automata are created
+  /// @param [in] _automataTime Controls the speed at which automata are created
   //////////////////////////////////////////////////////////////////////////////
   void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance,
                  unsigned int _particleCount,QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
@@ -87,20 +92,6 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void addFood(QVector3D _particleCentre) override;
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Moves the particles being hit by light towards the point light
-  /// @param [in] _particleList List of all particles
-  /// @param [in] _lightPos Holds the position of the point light
-  //////////////////////////////////////////////////////////////////////////////
-  void lightAttract(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns a list containing all particles closest to the light.
-  /// @param [in] _particleList List of all particles
-  /// @param [in] _lightPos Holds the position of the point light
-  /////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> getHitParticles(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _lightPos);
-
   // Computes all the relinking and creates a new particle
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split, Calculates which particles
@@ -117,7 +108,9 @@ public:
   //////////////////////////////////////////////////////////////////////////////
 
   void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList) override;
+
 private:
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Tests for position relative to a plane.
   /// @param[in] _normal Normal of the plane
@@ -130,9 +123,12 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Increases with time, to check how long the particle has been alive.
   //////////////////////////////////////////////////////////////////////////////
-  int particleLife;
+  int m_particleLife;
 
-  int life;
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Value for the lifespan controlled by food.
+  //////////////////////////////////////////////////////////////////////////////
+  int m_foodLife;
 
 };
 
