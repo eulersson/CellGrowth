@@ -34,7 +34,9 @@ GrowthParticle::GrowthParticle(qreal _x,
          "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
+void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList,
+                               QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor,
+                               int _localCohesionFactor, bool _particleDeath, int _automataRadius, int _automataTime)
 {
 
 }
@@ -54,7 +56,7 @@ bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Part
 
 
   //triggered by reaching the food threshold
-  //checks length of linked list to see if the max particle treshold is reached
+  //checks length of linked list to see if the max particle threshold is reached
   if(m_connectedParticles.size() >= m_childrenTreshold)
   {return false;}
 
@@ -242,7 +244,6 @@ bool GrowthParticle::recursiveCollision(QVector3D _particle,std::vector<std::uni
 
   }
   return false;
-
 }
 
 

@@ -35,7 +35,8 @@ LinkedParticle::LinkedParticle(qreal _x,
 }
 
 
-void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
+// All the force calculation should happen in here
+void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath, int _automataRadius, int _automataTime)
 {
 
 
@@ -79,7 +80,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   cohesion*=(cohesionDist/(_cohesionFactor*3.3f));
   m_vel+=cohesion;
 
-
   //LOCAL COHESION
   //Calculates cohesion based on particles links
   //Finds the centre of the linked particles
@@ -107,12 +107,9 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   localCohesion*=(localCohesionDist/(_localCohesionFactor));
   m_vel+=localCohesion;
 
-
   //CALCULATE UNLINKED
   //Makes a call to calculate unlinked function
-
   calculateUnlinked(_particleList);
-
 
   //PARTICLELIFE
   //Determines how long the particle has been alive
@@ -135,7 +132,6 @@ void LinkedParticle::calculate(QVector3D _particleCentre, std::vector<std::uniqu
   };
 
 }
-
 
 void LinkedParticle::calculateUnlinked(std::vector<std::unique_ptr<Particle>> &_particleList)
 {
@@ -277,9 +273,6 @@ int LinkedParticle::planeSorting(QVector3D _normal, QVector3D _planePoint, QVect
 
 bool LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList,std::mt19937_64 _gen)
 {
- // hitParticles = getHitParticle(_particleList, _lightPos);
- // std::cout<<"m_hitParticles.size(): "<<m_hitParticles.size()<<std::endl;
-
   // Sanity check
   if(m_connectedParticles.size() < 2)
   {
@@ -375,12 +368,7 @@ bool LinkedParticle::split(std::vector<std::unique_ptr<Particle>> &_particleList
   doubleConnect(newPartID,_particleList);
 
 
-//  QVector3D particleCentre;
-//  QVector3D averageDistance;
-//  std::vector<unsigned int> returnList;
-//  calculate(particleCentre, _particleList, averageDistance, returnList);
   return true;
-
 }
 
 void LinkedParticle::doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList)

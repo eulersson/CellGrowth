@@ -9,6 +9,7 @@ CONFIG -= app_bundle
 SOURCES += \
     src/main.cpp \
     src/ArcBallCamera.cpp \
+    src/AutomataParticle.cpp \
     src/GLWindow.cpp \
     src/GrowthParticle.cpp \
     src/Helpers.cpp \
@@ -31,6 +32,7 @@ INCLUDEPATH += include
 
 HEADERS += \
     include/ArcBallCamera.h \
+    include/AutomataParticle.h \
     include/GLWindow.h \
     include/GrowthParticle.h \
     include/InputManager.h \
