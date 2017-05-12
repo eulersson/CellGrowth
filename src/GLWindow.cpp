@@ -576,7 +576,9 @@ void GLWindow::initializeMatrices()
 void GLWindow::loadLightToShader()
 {
   m_lightPos = m_object_list[0]->getPosition();
+  m_fillLightPos = m_object_list[1]->getPosition();
   m_ps.setLightPos(m_lightPos);
+  m_ps.setLightPos(m_fillLightPos);
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("light.position", m_lightPos);
     m_lighting_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
@@ -591,7 +593,7 @@ void GLWindow::loadMaterialToShader()
 {
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("material.ambient", QVector3D(0.2f, 0.2f, 0.2f));
-    m_lighting_program->setUniformValue("material.diffuse", QVector3D(1.0f, 1.0f, 1.0f));
+    m_lighting_program->setUniformValue("material.diffuse", QVector3D(m_materialDiffuseR, m_materialDiffuseG, m_materialDiffuseB));
     m_lighting_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
     m_lighting_program->setUniformValue("material.shininess", 32.0f);
     m_lighting_program->setUniformValue("material.attenuation", 0.5f);
@@ -746,7 +748,7 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
 void GLWindow::updateParticleSystem()
 {
   m_ps.setLightPos(m_lightPos);
-
+  m_ps.setLightPos(m_fillLightPos);
   if(m_lightON == true)
   {
     m_ps.splitRandomParticle();
@@ -907,6 +909,8 @@ void GLWindow::setParticleType(int _type)
   emit resetRColour(255);
   emit resetGColour(255);
   emit resetBColour(255);
+  emit resetAmbientLight(100);
+  emit resetSpecularLight(100);
 
   char particleType;
   if (_type == 0)
@@ -1028,8 +1032,9 @@ void GLWindow::setSplitType(int _type)
 
   else if (_type==1) //LIGHT IS OFF
   {
-    m_ambient = 0.5;
+    m_ambient = 0;
     m_specular = 0;
+
     emit enableLightOn(true);
     emit enableLightOff(true);
   }
@@ -1060,6 +1065,34 @@ void GLWindow::setGcolour(int _gColour)
 void GLWindow::setBcolour(int _bColour)
 {
   m_lightDiffuseB = (float)_bColour/255.0f;
+}
+
+void GLWindow::setAmbientLight(int _ambient)
+{
+    m_ambient = (float) _ambient/100;
+//    m_ambient.y() =(float) _ambient/100 * m_lightDiffuseG;
+//    m_ambient.z() = (float) _ambient/100 * m_lightDiffuseB;
+}
+
+void GLWindow::setSpecularLight(int _specular)
+{
+    m_specular = (float) _specular/100;
+}
+
+void GLWindow::setRcolourMaterial(int _rColour)
+{
+    m_materialDiffuseR = (float)_rColour/255.0f;
+}
+
+void GLWindow::setGcolourMaterial(int _gColour)
+{
+    m_materialDiffuseG = (float)_gColour/255.0f;
+}
+
+
+void GLWindow::setBcolourMaterial(int _bColour)
+{
+    m_materialDiffuseB = (float)_bColour/255.0f;
 }
 
 
@@ -1140,6 +1173,8 @@ void GLWindow::restart()
   emit resetRColour(255);
   emit resetGColour(255);
   emit resetBColour(255);
+  emit resetAmbientLight(100);
+  emit resetSpecularLight(100);
 
 }
 

@@ -112,12 +112,10 @@ vec4 ADSRender()
     specular *= attenuation;
     
     vec3 lighting = (ambient + diffuse + specular);
-    //lighting *= vec3(Occlusion);
 
     lighting = clamp(lighting, vec3(0), vec3(1));
 
-    // lighting goes in to vec4 underneath.
-    return vec4(lighting, lighting, lighting, 1.0);
+    return vec4(lighting, 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +140,6 @@ vec4 XRayRender()
 
     vec4 InvertAO = vec4(vec3(1.0, 1.0, 1.0) - vec3(Occlusion, Occlusion, Occlusion), Alpha);
 
-    ///! WORK HERE VAL
     return result * InvertAO;
 
 }
