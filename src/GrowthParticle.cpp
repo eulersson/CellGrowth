@@ -34,7 +34,7 @@ GrowthParticle::GrowthParticle(qreal _x,
          "particles", _x, _y, _z);
 }
 
-void GrowthParticle::calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList,
+void GrowthParticle::calculate(std::vector<std::unique_ptr<Particle> > &_particleList,
                                QVector3D _averageDistance, unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor,
                                int _localCohesionFactor, bool _particleDeath, int _automataRadius, int _automataTime)
 {
