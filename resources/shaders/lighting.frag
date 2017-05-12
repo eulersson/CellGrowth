@@ -64,23 +64,16 @@ vec3 WorldNormal = normalize(texture(tWorldNormal, vTexCoords).xyz);
 vec3 ViewNormal  = normalize(normalMatrix * WorldNormal);
 float Occlusion = texture(tSSAO, vTexCoords).r;
 float Links = texture(tLinks, vTexCoords).r;
-float Depth = -ViewPosition.z;
+vec4 SkyBox = texture(tSkyBox, WorldNormal);
 
 
-vec4 SkyBoxFixer()
+float linDepth()
 {
-    vec4 SkyBox = texture(tSkyBox, WorldNormal);
-
-    return SkyBox;
+    float zDepth = -ViewPosition.z;
+    float near = 2.5f;
+    float far = 9.0f;
+    return ((2.0 * near) / (far + near - zDepth*(far - near)));
 }
-
-//float linDepth()
-//{
-//    float zDepth = Depth;
-//    float near = 2.5f;
-//    float far = 9.0f;
-//    return ((2.0 * near) / (far + near - zDepth*(far - near)));
-//}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +117,7 @@ vec4 ADSRender()
     lighting = clamp(lighting, vec3(0), vec3(1));
 
     // lighting goes in to vec4 underneath.
-    return vec4(lighting, 1.0);
+    return vec4(lighting, lighting, lighting, 1.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +128,7 @@ vec4 ADSRender()
 subroutine (RenderType)
 vec4 XRayRender()
 {
-    vec4 result = vec4(1.0);
+    vec4 result = vec4(1.0, 1.0, 1.0, 1.0);
     
     float EdgeFalloff = 2.3;
     float opacity = dot(normalize(ViewNormal), normalize(-ViewPosition));
@@ -143,10 +136,14 @@ vec4 XRayRender()
     opacity = 1.0 - pow(opacity, EdgeFalloff);
      
     result *= opacity;
-    vec3 InvertAO = vec3(Occlusion);
+
+    //Inverted occlusion for more shadow
+    float Alpha = 0.5;
+
+    vec4 InvertAO = vec4(vec3(1.0, 1.0, 1.0) - vec3(Occlusion, Occlusion, Occlusion), Alpha);
 
     ///! WORK HERE VAL
-    return result;
+    return result * InvertAO;
 
 }
 
@@ -162,8 +159,6 @@ vec4 AORender()
 }
 
 void main() {
-
-    float newDepth = clamp(-Depth, 1.0, 2.0);
 
     vec4 color = RenderTypeSelection();
     float alpha = WorldPosition.r == 0.0 ? 0.0 : 1.0;
