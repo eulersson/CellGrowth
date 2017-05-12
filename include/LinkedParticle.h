@@ -59,7 +59,6 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the new velocity of the particle based on the forces
   /// that act on it.
-  /// @param _particleCentre Position of the average centre of all particles
   /// @param [in] _particleList List of all particles
   /// @param [in] _averageDistance Average distance between particles
   /// @param [in] _particleCount Total number of particles in the system
@@ -70,7 +69,7 @@ public:
   /// @param [in] _automataRadius Controls the radius in which automata are created
   /// @param [in] _automataTime Controls the speed at which automata are created
   //////////////////////////////////////////////////////////////////////////////
-  void calculate(QVector3D _particleCentre, std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance,
+  void calculate(std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance,
                  unsigned int _particleCount,QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
                  bool _particleDeath, int _automataRadius, int _automataTime) override;
 
@@ -88,7 +87,8 @@ public:
   void bulge(QVector3D _particleCentre) override;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Adds food to random particles to create interesting effects..
+  /// @brief Adds food to random particles to create interesting effects.
+  /// @param [in] _particleCentre Position of the average centre of all particles
   //////////////////////////////////////////////////////////////////////////////
   void addFood(QVector3D _particleCentre) override;
 
