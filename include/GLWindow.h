@@ -773,7 +773,6 @@ signals:
   void enableConnections(bool _value);
   void enableSplitType(bool value);
 
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Singal emits when nearesr particle state needs to be changes.
   /// @param[in] value state that needs to be set.

@@ -85,7 +85,7 @@ void ParticleSystem::advance()
 //    }
   }
 
-  //calcuting the forces
+  //calculating the forces
   if (m_forces==true)
   {
     for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -119,6 +119,22 @@ void ParticleSystem::bulge()
     m_particles[i]->advance();
   }
   calculateParticleCentre();
+}
+
+void ParticleSystem::addFood()
+{
+  for (unsigned int i=0; i<=m_particles.size()/3; i++)
+  {
+    unsigned int randomIndex = rand() % m_particleCount;
+    m_particles[randomIndex]->setFoodLevelTrue();
+  }
+
+  for (unsigned int i = 0; i < m_particleCount; ++i)
+  {
+
+    m_particles[i]->advance();
+  }
+
 }
 
 void ParticleSystem::fill(unsigned int _amount)
@@ -157,7 +173,7 @@ void ParticleSystem::fill(unsigned int _amount)
     else if(m_particleType=='L')
     {
       m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(pos[i].x(), pos[i].y(),pos[i].z(),m_currentParticleSize)));
-      //m_particles.emplace_back(std::unique_ptr<Particle>(new LinkedParticle(x, y, z)));
+
     }
     else if(m_particleType=='A')
     {
@@ -204,10 +220,11 @@ void ParticleSystem::fill(unsigned int _amount)
    }
   }
 
-//  else
-//  {
-//    qDebug("To many particles to link");
-//  }
+  else
+  {
+    qDebug("To many particles to link");
+  }
+
 }
 
 // Returns a NORMAL pointer to the linked particle, not a smart one, otherwise
@@ -398,7 +415,7 @@ QVector3D ParticleSystem::calculateAverageDistanceFromCentre()
     fabsDistance.setY(fabs (distance.y()));
     fabsDistance.setZ(fabs(distance.z()));
 
-    averageDistance += fabsDistance;
+    m_averageDistance += fabsDistance;
   }
 
   averageDistance = averageDistance/(m_particles.size());

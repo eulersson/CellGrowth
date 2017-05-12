@@ -304,13 +304,11 @@ void GLWindow::prepareSSAOPipeline()
   m_lighting_program->bind();
 
     // Texture unit to use
-   // m_lighting_program->setUniformValue("tWorldPosition" , 0);
-    m_lighting_program->setUniformValue("tViewPosition"  , 1);
-    m_lighting_program->setUniformValue("tWorldNormal"   , 2);
-    m_lighting_program->setUniformValue("tViewNormal"    , 3);
-    m_lighting_program->setUniformValue("tSSAO"          , 4);
-    m_lighting_program->setUniformValue("tLinks"         , 5);
-    m_lighting_program->setUniformValue("tSkybox"        , 6);
+    m_lighting_program->setUniformValue("tWorldPosition" , 0);
+    m_lighting_program->setUniformValue("tWorldNormal"   , 1);
+    m_lighting_program->setUniformValue("tSSAO"          , 2);
+    m_lighting_program->setUniformValue("tLinks"         , 3);
+    m_lighting_program->setUniformValue("tSkybox"        , 4);
 
 
     // Uniforms
@@ -481,24 +479,16 @@ void GLWindow::paintGL()
     break;
   }
 
-
-  int temp = m_skybox->GetSkyBoxTexture()->textureId();
   m_lighting_program->bind();
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
-  glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, m_world_normal_texture->textureId());
-  glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
-  glActiveTexture(GL_TEXTURE4);
+  glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
-  glActiveTexture(GL_TEXTURE5);
+  glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
-  glActiveTexture(GL_TEXTURE6);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, temp);
-
+  m_skybox->GetSkyBoxTexture()->bind(4);
 
 
   m_quad_vao->bind();
@@ -695,7 +685,7 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
   // Recursion subdivision algorithm from:
   // httpresources/shaders//www.opengl.org.ru/docs/pg/0208.html
 
-  GLfloat X = 0.25731112119133606;
+  GLfloat X = 0.525731112119133606;
   GLfloat Z = 0.850650808352039932;
 
   GLfloat vdata[12][3] = {
@@ -900,7 +890,6 @@ void GLWindow::setParticleType(int _type)
     setShading("ADS");
     emit changedShadingType(0);
     emit resetNearestParticle(true);
-
   }
   else if (_type == 1)
   {
@@ -1048,7 +1037,6 @@ void GLWindow::bulge()
   sendParticleDataToOpenGL();
 }
 
-//Might be able able to move this into function above.
 
 void GLWindow::lightOn()
 {

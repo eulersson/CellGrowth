@@ -76,7 +76,7 @@ void SkyBox::prepare()
   m_program->enableAttributeArray("pos");
 
   m_program->setAttributeBuffer("pos", GL_FLOAT, 0, 3);
-  m_program->setUniformValue("tSkyBox", 6);
+  m_program->setUniformValue("tSkyBox", 4);
 
   m_vao->release();
 
@@ -115,7 +115,7 @@ void SkyBox::prepare()
 void SkyBox::draw()
 {
 
-  m_texture->bind();
+  m_texture->bind(4);
 
     m_program->bind();
 
