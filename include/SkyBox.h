@@ -4,6 +4,11 @@
 /// @author Ramon Blanquer
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
+/// Source:
+/// Gerdelan, A., 2016. Cube Maps: Skyboxes and Environment Mapping. [online]
+/// Antongerdelan.net. Available from: http://antongerdelan.net/opengl/cubemaps.html
+/// [Accessed 13 Apr. 2017].
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef SKYBOX_H
 #define SKYBOX_H

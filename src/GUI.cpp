@@ -11,7 +11,6 @@ GUI::GUI(QWidget *parent) :
   m_colour_light.setRgb(255, 255, 255);
   m_colour_material.setRgb(255, 255, 255);
 
-
   m_ui->setupUi(this);
   m_gl = new GLWindow(this);
   m_gl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -60,6 +59,11 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_materialGSpinBox, SIGNAL(valueChanged(int)),SLOT(onGreenMaterial(int)));
   connect(m_ui->m_materialBSpinBox, SIGNAL(valueChanged(int)),SLOT(onBlueMaterial(int)));
 
+  //AO Variables
+  connect(m_ui->m_RadiusSB,SIGNAL(valueChanged(double)),m_gl,SLOT(setSSAORadius(double)));
+  connect(m_ui->m_BiasSB,SIGNAL(valueChanged(double)),m_gl,SLOT(setSSAOBias(double)));
+
+
 
   connect(m_gl,SIGNAL(resetBranchLength(double)),m_ui->m_GP_branchLength,SLOT(setValue(double)));
   connect(m_gl,SIGNAL(resetChildrenThreshold(int)),m_ui->m_GP_children,SLOT(setValue(int)));
@@ -95,6 +99,12 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(resetSpecularLight(int)),m_ui->m_specularLight,SLOT(setValue(int)));
 
   connect(m_gl,SIGNAL(enableConnections(bool)),m_ui->m_showConnections,SLOT(setEnabled(bool)));
+
+  //AO Variables
+  connect(m_gl,SIGNAL(resetAORadius(double)),m_ui->m_RadiusSB,SLOT(setValue(double)));
+  connect(m_gl,SIGNAL(resetAOBias(double)),m_ui->m_BiasSB,SLOT(setValue(double)));
+
+
 
 }
 

@@ -89,11 +89,11 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
 }
 
 
-void InputManager::setupCamera(int _w, int _h)
+void InputManager::setupCamera(float _fov, int _w, int _h, float _near, float _far)
 {
   m_projection.setToIdentity();
-  m_projection.perspective(45.0f, (float)_w / (float)_h,
-                         0.1f, 10000.0f);
+  m_projection.perspective(_fov, (float)_w / (float)_h,
+                         _near, _far);
 
 
 
