@@ -83,6 +83,7 @@ void GLWindow::cleanup()
   delete m_gbuffer_fbo;
   delete m_ssao_fbo;
   delete m_blur_fbo;
+
 }
 
 void GLWindow::prepareSSAOPipeline()
@@ -291,6 +292,7 @@ void GLWindow::prepareSSAOPipeline()
     m_ssao_program->setUniformValue("tViewNormal"   , 1);
     m_ssao_program->setUniformValue("tTexNoise"     , 2);
 
+
   m_ssao_program->release();
 
   // === BLUR ===
@@ -383,7 +385,16 @@ void GLWindow::initializeGL()
   //setUpCamera(fov, width, height, zNear, zFar);
   m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 250.f);
 
+  //Initializing SSAO uniform values used i GUI.
+  m_ssaoRadius = 5.0;
+  m_ssaoBias = 0.025;
+
+  m_ssao_program->bind();
+    m_ssao_program->setUniformValue("Radius", m_ssaoRadius);
+    m_ssao_program->setUniformValue("Bias", m_ssaoBias);
+  m_ssao_program->release();
 }
+
 
 void GLWindow::paintGL()
 {
@@ -906,6 +917,8 @@ void GLWindow::setParticleType(int _type)
   emit resetBColour(255);
   emit resetAmbientLight(100);
   emit resetSpecularLight(100);
+  emit resetAORadius(5.0);
+  emit resetAOBias(0.025);
 
   char particleType;
   if (_type == 0)
@@ -1039,6 +1052,25 @@ void GLWindow::setCohesion(int _amount)
   sendParticleDataToOpenGL();
 }
 
+void GLWindow::setSSAORadius(double _radius)
+{
+    m_ssaoRadius = (float) _radius;
+    qDebug("SSAO rad: %f", m_ssaoRadius);
+
+    m_ssao_program->bind();
+      m_ssao_program->setUniformValue("Radius", m_ssaoRadius);
+    m_ssao_program->release();
+
+}
+
+void GLWindow::setSSAOBias(double _bias)
+{
+    m_ssaoBias = (float) _bias;
+    m_ssao_program->bind();
+      m_ssao_program->setUniformValue("Bias", m_ssaoBias);
+    m_ssao_program->release();
+}
+
 void GLWindow::setRcolour(int _rColour)
 {
   m_lightDiffuseR = (float)_rColour/255.0f;
@@ -1160,6 +1192,8 @@ void GLWindow::restart()
   emit resetBColour(255);
   emit resetAmbientLight(100);
   emit resetSpecularLight(100);
+  emit resetAORadius(5.0);
+  emit resetAOBias(0.025);
 }
 
 void GLWindow::setChildThreshold(int _amount)
