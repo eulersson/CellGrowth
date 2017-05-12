@@ -23,7 +23,7 @@ Particle::Particle()
     , m_size(2.0)
     , m_foodThreshold(0)
 {
-  //qDebug("Particle default constructor.");
+  qDebug("Particle default constructor.");
 }
 
 
@@ -34,7 +34,7 @@ Particle::Particle(qreal _x, qreal _y, qreal _z, float _size)
     , m_size(_size)
     , m_foodThreshold(100)
 {
-  //qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
+  qDebug("Particle constructor passing in positions: %f,%f,%f", _x, _y, _z);
 }
 
 
@@ -48,22 +48,14 @@ Particle::Particle(qreal _x,
     , m_size(_size)
     , m_foodThreshold(100)
 {
- // qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
-         //"particles", _x, _y, _z);
+ qDebug("Particle constructor passing in positions: %f,%f,%f and a list of"
+         "particles", _x, _y, _z);
   m_connectedParticles = _connectedParticles;
 }
 
 void Particle::advance()
 {
   m_pos += m_vel;
-}
-
-void Particle::testForSplit()
-{
-//  if (m_foodLevel >= m_foodThreshold)
-//    m_split=true;
-//  else
-//    m_split=false;
 }
 
 void Particle::setFoodLevelTrue()
@@ -77,7 +69,6 @@ void Particle::getPos(QVector3D &_pos)
   _pos.setY(m_pos.y());
   _pos.setZ(m_pos.z());
 }
-
 
 void Particle::setPos(qreal _x, qreal _y, qreal _z)
 {
@@ -101,7 +92,6 @@ void Particle::connect(unsigned int _ID, std::vector<std::unique_ptr<Particle> >
   m_connectedParticles.push_back(_ID);
 }
 
-
 void Particle::deleteConnection(unsigned int _ID)
 {
   for(size_t i=0;i<m_connectedParticles.size();i++)
@@ -114,18 +104,15 @@ void Particle::deleteConnection(unsigned int _ID)
   }
 }
 
-
 unsigned int Particle::getID()
 {
  return m_ID;
 }
 
-
 void Particle::getConnectionsID(std::vector<unsigned int> &_returnList)
 {
   _returnList=m_connectedParticles;
 }
-
 
 int Particle::getConnectionCount()
 {
@@ -138,15 +125,12 @@ void Particle::getPosFromConnections(std::vector<QVector3D> &_linkPos,std::vecto
   _linkPos.clear();
   QVector3D tempVec;
 
-
   for(size_t i=0;i<m_connectedParticles.size();i++)
   {
     _particleList[m_connectedParticles[i]]->getPos(tempVec);
     _linkPos.push_back(tempVec);
   }
-
 }
-
 
 void Particle::resetIDCounter()
 {
