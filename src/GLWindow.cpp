@@ -914,6 +914,7 @@ void GLWindow::setParticleType(int _type)
     emit enableSplitType(false);
     emit enableConnections(false);
     setShading("Ambient Occlusion");
+    emit changedShadingType(2);
     showConnections(false);
   }
   m_ps.reset(particleType);
