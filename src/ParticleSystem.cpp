@@ -271,32 +271,35 @@ void ParticleSystem::splitRandomParticle()
   {
     toSplit.push_back(i);
   }
-
-  std::uniform_int_distribution<int> distribution(0,toSplit.size()-1);
-
-  uint nearestParticle = getNearestParticle(toSplit);
-  uint index;
-
-  if(m_nearestParticleState==true)
-      index=nearestParticle;
-  else
-      index=distribution(m_gen);
-  // calling different split function based on the particle type
-
-  if(m_particleType=='G')
+  
+  while (split == false)
   {
-    split=m_particles[toSplit[index]]->split(m_lightPos,m_particles,m_gen,m_GP_growtoLight);
-  }
-  else if(m_particleType=='L')
-  {
-    split=m_particles[toSplit[index]]->split(m_particles,m_gen);
-  }
+    std::uniform_int_distribution<int> distribution(0,toSplit.size()-1);
 
-  m_particleCount=m_particles.size();
+    uint nearestParticle = getNearestParticle(toSplit);
+    uint index;
 
-  if(split==false)
-  {
-    toSplit.erase(toSplit.begin()+index);
+    if(m_nearestParticleState==true)
+        index=nearestParticle;
+    else
+        index=distribution(m_gen);
+    // calling different split function based on the particle type
+
+    if(m_particleType=='G')
+    {
+      split=m_particles[toSplit[index]]->split(m_lightPos,m_particles,m_gen,m_GP_growtoLight);
+    }
+    else if(m_particleType=='L')
+    {
+      split=m_particles[toSplit[index]]->split(m_particles,m_gen);
+    }
+
+    m_particleCount=m_particles.size();
+
+    if(split==false)
+    {
+      toSplit.erase(toSplit.begin()+index);
+    }
   }
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
