@@ -544,8 +544,8 @@ void GLWindow::paintGL()
 void GLWindow::resizeGL(int _w, int _h)
 {
   qDebug("Window resized to %dx%d", _w, _h);
-
   m_input_manager->resized(_w, _h);
+  m_input_manager->setupCamera(45.0f, width(), height(), 0.1f, 250.0f);
   cleanup();
   prepareSSAOPipeline();
   m_ssao_program->bind();
