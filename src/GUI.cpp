@@ -106,6 +106,27 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(resetAORadius(double)),m_ui->m_RadiusSB,SLOT(setValue(double)));
   connect(m_gl,SIGNAL(resetAOBias(double)),m_ui->m_BiasSB,SLOT(setValue(double)));
 
+  // Help status bar
+  m_ui->label_particle_type->setToolTip("Particle Type");
+  m_ui->label_particle_size->setToolTip("Particle Size");
+  m_ui->m_LP_particleDeath->setToolTip("Particle Death");
+  m_ui->m_LP_cohesion->setToolTip("Cohesion");
+  m_ui->m_LP_localCohesion->setToolTip("Local Cohesion");
+  m_ui->LP_bulge->setToolTip("Bulge");
+  m_ui->label_split_type->setToolTip("Split Type");
+  m_ui->m_LP_lightOn->setToolTip("Light On");
+  m_ui->m_LP_lightOff->setToolTip("Light Off");
+  m_ui->label_GP_branches->setToolTip("Branches per particle");
+  m_ui->label_GP_branch_length->setToolTip("Branch length");
+  m_ui->m_GP_growtoLight->setToolTip("Grow towards light");
+  m_ui->m_nearestPart->setToolTip("Nearest particle to light");
+  m_ui->label_AP_radius->setToolTip("Radius");
+  m_ui->label_AP_time->setToolTip("Time");
+
+  m_ui->m_restart->setToolTip("Restart");
+
+
+
 
 
 }
