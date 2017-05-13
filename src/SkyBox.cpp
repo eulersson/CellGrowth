@@ -2,7 +2,7 @@
 #include <QOpenGLFunctions_4_1_Core>
 
 
-SkyBox::SkyBox(InputManager *_input_manager) : m_input_manager(_input_manager)
+SkyBox::SkyBox(InputManager *_input_manager) : m_input_manager(_input_manager), m_blur_iterations(5)
 {
 
 }
@@ -204,12 +204,30 @@ void SkyBox::draw(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
 
    m_fbo->release();
 
+
+
+  for (uint i = 1; i < m_blur_iterations; i++)
+  {
+    m_fbo->bind();
+     m_painted_sky->bind(0);
+     m_blur_program->bind();
+     m_quad_vao->bind();
+       _funcs->glDrawArrays(GL_TRIANGLES, 0, 6);
+     m_quad_vao->release();
+     m_blur_program->release();
+    m_fbo->release();
+
+  }
+
+
+
+
+
    _funcs->glDisable(GL_DEPTH_TEST);
 
    m_blur_program->bind();
    m_quad_vao->bind();
    m_painted_sky->bind(0);
-   m_blur_program->setUniformValue("uResolution", QVector2D(_width, _height));
    _funcs->glDrawArrays(GL_TRIANGLES, 0, 6);
    m_quad_vao->release();
 

@@ -5,7 +5,6 @@ out vec3 fColor;
 in vec2 vTexCoords;
 
 uniform sampler2D tInputBG;
-uniform vec2 uResolution;
 
 
 const float offset = 1.0 / 300;  

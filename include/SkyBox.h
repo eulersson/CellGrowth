@@ -39,6 +39,7 @@ public:
   QOpenGLTexture *getCubeMapTexture() {return m_cubemap_texture;}
 
 private:
+  uint m_blur_iterations;
   InputManager *m_input_manager;
 
   QOpenGLBuffer m_skybox_vbo;
