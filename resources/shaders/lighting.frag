@@ -94,7 +94,7 @@ subroutine uniform RenderType RenderTypeSelection;
 subroutine (RenderType)
 vec4 ADSRender()
 {
-    vec3 lightDir = normalize((light.position + fillLight.position) - WorldPosition);
+    vec3 lightDir = normalize(light.position - WorldPosition) + normalize(fillLight.position - WorldPosition);
     vec3 viewDir  = normalize(-WorldPosition);
 
     // Ambient
