@@ -7,40 +7,41 @@ in vec2 vTexCoords;
 uniform sampler2D tInputBG;
 uniform vec2 uResolution;
 
+
+const float offset = 1.0 / 300;  
+
 void main() {
-  // vec3 color = vec3(0.0);
-  // vec2 off1 = vec2(1.3333333333333333);
-  // color += texture2D(tInputBG, vTexCoords).rgb * 0.29411764705882354;
-  // color += texture2D(tInputBG, vTexCoords + (off1 / resolution)).rgb * 0.35294117647058826;
-  // color += texture2D(tInputBG, vTexCoords - (off1 / resolution)).rgb * 0.35294117647058826;
+  vec2 offsets[9] = vec2[](
+        vec2(-offset, offset),  // top-left
+        vec2(0.0f,    offset),  // top-center
+        vec2(offset,  offset),  // top-right
+        vec2(-offset, 0.0f),    // center-left
+        vec2(0.0f,    0.0f),    // center-center
+        vec2(offset,  0.0f),    // center-right
+        vec2(-offset, -offset), // bottom-left
+        vec2(0.0f,    -offset), // bottom-center
+        vec2(offset,  -offset)  // bottom-right    
+    );
+
+    float kernel[9] = float[](
+        1.0 / 16, 2.0 / 16, 1.0 / 16,
+        2.0 / 16, 4.0 / 16, 2.0 / 16,
+        1.0 / 16, 2.0 / 16, 1.0 / 16  
+    );
+
+    vec3 sampleTex[9];
+
+    for(int i = 0; i < 9; i++)
+    {
+        sampleTex[i] = vec3(texture(tInputBG, vTexCoords.st + offsets[i]));
+    }
+
+    vec3 col = vec3(0.0, 0.0, 0.0);
+    for(int i = 0; i < 9; i++)
+    {
+        col += kernel[i] * sampleTex[i];
+    }
 
 
-
-
-
-  vec3 color = vec3(0.0);
-  vec2 off1 = vec2(1.411764705882353);
-  vec2 off2 = vec2(3.2941176470588234);
-  vec2 off3 = vec2(5.176470588235294);
-  color += texture2D(tInputBG, vTexCoords).rgb * 0.1964825501511404;
-  color += texture2D(tInputBG, vTexCoords + (off1 / uResolution)).rgb * 0.2969069646728344;
-  color += texture2D(tInputBG, vTexCoords - (off1 / uResolution)).rgb * 0.2969069646728344;
-  color += texture2D(tInputBG, vTexCoords + (off2 / uResolution)).rgb * 0.09447039785044732;
-  color += texture2D(tInputBG, vTexCoords - (off2 / uResolution)).rgb * 0.09447039785044732;
-  color += texture2D(tInputBG, vTexCoords + (off3 / uResolution)).rgb * 0.010381362401148057;
-  color += texture2D(tInputBG, vTexCoords - (off3 / uResolution)).rgb * 0.010381362401148057;
-
-
-  color = texture2D(tInputBG, vTexCoords).rgb;
-
-
-
-
-
-
-
-
-
-
-  fColor = color;
+  fColor = col.rgb;
 }
