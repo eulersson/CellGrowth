@@ -264,6 +264,8 @@ void ParticleSystem::setLightPos(QVector3D _lightPos)
 
 void ParticleSystem::splitRandomParticle()
 {
+  if(m_particleType=='A') return;
+
   bool split=false;
   std::vector<uint> toSplit;
 
@@ -272,6 +274,7 @@ void ParticleSystem::splitRandomParticle()
     toSplit.push_back(i);
   }
   
+
   while (split == false)
   {
     std::uniform_int_distribution<int> distribution(0,toSplit.size()-1);

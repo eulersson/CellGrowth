@@ -946,6 +946,7 @@ void GLWindow::setParticleType(int _type)
     emit enableSplitType(false);
     emit enableConnections(true);
     emit setConnectionState(true);
+    showConnections(true);
     setShading("X Ray");
     emit changedShadingType(1);
     emit resetNearestParticle(false);
