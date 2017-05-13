@@ -19,8 +19,9 @@
 ParticleSystem::ParticleSystem() :
   m_gen(m_rd())
 {
-  m_currentParticleSize=2.0;
   qDebug("Default constructor called");
+
+  m_currentParticleSize=2.0;
   m_particleCount=0;
   m_particleType= 'L';
   fill(12);
@@ -34,28 +35,30 @@ ParticleSystem::ParticleSystem() :
   m_GP_growtoLight=true;
 }
 
-// For custom number of particlesm_packagedParticleData
+//filling particle system with input particle type
 ParticleSystem::ParticleSystem(char _particleType):
   m_gen(m_rd())
 {
-  m_currentParticleSize=2.0;
   qDebug("Custom constructor called");
+
+  m_currentParticleSize=2.0;
   m_particleCount=0;
   m_particleType = _particleType;
 
-  //if it's a linked particle we need 3 particle
+  //if it's a linked particle we need 12 particle
   if (m_particleType=='L')
   {
     fill(12);
+
+    m_cohesion = 30; //percent
+    m_localCohesion = 30;
+    m_forces = true;
+    m_particleDeath = false;
   }
   //if it's a Growth particle we need 1 particle to start with
   else if (m_particleType== 'G')
   {
     fill(1);
-    m_forces = true;
-    m_particleDeath = false;
-    m_cohesion = 30; //percent
-    m_localCohesion = 30;
   }
   else if (m_particleType=='A')
   {
@@ -132,6 +135,7 @@ void ParticleSystem::fill(unsigned int _amount)
   const float Z = 0.850650808352039932;
   const float N= 0.0f;
 
+  //Esme
   pos.push_back(QVector3D(-X,N,Z));
   pos.push_back(QVector3D(X,N,Z));
   pos.push_back(QVector3D(-X,N,-Z));
@@ -149,7 +153,8 @@ void ParticleSystem::fill(unsigned int _amount)
   {
     if(m_particleType=='G') //Growth particle
     {
-      m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(0,0,0,m_currentParticleSize)));
+      m_particles.emplace_back(std::unique_ptr<Particle>(new GrowthParticle(0.1,0.3,0.4,m_currentParticleSize)));
+
       m_particleCount++;
     }
     else if(m_particleType=='L') //Linked particle
@@ -226,16 +231,10 @@ unsigned int ParticleSystem::getSize()
 void ParticleSystem::getLinksForDraw(std::vector<uint> &_returnList)
 {
   _returnList.clear();
-  // There is a lot of iterating here maybe there can be find a better way to
-  // do this. Using pointers would maybe get rid of the the iterations but it
-  // might cause problems with vectors reallocating their memory as the memory
-  // address changes we could have a fixed size array and maybe have a max
-  // particle treshold. Using size of vetor for this because Jon said I should
-  // be doing that we can change it to particle Count though
+  //loops through each particle and finds the links
   for (unsigned int i = 0; i < m_particles.size(); i++)
   {
-    // Gets the links from the current particle and than looks for the position
-    // dependent on the particles ID
+
     std::vector<unsigned int> tempList;
     m_particles[i]->getConnectionsID(tempList);
     for (unsigned int j = 0; j < tempList.size(); j++)
@@ -305,7 +304,6 @@ void ParticleSystem::splitRandomParticle()
     m_particles[i]->calculate(m_particles, m_averageDistance, m_particleCount,
                               m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
   }
-  qDebug("Particles: %d", m_particleCount);
 }
 
 unsigned int ParticleSystem::getNearestParticle(std::vector<uint> _toSplit)
