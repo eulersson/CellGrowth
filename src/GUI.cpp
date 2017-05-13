@@ -48,6 +48,7 @@ GUI::GUI(QWidget *parent) :
 
   connect(m_ui->m_lightAmbient,SIGNAL(valueChanged(int)),m_gl,SLOT(setAmbientLight(int)));
   connect(m_ui->m_specularLight,SIGNAL(valueChanged(int)),m_gl,SLOT(setSpecularLight(int)));
+  connect(m_ui->m_FillLight,SIGNAL(valueChanged(int)),m_gl,SLOT(setFillLight(int)));
 
 
   //Materials
@@ -96,6 +97,8 @@ GUI::GUI(QWidget *parent) :
 
   connect(m_gl,SIGNAL(resetAmbientLight(int)),m_ui->m_lightAmbient,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetSpecularLight(int)),m_ui->m_specularLight,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetFillLight(int)),m_ui->m_FillLight,SLOT(setValue(int)));
+
 
   connect(m_gl,SIGNAL(enableConnections(bool)),m_ui->m_showConnections,SLOT(setEnabled(bool)));
 
