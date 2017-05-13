@@ -15,9 +15,12 @@
 
 // Qt
 #include <QOpenGLBuffer>
+#include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QOpenGLVertexArrayObject>
+#include <QOpenGLFunctions_4_1_Core>
+
 
 // Project
 #include "InputManager.h"
@@ -31,16 +34,23 @@ class SkyBox
 public:
   SkyBox(InputManager *_input_manager);
   ~SkyBox();
-  void prepare();
-  void draw();
-  QOpenGLTexture *GetSkyBoxTexture() {return m_texture;}
+  void prepare(int _width, int _height, QOpenGLFunctions_4_1_Core *_funcs);
+  void draw(int _width, int _height, QOpenGLFunctions_4_1_Core *_funcs);
+  QOpenGLTexture *getCubeMapTexture() {return m_cubemap_texture;}
 
 private:
   InputManager *m_input_manager;
-  QOpenGLBuffer m_vbo;
-  QOpenGLVertexArrayObject *m_vao;
-  QOpenGLShaderProgram *m_program;
-  QOpenGLTexture *m_texture;
+
+  QOpenGLBuffer m_skybox_vbo;
+  QOpenGLVertexArrayObject *m_skybox_vao;
+  QOpenGLShaderProgram *m_sky_program;
+  QOpenGLTexture *m_cubemap_texture;
+  QOpenGLTexture* m_painted_sky;
+
+  QOpenGLFramebufferObject *m_fbo;
+  QOpenGLVertexArrayObject *m_quad_vao;
+  QOpenGLBuffer m_quad_vbo;
+  QOpenGLShaderProgram *m_blur_program;
 };
 
 #endif // SKYBOX_H
