@@ -594,8 +594,8 @@ void GLWindow::loadLightToShader()
 void GLWindow::loadMaterialToShader()
 {
   m_lighting_program->bind();
-    m_lighting_program->setUniformValue("material.ambient", QVector3D(0.2f, 0.2f, 0.2f));
-    m_lighting_program->setUniformValue("material.diffuse", QVector3D(m_materialDiffuseR, m_materialDiffuseG, m_materialDiffuseB));
+    m_lighting_program->setUniformValue("material.ambient", QVector3D(m_materialR*0.5, m_materialG*0.5, m_materialB*0.5));
+    m_lighting_program->setUniformValue("material.diffuse", QVector3D(m_materialR, m_materialG, m_materialB));
     m_lighting_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
     m_lighting_program->setUniformValue("material.shininess", 32.0f);
     m_lighting_program->setUniformValue("material.attenuation", 0.5f);
@@ -1105,18 +1105,18 @@ void GLWindow::setFillLight(int _amount)
 
 void GLWindow::setRcolourMaterial(int _rColour)
 {
-    m_materialDiffuseR = (float)_rColour/255.0f;
+    m_materialR = (float)_rColour/255.0f;
 }
 
 void GLWindow::setGcolourMaterial(int _gColour)
 {
-    m_materialDiffuseG = (float)_gColour/255.0f;
+    m_materialG = (float)_gColour/255.0f;
 }
 
 
 void GLWindow::setBcolourMaterial(int _bColour)
 {
-    m_materialDiffuseB = (float)_bColour/255.0f;
+    m_materialB = (float)_bColour/255.0f;
 }
 
 
