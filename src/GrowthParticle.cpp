@@ -36,6 +36,7 @@ GrowthParticle::GrowthParticle(qreal _x,
 
 
 
+
 bool GrowthParticle::split(QVector3D _lightPos, std::vector<std::unique_ptr<Particle> > &_particleList,std::mt19937_64 _gen,bool _growToLight)
 {
 

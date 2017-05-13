@@ -4,6 +4,7 @@
 /// @author Fanny Marstrom
 /// @author Carola Gille
 /// @author Esme Prior
+/// @author Lydia Kenton
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
@@ -82,6 +83,7 @@ void GLWindow::cleanup()
   delete m_gbuffer_fbo;
   delete m_ssao_fbo;
   delete m_blur_fbo;
+
 }
 
 void GLWindow::prepareSSAOPipeline()
@@ -290,6 +292,7 @@ void GLWindow::prepareSSAOPipeline()
     m_ssao_program->setUniformValue("tViewNormal"   , 1);
     m_ssao_program->setUniformValue("tTexNoise"     , 2);
 
+
   m_ssao_program->release();
 
   // === BLUR ===
@@ -337,6 +340,9 @@ void GLWindow::prepareSSAOPipeline()
 void GLWindow::initializeGL()
 {
 
+    qDebug("Light Position length: %d", m_lightPos.length());
+    qDebug("Fill Light Position length: %d", m_fillLightPos.length());
+
   initializeOpenGLFunctions();
 
   m_input_manager = new InputManager(this);
@@ -375,14 +381,26 @@ void GLWindow::initializeGL()
   prepareSSAOPipeline();
 
   glViewport(0, 0, width(), height());
+
+  //setUpCamera(fov, width, height, zNear, zFar);
+  m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 250.f);
+
+  //Initializing SSAO uniform values used i GUI.
+  m_ssaoRadius = 5.0;
+  m_ssaoBias = 0.025;
+
+  m_ssao_program->bind();
+    m_ssao_program->setUniformValue("Radius", m_ssaoRadius);
+    m_ssao_program->setUniformValue("Bias", m_ssaoBias);
+  m_ssao_program->release();
 }
+
 
 void GLWindow::paintGL()
 {
   updateModelMatrix();
 
-  m_input_manager->setupCamera(width(), height());
-  m_input_manager->doMovement();
+  m_input_manager->doMovement(-m_ps.calculateParticleCentre());
 
   //////////////////////////////////////////////////////////////////////////////
   /// gBuffer: Geometry pass
@@ -393,8 +411,6 @@ void GLWindow::paintGL()
 
     switch (m_rendering_mode) {
     case GLWindow::XRAY:
-      glClearColor(0, 0, 0, 0);
-
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_COLOR);
       glBlendEquation(GL_FUNC_ADD);
@@ -404,6 +420,7 @@ void GLWindow::paintGL()
       glDisable(GL_BLEND);
 
       break;
+
     default:
       drawParticles();
       break;
@@ -425,12 +442,9 @@ void GLWindow::paintGL()
       m_ssao_program->setUniformValue(s.c_str(), m_ssao_kernel[i]);
     }
     m_ssao_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_view_position_texture->textureId());
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, m_noise_texture->textureId());
+    m_view_position_texture->bind(0);
+    m_view_normal_texture->bind(1);
+    m_noise_texture->bind(2);
     m_quad_vao->bind();
     glDrawArrays(GL_TRIANGLES, 0, 6);
     m_quad_vao->release();
@@ -444,8 +458,7 @@ void GLWindow::paintGL()
     glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
     m_blur_program->bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_occlusion_texture->textureId());
+    m_occlusion_texture->bind(0);
     m_quad_vao->bind();
       glDrawArrays(GL_TRIANGLES, 0, 6);
     m_quad_vao->release();
@@ -470,10 +483,9 @@ void GLWindow::paintGL()
     m_skybox->draw();
     glDepthMask(GL_TRUE);
     break;
+
+  //Ambient Occlusion render pass.
   case GLWindow::AO:
-    //Setting background to white
-   // glClearColor(1,1,1,1);
-   // glClear(GL_COLOR_BUFFER_BIT);
     break;
   default:
     break;
@@ -483,19 +495,14 @@ void GLWindow::paintGL()
   /// Quad
   //////////////////////////////////////////////////////////////////////////////
   m_lighting_program->bind();
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, m_world_position_texture->textureId());
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, m_world_normal_texture->textureId());
-  glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, m_blurred_occlusion_texture->textureId());
-  glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
+  m_world_position_texture->bind(0);
+  m_world_normal_texture->bind(1);
+  m_blurred_occlusion_texture->bind(2);
+  m_links_texture->bind(3);
   m_skybox->GetSkyBoxTexture()->bind(4);
 
 
   m_quad_vao->bind();
-    m_lighting_program->setUniformValue("ProjectionMatrix", m_input_manager->getProjectionMatrix());
     m_lighting_program->setUniformValue("ModelMatrix", m_model_matrix);
     m_lighting_program->setUniformValue("ViewMatrix", m_input_manager->getViewMatrix());
     glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &m_activeRenderPassIndex);
@@ -526,21 +533,10 @@ void GLWindow::paintGL()
   // Enable back colour so we can paint manipulators
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   // Draw manipulators
+
   for(auto &s : m_object_list) { s->draw(); }
   // Bring it back to previous state
   glDisable(GL_DEPTH_TEST);
-
-
-
-
-
-
-
-
-
-
-
-
 
   updateParticleSystem();
 }
@@ -567,7 +563,7 @@ void GLWindow::initializeMatrices()
         45.0f,
         (float)width() / (float)height(),
         0.1f,
-        100.0f);
+        250.0f);
 
   m_model_matrix.setToIdentity();
   m_model_matrix.translate(0.0, 0.0, 0.0);
@@ -576,7 +572,10 @@ void GLWindow::initializeMatrices()
 void GLWindow::loadLightToShader()
 {
   m_lightPos = m_object_list[0]->getPosition();
+  m_fillLightPos = m_object_list[1]->getPosition();
   m_ps.setLightPos(m_lightPos);
+  m_ps.setLightPos(m_fillLightPos);
+
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("light.position", m_lightPos);
     m_lighting_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
@@ -584,6 +583,11 @@ void GLWindow::loadLightToShader()
     m_lighting_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
     m_lighting_program->setUniformValue("light.Linear", 0.09f);
     m_lighting_program->setUniformValue("light.Quadratic", 0.032f);
+
+    m_lighting_program->setUniformValue("light2.position", m_fillLightPos);
+    m_lighting_program->setUniformValue("light2.ambient", QVector3D(1.0, 1.0, 1.0));
+    m_lighting_program->setUniformValue("light2.diffuse", QVector3D(1.0, 1.0, 1.0));
+    m_lighting_program->setUniformValue("light2.specular", QVector3D(1.0, 1.0, 1.0));
   m_lighting_program->release();
 }
 
@@ -591,7 +595,7 @@ void GLWindow::loadMaterialToShader()
 {
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("material.ambient", QVector3D(0.2f, 0.2f, 0.2f));
-    m_lighting_program->setUniformValue("material.diffuse", QVector3D(1.0f, 1.0f, 1.0f));
+    m_lighting_program->setUniformValue("material.diffuse", QVector3D(m_materialDiffuseR, m_materialDiffuseG, m_materialDiffuseB));
     m_lighting_program->setUniformValue("material.specular", QVector3D(0.5f, 0.5f, 0.5f));
     m_lighting_program->setUniformValue("material.shininess", 32.0f);
     m_lighting_program->setUniformValue("material.attenuation", 0.5f);
@@ -698,7 +702,6 @@ void GLWindow::setupLights()
 
   PointLight *pointlight = new PointLight(QVector3D(4,0,0), m_manipulator_program, m_sun_program);
   pointlight->createGeometry(masterUniqueColour);
-
   m_object_list.push_back(std::move(std::unique_ptr<PointLight>(pointlight)));
 
   m_input_manager->addShaderProgram(m_manipulator_program);
@@ -746,7 +749,7 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
 void GLWindow::updateParticleSystem()
 {
   m_ps.setLightPos(m_lightPos);
-
+  m_ps.setLightPos(m_fillLightPos);
   if(m_lightON == true)
   {
     m_ps.splitRandomParticle();
@@ -863,6 +866,7 @@ void GLWindow::mouseMoveEvent(QMouseEvent* event)
   makeCurrent();
   setFocus();
   m_input_manager->mouseMoveEvent(event);
+
 }
 
 void GLWindow::mousePressEvent(QMouseEvent *event)
@@ -877,6 +881,11 @@ void GLWindow::mouseReleaseEvent(QMouseEvent *event)
   makeCurrent();
   setFocus();
   m_input_manager->mouseReleaseEvent(event);
+
+  qDebug("Light Position length: %d", m_lightPos.length());
+  qDebug("Fill Light Position length: %d", m_fillLightPos.length());
+
+
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
@@ -885,7 +894,6 @@ void GLWindow::wheelEvent(QWheelEvent *event)
   setFocus();
   m_input_manager->wheelEvent(event);
 }
-
 
 // Slots
 void GLWindow::setParticleSize(double _size)
@@ -907,12 +915,15 @@ void GLWindow::setParticleType(int _type)
   emit resetRColour(255);
   emit resetGColour(255);
   emit resetBColour(255);
+  emit resetAmbientLight(100);
+  emit resetSpecularLight(100);
+  emit resetAORadius(5.0);
+  emit resetAOBias(0.025);
 
   char particleType;
   if (_type == 0)
   {
-    particleType = 'L';
-
+    particleType = 'L'; //Linked particle
 
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(true);
@@ -926,8 +937,8 @@ void GLWindow::setParticleType(int _type)
   }
   else if (_type == 1)
   {
-    particleType = 'G';
-    //emit resetSplitType(0);
+    particleType = 'G'; //Growth particle
+
     emit enableGrowthParticle(true);
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(false);
@@ -940,21 +951,19 @@ void GLWindow::setParticleType(int _type)
   }
   else if (_type == 2)
   {
-    particleType = 'A';
+    particleType = 'A'; //Automata particle
+
     emit enableGrowthParticle(false);
     emit enableLinkedParticle(false);
     emit enableAutomataParticle(true);
     emit enableSplitType(false);
     emit enableConnections(false);
+    setShading("Ambient Occlusion");
+    emit changedShadingType(2);
     showConnections(false);
   }
   m_ps.reset(particleType);
   sendParticleDataToOpenGL();
-}
-
-void GLWindow::cancel()
-{
-
 }
 
 void GLWindow::showConnections(bool _state)
@@ -1013,7 +1022,6 @@ void GLWindow::toggleParticleDeath(bool _state)
 
 void GLWindow::setSplitType(int _type)
 {
-  //m_ps.setSplitType(_type);
   sendParticleDataToOpenGL();
   std::cout<<"splitType:"<<_type<<std::endl;
 
@@ -1028,22 +1036,39 @@ void GLWindow::setSplitType(int _type)
 
   else if (_type==1) //LIGHT IS OFF
   {
-    m_ambient = 0.5;
+    m_ambient = 0;
     m_specular = 0;
+
     emit enableLightOn(true);
     emit enableLightOff(true);
   }
-
-  //m_ps.reset(particleType);
   sendParticleDataToOpenGL();
-
 }
 
 void GLWindow::setCohesion(int _amount)
 {
-  // Only for LinkedParticles
+  //Only for LinkedParticles
   m_ps.setCohesion(_amount);
   sendParticleDataToOpenGL();
+}
+
+void GLWindow::setSSAORadius(double _radius)
+{
+    m_ssaoRadius = (float) _radius;
+    qDebug("SSAO rad: %f", m_ssaoRadius);
+
+    m_ssao_program->bind();
+      m_ssao_program->setUniformValue("Radius", m_ssaoRadius);
+    m_ssao_program->release();
+
+}
+
+void GLWindow::setSSAOBias(double _bias)
+{
+    m_ssaoBias = (float) _bias;
+    m_ssao_program->bind();
+      m_ssao_program->setUniformValue("Bias", m_ssaoBias);
+    m_ssao_program->release();
 }
 
 void GLWindow::setRcolour(int _rColour)
@@ -1062,6 +1087,34 @@ void GLWindow::setBcolour(int _bColour)
   m_lightDiffuseB = (float)_bColour/255.0f;
 }
 
+void GLWindow::setAmbientLight(int _ambient)
+{
+    m_ambient = (float) _ambient/100;
+//    m_ambient.y() =(float) _ambient/100 * m_lightDiffuseG;
+//    m_ambient.z() = (float) _ambient/100 * m_lightDiffuseB;
+}
+
+void GLWindow::setSpecularLight(int _specular)
+{
+    m_specular = (float) _specular/100;
+}
+
+void GLWindow::setRcolourMaterial(int _rColour)
+{
+    m_materialDiffuseR = (float)_rColour/255.0f;
+}
+
+void GLWindow::setGcolourMaterial(int _gColour)
+{
+    m_materialDiffuseG = (float)_gColour/255.0f;
+}
+
+
+void GLWindow::setBcolourMaterial(int _bColour)
+{
+    m_materialDiffuseB = (float)_bColour/255.0f;
+}
+
 
 void GLWindow::bulge()
 {
@@ -1069,7 +1122,6 @@ void GLWindow::bulge()
   m_ps.bulge();
   sendParticleDataToOpenGL();
 }
-
 
 void GLWindow::lightOn()
 {
@@ -1116,10 +1168,8 @@ void GLWindow::setBranchLength(double _amount)
   sendParticleDataToOpenGL();
 }
 
-
 void GLWindow::restart()
 {
-
   emit resetParticleSize(2);
   emit resetParticleType(0);
   emit resetSplitType(0);
@@ -1140,7 +1190,10 @@ void GLWindow::restart()
   emit resetRColour(255);
   emit resetGColour(255);
   emit resetBColour(255);
-
+  emit resetAmbientLight(100);
+  emit resetSpecularLight(100);
+  emit resetAORadius(5.0);
+  emit resetAOBias(0.025);
 }
 
 void GLWindow::setChildThreshold(int _amount)
@@ -1156,4 +1209,9 @@ void GLWindow::setNearestParticle(bool _state)
 void GLWindow::setGrowToLight(bool _state)
 {
   m_ps.setGrowToLight(_state);
+}
+
+void GLWindow::cancel()
+{
+
 }
