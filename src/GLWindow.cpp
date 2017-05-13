@@ -354,7 +354,7 @@ void GLWindow::initializeGL()
 
   initializeMatrices();
   setupLights();
-  m_skybox->prepare();
+  m_skybox->prepare(width(), height(), context()->versionFunctions<QOpenGLFunctions_4_1_Core>());
 
   m_geom_program = new QOpenGLShaderProgram;
   m_geom_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/geom.vert");
@@ -480,7 +480,7 @@ void GLWindow::paintGL()
   case GLWindow::ADS:
     glClearColor(0, 0, 0, 0);
     glDepthMask(GL_FALSE);
-    m_skybox->draw();
+    m_skybox->draw(width(), height(), context()->versionFunctions<QOpenGLFunctions_4_1_Core>());
     glDepthMask(GL_TRUE);
     break;
 
@@ -499,7 +499,7 @@ void GLWindow::paintGL()
   m_world_normal_texture->bind(1);
   m_blurred_occlusion_texture->bind(2);
   m_links_texture->bind(3);
-  m_skybox->GetSkyBoxTexture()->bind(4);
+  m_skybox->getCubeMapTexture()->bind(4);
 
 
   m_quad_vao->bind();
