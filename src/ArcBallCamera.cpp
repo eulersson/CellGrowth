@@ -19,9 +19,13 @@ QMatrix4x4 ArcBallCamera::getViewMatrix()
 
 QVector3D ArcBallCamera::getPosition()
 {
-  QVector4D position = QVector4D (m_view(0,3), m_view(1,3), m_view(2,3), 1);
-  position=position*m_view;
-  qDebug("%f, %f, %f", position.x(), position.y(), position.z());
+  return getPosition(m_view);
+}
+
+QVector3D ArcBallCamera::getPosition(QMatrix4x4 _mat)
+{
+  QVector4D position = QVector4D (_mat(0,3), _mat(1,3), _mat(2,3), 1);
+  position=position*_mat;
   return QVector3D(position.x(), position.y(), position.z());
 }
 
@@ -58,20 +62,17 @@ void ArcBallCamera::processKeyboard(ARCCamera_Movement _direction, GLfloat _delt
 }
 
 
-QQuaternion ArcBallCamera::create_from_angle(
-    const double &_xx, const double &_yy,
-    const double &_zz, const double &_a)
+QQuaternion ArcBallCamera::createFromAngle(
+    const double _vx, const double _vy,
+    const double _vz, const double _offset)
 {
-    // Here we calculate the sin( theta / 2) once for optimization
-    double factor = sin( _a * .5 );
+    double factor = sin( _offset * .5 );
 
-    // Calculate the x, y and z of the quaternion
-    double x = _xx * factor;
-    double y = _yy * factor;
-    double z = _zz * factor;
+    double x = _vx * factor;
+    double y = _vy * factor;
+    double z = _vz * factor;
 
-    // Calcualte the w value by cos( theta / 2 )
-    double w = cos( _a * .5 );
+    double w = cos( _offset * .5 );
 
     QQuaternion ret = QQuaternion(w, x, y, z);
     ret.normalize();
@@ -84,15 +85,14 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
   _xoffset =  _xoffset*m_mouseSensitivity;
   _yoffset =  _yoffset*m_mouseSensitivity;
 
-
   // Translate rotation point to origin to rotate about arbitrary point.
   m_view.translate(-m_rotationPoint);
 
   QQuaternion rotq;
-  rotq=create_from_angle(0,1,0,qDegreesToRadians(_xoffset));
+  rotq=createFromAngle(0,1,0,qDegreesToRadians(_xoffset));
 
   m_view.rotate(rotq);
-  rotq=create_from_angle(m_right.x(), m_right.y(), m_right.z(),qDegreesToRadians(_yoffset));
+  rotq=createFromAngle(m_right.x(), m_right.y(), m_right.z(),qDegreesToRadians(_yoffset));
   m_view.rotate(rotq);
 
   // Translate rotation point back.
@@ -112,9 +112,6 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
   m_front.setZ(-m_view(2,2));
 
 
-//  qDebug("%f, %f, %f",position.x(), position.y(), position.z());
-//  qDebug("%f, %f, %f", m_view(0,3), m_view(1,3), m_view(2,3));
-
 }
 
 
@@ -122,9 +119,7 @@ void ArcBallCamera::refocus()
 {
   // Played on f-press
   QVector3D front=QVector3D(0,0,1);
-
   QVector3D pos = getPosition();
-
   QVector3D forwardVector = m_rotationPoint-pos;
   forwardVector.normalize();
 
@@ -142,7 +137,7 @@ void ArcBallCamera::refocus()
   QVector3D rotAxis = QVector3D::crossProduct(front,forwardVector);
   rotAxis.normalize();
   // Create quaternion using absolute angle.
-  QQuaternion rotq=create_from_angle(rotAxis.x(), rotAxis.y(), rotAxis.z(), -rotAngle);
+  QQuaternion rotq=createFromAngle(rotAxis.x(), rotAxis.y(), rotAxis.z(), -rotAngle);
 
   qDebug()<<rotAngle;
   QMatrix3x3 rotmat=rotq.toRotationMatrix();
@@ -170,7 +165,7 @@ void ArcBallCamera::processMouseScroll(int steps)
 {
   QVector3D currpos=getPosition();
 
-  GLfloat offset=-(steps*.8);
+  GLfloat offset=-(steps);
   QVector3D dir=currpos-m_rotationPoint;
   dir.normalize();
   QVector3D velocity = m_scrollSpeed * offset * dir;
@@ -179,14 +174,12 @@ void ArcBallCamera::processMouseScroll(int steps)
 
 void ArcBallCamera::move(QVector3D velocity)
 {
-//  QMatrix4x4 tm;
-//  tm=m_view;
-//  tm.translate(velocity);
-
-  float dist = getPosition().length();
+  QMatrix4x4 tm=m_view;
+  tm.translate(velocity);
+  float dist = getPosition(tm).length()-m_rotationPoint.length();
 
 
-  if(dist>2)
+  if(dist>6.0)
   {
     m_view.translate(velocity);
 
