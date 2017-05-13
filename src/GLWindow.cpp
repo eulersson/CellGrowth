@@ -584,10 +584,10 @@ void GLWindow::loadLightToShader()
     m_lighting_program->setUniformValue("light.Linear", 0.09f);
     m_lighting_program->setUniformValue("light.Quadratic", 0.032f);
 
-    m_lighting_program->setUniformValue("light2.position", m_fillLightPos);
-    m_lighting_program->setUniformValue("light2.ambient", QVector3D(1.0, 1.0, 1.0));
-    m_lighting_program->setUniformValue("light2.diffuse", QVector3D(3.0, 3.0, 3.0));
-    m_lighting_program->setUniformValue("light2.specular", QVector3D(1.0, 1.0, 1.0));
+    m_lighting_program->setUniformValue("fillLight.position", m_fillLightPos);
+    m_lighting_program->setUniformValue("fillLight.ambient", QVector3D(m_fillLight, m_fillLight, m_fillLight));
+    m_lighting_program->setUniformValue("fillLight.diffuse", QVector3D(m_fillLight, m_fillLight, m_fillLight));
+    m_lighting_program->setUniformValue("fillLight.specular", QVector3D(m_fillLight, m_fillLight, m_fillLight));
   m_lighting_program->release();
 }
 
@@ -917,6 +917,7 @@ void GLWindow::setParticleType(int _type)
   emit resetBColour(255);
   emit resetAmbientLight(100);
   emit resetSpecularLight(100);
+  emit resetFillLight(50);
   emit resetAORadius(5.0);
   emit resetAOBias(0.025);
 
@@ -1090,13 +1091,16 @@ void GLWindow::setBcolour(int _bColour)
 void GLWindow::setAmbientLight(int _ambient)
 {
     m_ambient = (float) _ambient/100;
-//    m_ambient.y() =(float) _ambient/100 * m_lightDiffuseG;
-//    m_ambient.z() = (float) _ambient/100 * m_lightDiffuseB;
 }
 
 void GLWindow::setSpecularLight(int _specular)
 {
     m_specular = (float) _specular/100;
+}
+
+void GLWindow::setFillLight(int _amount)
+{
+   m_fillLight = (float) _amount/100;
 }
 
 void GLWindow::setRcolourMaterial(int _rColour)
@@ -1192,6 +1196,7 @@ void GLWindow::restart()
   emit resetBColour(255);
   emit resetAmbientLight(100);
   emit resetSpecularLight(100);
+  emit resetFillLight(50);
   emit resetAORadius(5.0);
   emit resetAOBias(0.025);
 }
