@@ -113,6 +113,8 @@ public:
       return uColourVec;
   }
 
+  void setLightScale(float _lightScale) { lightScale = _lightScale; }
+  float lightScale = 0.04f;
 };
 
 

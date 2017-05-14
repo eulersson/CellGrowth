@@ -53,6 +53,7 @@ void PointLight::draw()
   m_manipshaderp->bind();
   modelLoc = m_manipshaderp->uniformLocation("model");
   m_manipshaderp->setUniformValue(modelLoc, m_model);
+  m_manipshaderp->setUniformValue("lightScale", lightScale);
   // Draw manipulator
   m_manip.draw();
 }

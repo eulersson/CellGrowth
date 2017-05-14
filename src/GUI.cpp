@@ -38,9 +38,12 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_GP_growtoLight,SIGNAL(clicked(bool)),m_gl,SLOT(setGrowToLight(bool)));
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_ui->m_particleTab,SLOT(setCurrentIndex(int)));
 
-  //Setting backgrounds
+  // Setting backgrounds
   connect(m_ui->m_background_selector, SIGNAL(currentIndexChanged(int)), m_gl, SLOT(setBackgroundSkymap(int)));
   connect(m_ui->m_blur_iterations, SIGNAL(valueChanged(int)), m_gl, SLOT(setBackgroundBlurIterations(int)));
+
+  // Icon settings
+  connect(m_ui->m_icon_scale, SIGNAL(valueChanged(int)), m_gl, SLOT(setLightIconScale(int)));
 
   //Setting the RGB values for light and materials
   connect(m_ui->m_RColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setRcolour(int)));
@@ -187,6 +190,7 @@ GUI::GUI(QWidget *parent) :
   // Display tab
   m_ui->label_background->setToolTip("Change sky background.");
   m_ui->label_blur_iterations->setToolTip("How many times it blurs the background.");
+  m_ui->label_light_icon_scale->setToolTip("How big should lights display.");
   m_ui->m_showConnections->setToolTip("Show connections.");
   m_ui->label_shading_type->setToolTip("Shading type.");
   m_ui->label_light_color_r->setToolTip("Red component of the light colour.");

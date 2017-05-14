@@ -41,6 +41,7 @@ void SpotLight::draw()
   // MANIPULATOR
   m_manipshaderp->bind();
   m_manipshaderp->setUniformValue("model", m_model);
+  m_manipshaderp->setUniformValue("lightScale", lightScale);
   // Draw manipulator
   m_manip.draw();
   m_manipshaderp->release();

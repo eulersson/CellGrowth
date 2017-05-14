@@ -278,3 +278,12 @@ void InputManager::resized(int _w, int _h)
   m_fbo = new QOpenGLFramebufferObject(_w, _h);
 }
 
+void InputManager::setLightIconScales(float _lightScale)
+{
+
+  for(auto &s : m_objectList)
+  {
+    s->setLightScale(_lightScale);
+  }
+}
+

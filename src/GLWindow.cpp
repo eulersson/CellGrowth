@@ -904,6 +904,13 @@ void GLWindow::wheelEvent(QWheelEvent *event)
   m_input_manager->wheelEvent(event);
 }
 
+void GLWindow::setLightIconScale(int _value)
+{
+  float t = (float)_value / 100.0f;
+  float iconScale = 0.02f * (1.0f - t) + 0.08f * t;
+  m_input_manager->setLightIconScales(iconScale);
+}
+
 void GLWindow::setBackgroundBlurIterations(int _value)
 {
   qDebug("aiaiai  %d", _value);

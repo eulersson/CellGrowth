@@ -28,7 +28,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -558,13 +558,6 @@
             <item>
              <widget class="QWidget" name="widget" native="true">
               <layout class="QGridLayout" name="gridLayout_8">
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_blur_iterations">
-                 <property name="text">
-                  <string>Blur Iterations</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="1">
                 <widget class="QComboBox" name="m_background_selector">
                  <property name="sizePolicy">
@@ -615,6 +608,20 @@
                  </item>
                 </widget>
                </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_blur_iterations">
+                 <property name="text">
+                  <string>Blur Iterations</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_light_icon_scale">
+                 <property name="text">
+                  <string>Icon Scale</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_background">
                  <property name="text">
@@ -635,6 +642,16 @@
                  </property>
                  <property name="value">
                   <number>5</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QSlider" name="m_icon_scale">
+                 <property name="value">
+                  <number>50</number>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>

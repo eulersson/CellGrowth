@@ -542,6 +542,8 @@ private:
   void wheelEvent(QWheelEvent *event);
 
 public slots:
+
+  void setLightIconScale(int _value);
   void setBackgroundBlurIterations(int _value);
 
   void setBackgroundSkymap(int _index);

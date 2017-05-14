@@ -11,6 +11,8 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform float lightScale;
+
 void main()
 {
 
@@ -18,7 +20,7 @@ void main()
     vPos=posAttr;
 
 
-    float scaleModifier = 0.04; // change value to match resolution.    = (2 * ObjectSizeOnscreenInPixels / ScreenWidthInPixels)
+    float scaleModifier = lightScale; // change value to match resolution.    = (2 * ObjectSizeOnscreenInPixels / ScreenWidthInPixels)
     float w = (projection * view * model * vec4(0,0,0,1)).w;
     w *= scaleModifier;
 
