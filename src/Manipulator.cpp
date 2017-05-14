@@ -78,6 +78,7 @@ void Manipulator::draw()
   QVector3D baseColour(1.0f, 1.0f, 1.0f);
   m_manipshaderp->bind();
   m_manipshaderp->setUniformValue("backRender", false);
+  m_manipshaderp->setUniformValue("flatRender", true);
 
 
   // MANIPULATOR MOVE ARROWS
@@ -85,21 +86,21 @@ void Manipulator::draw()
   {
     Geo arrow= m_arrows[i];
     if(arrow.numberOfPoints<1) {continue;}
-    m_manipshaderp->setUniformValue("renderColour", {arrow.renderColour.x(),
+    m_manipshaderp->setUniformValue("highlightColour", {arrow.renderColour.x(),
                                                      arrow.renderColour.y(),
                                                      arrow.renderColour.z()});
     switch(arrow.axis)
     {
       case DIRECTION_X:
-        baseColour= QVector3D(0.2f, 0.0f, 0.0f);
+        baseColour= QVector3D(0.4f, 0.0f, 0.0f);
         break;
 
       case DIRECTION_Y:
-        baseColour= QVector3D(0.0f, 0.2f, 0.0f);
+        baseColour= QVector3D(0.0f, 0.4f, 0.0f);
         break;
 
       case DIRECTION_Z:
-        baseColour= QVector3D(0.0f, 0.0f, 0.2f);
+        baseColour= QVector3D(0.0f, 0.0f, 0.4f);
         break;
     }
     m_manipshaderp->setUniformValue("baseColour", baseColour);
@@ -116,7 +117,7 @@ void Manipulator::draw()
   {
       Geo circle= m_circles[i];
       if(circle.numberOfPoints<1) {continue;}
-      m_manipshaderp->setUniformValue("renderColour", {circle.renderColour.x(),
+      m_manipshaderp->setUniformValue("highlightColour", {circle.renderColour.x(),
                                                        circle.renderColour.y(),
                                                        circle.renderColour.z()});
       switch(circle.axis)
@@ -142,6 +143,9 @@ void Manipulator::draw()
 
     m_manipshaderp->setUniformValue("flatRender", true);
     m_manipshaderp->setUniformValue("backRender", false);
+
+    baseColour= QVector3D(1.0f, 1.0f, 1.0f);
+    m_manipshaderp->setUniformValue("baseColour", baseColour);
 
     m_coneCircle.vao->bind();
     glDrawArrays(GL_TRIANGLES, 0, m_coneCircle.numberOfPoints);
@@ -232,25 +236,17 @@ void Manipulator::setHover(int axis)
   for(size_t i = 0; i < m_arrows.size(); i++)
   {
     if(axis == m_arrows[i].axis)
-    {
       m_arrows[i].renderColour=QVector3D(.6, .6, .6);
-    }
     else
-    {
-      m_arrows[i].renderColour=QVector3D(.2, .2, .2);
-    }
+      m_arrows[i].renderColour=QVector3D(0, 0, 0);
   }
 
   for(size_t i = 0; i < m_circles.size(); i++)
   {
     if(axis == m_circles[i].axis)
-    {
       m_circles[i].renderColour=QVector3D(.6, .6, .6);
-    }
     else
-    {
-      m_circles[i].renderColour=QVector3D(.2, .2, .2);
-    }
+      m_circles[i].renderColour=QVector3D(0, 0, 0);
   }
 }
 
@@ -298,23 +294,20 @@ void Manipulator::setupRotCircleVBO(
 
 }
 
-
-void Manipulator::createRotCircle(QOpenGLVertexArrayObject *_vao,
-                     QVector3D _uniqueColour,
-                     int _axis)
+void Manipulator::createSingleCircle(
+    int _segments,
+    float _thickness,
+    float _r,
+    int _axis,
+    int _numb,
+    QVector3D _op,
+    std::vector<QVector3D> &_vertices)
 {
 
-  std::vector<QVector3D> vertices;
-  int segments = 50;
-  float amt=(2*M_PI)/segments;
+  float amt=(2*M_PI)/_segments;
+  QVector3D lastPoint = QVector3D(_op.x(),_op.y(),_op.z());
 
-  float thickness=0.14f  +1.0f;
-  float r=0.8f;
-
-  QVector3D op(0,0,0);
-
-  QVector3D lastPoint = QVector3D(op.x(),op.y(),op.z());
-  for(size_t i=0; i<=segments;i++)
+  for(size_t i=0; i<=_segments;i++)
   {
 
     float x=0;
@@ -325,51 +318,107 @@ void Manipulator::createRotCircle(QOpenGLVertexArrayObject *_vao,
     float ly=1;
     float lz=1;
     float angle = amt*i;
+
+
+    float off_x=0;
+    float off_y=0;
+    float off_z=0;
     switch(_axis)
     {
+
+      case ROTATION_X:
+      {
+        z=_r*cos(angle);
+        y=_r*sin(angle);
+        lz=_thickness;
+        ly=_thickness;
+
+        if(_numb==1)
+        {
+            x-=(_thickness-1)/2;
+            off_x=(_thickness-1);
+            lz=1;
+            ly=1;
+        }
+        break;
+      }
+
       // Around Y axis
       case ROTATION_Y:
+      {
+        x=_r*cos(angle);
+        z=_r*sin(angle);
+        lx=_thickness;
+        lz=_thickness;
 
-        x=r*cos(angle);
-        z=r*sin(angle);
+        if(_numb==1)
+        {
+            y-=(_thickness-1)/2;
+            off_y=(_thickness-1);
+            lx=1;
+            lz=1;
+        }
 
-        lx=thickness;
-        lz=thickness;
 
         break;
-
-
+      }
       // Around Z axis
       case ROTATION_Z:
+      {
+        x=_r*cos(angle);
+        y=_r*sin(angle);
+        lx=_thickness;
+        ly=_thickness;
 
-        x=r*cos(angle);
-        y=r*sin(angle);
-
-        lx=thickness;
-        ly=thickness;
-
+        if(_numb==1)
+        {
+            z-=(_thickness-1)/2;
+            off_z=(_thickness-1);
+            lx=1;
+            ly=1;
+        }
         break;
+      }
     }
-
-    if(lastPoint==QVector3D(op.x(),op.y(),op.z()))
+    if(lastPoint==QVector3D(_op.x(),_op.y(),_op.z()))
     {
       lastPoint=QVector3D(x,y,z);
       continue;
     }
 
+    _vertices.push_back(QVector3D(x,y,z)                         +QVector3D(_op.x(),_op.y(),_op.z()));
+    _vertices.push_back(lastPoint                                +QVector3D(_op.x(),_op.y(),_op.z()));
+    _vertices.push_back(QVector3D(lx, ly, lz)*lastPoint          +QVector3D(_op.x()+off_x,_op.y()+off_y,_op.z()+off_z));
 
-    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(lastPoint+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
-
-    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(QVector3D(x*lx, y*ly, z*lz)+QVector3D(op.x(),op.y(),op.z()));
+    _vertices.push_back(QVector3D(x,y,z)                         +QVector3D(_op.x(),_op.y(),_op.z()));
+    _vertices.push_back(QVector3D(lx, ly, lz)*lastPoint          +QVector3D(_op.x()+off_x,_op.y()+off_y,_op.z()+off_z));
+    _vertices.push_back(QVector3D(x,y,z)*QVector3D(lx, ly, lz)   +QVector3D(_op.x()+off_x,_op.y()+off_y,_op.z()+off_z));
 
     lastPoint=QVector3D(x,y,z);
 
 
   }
+}
+
+
+void Manipulator::createRotCircle(QOpenGLVertexArrayObject *_vao,
+                     QVector3D _uniqueColour,
+                     int _axis)
+{
+
+  std::vector<QVector3D> vertices;
+  int segments = 50;
+  float thickness=0.12f  +1.0f;
+  float r=0.8f;
+  QVector3D op(0,0,0);
+
+  // Make two circles to cower all viewing angles,
+  // and avoid lines from dissapearing when viewed straight on.
+  createSingleCircle(segments, thickness, r, _axis, 0, op, vertices);
+  createSingleCircle(segments, thickness, r, _axis, 1, op, vertices);
+
+
+
 
   Geo circle = Geo();
   circle.axis = _axis;
@@ -463,7 +512,8 @@ void Manipulator::createArrow(QOpenGLVertexArrayObject *_vao,
   float height = 0.8f;
 
   QVector3D topPoint;
-  for(unsigned int i = 0; i < sectors; i++) {
+
+  for(size_t i = 0; i < sectors; i++) {
 
     float angle = (2 * M_PI) * ((float)i / (float)sectors);
     float s = radius * sin(angle);
@@ -550,41 +600,15 @@ void Manipulator::createLightConeCircle(GLfloat _coneangle)
   // Create geometry
   std::vector<QVector3D> vertices;
   unsigned int segments = 20;
-  float amt=(2*M_PI)/segments;
   float r = _coneangle/90.0f;
   float thickness=0.04f; thickness++;
   float length = 3.0f*sin(qDegreesToRadians(coneangle));
   QVector3D op(length,0,0);
 
-  QVector3D lastPoint = QVector3D(op.x(),op.y(),op.z());
-  for(size_t i=0; i<=segments;i++)
-  {
-    float angle = amt*i;
-
-    float x=0;
-    float z=r*cos(angle);
-    float y=r*sin(angle);
-    float lx=1;
-    float lz=thickness;
-    float ly=thickness;
-
-    if(lastPoint==QVector3D(op.x(),op.y(),op.z()))
-    {
-      lastPoint=QVector3D(x,y,z);
-      continue;
-    }
-    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(lastPoint+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
-
-    vertices.push_back(QVector3D(x,y,z)+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(QVector3D(lx, ly, lz)*lastPoint+QVector3D(op.x(),op.y(),op.z()));
-    vertices.push_back(QVector3D(x*lx, y*ly, z*lz)+QVector3D(op.x(),op.y(),op.z()));
-
-    lastPoint=QVector3D(x,y,z);
-
-
-  }
+  // Make two circles to cower all viewing angles,
+  // and avoid lines from dissapearing when viewed straight on.
+  createSingleCircle(segments, thickness, r, ROTATION_X, 0, op, vertices);
+  createSingleCircle(segments, thickness, r, ROTATION_X, 1, op, vertices);
 
   // Make geometry OpenGL readable
   std::vector<GLfloat> pointPosArray;

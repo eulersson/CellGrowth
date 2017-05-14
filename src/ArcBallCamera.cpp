@@ -89,9 +89,11 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
   m_view.translate(-m_rotationPoint);
 
   QQuaternion rotq;
+  // Rotation 1 around Y.
   rotq=createFromAngle(0,1,0,qDegreesToRadians(_xoffset));
-
   m_view.rotate(rotq);
+
+  // Rotation 2 around camera right axis.
   rotq=createFromAngle(m_right.x(), m_right.y(), m_right.z(),qDegreesToRadians(_yoffset));
   m_view.rotate(rotq);
 
@@ -131,9 +133,9 @@ void ArcBallCamera::refocus()
       return;
   }
 
-  // Get the absolute rotation angle
+  // Get the absolute rotation angle.
   double rotAngle = acos(dot);
-  // Get the axis we need to rotate around
+  // Get the axis we need to rotate around.
   QVector3D rotAxis = QVector3D::crossProduct(front,forwardVector);
   rotAxis.normalize();
   // Create quaternion using absolute angle.
@@ -156,9 +158,9 @@ void ArcBallCamera::refocus()
   m_up.setY(-rotmat(1,1));
   m_up.setZ(-rotmat(1,2));
 
-  m_front.setX(rotmat(2,0));
-  m_front.setY(rotmat(2,1));
-  m_front.setZ(rotmat(2,2));
+  m_front.setX(-rotmat(2,0));
+  m_front.setY(-rotmat(2,1));
+  m_front.setZ(-rotmat(2,2));
 }
 
 void ArcBallCamera::processMouseScroll(int steps)

@@ -7,9 +7,10 @@ in vec3 vPos;
 out vec4 fColour;
 
 uniform vec3 baseColour; // Colour of arrow
-uniform vec3 renderColour; // Highlight
+uniform vec3 highlightColour; // Highlight
 uniform bool backRender=false;
 uniform bool flatRender=false;
+uniform vec3 camPos;
 
 const vec3 AMBIENT_LIGHT=vec3(0.3,0.3,0.3);
 
@@ -32,13 +33,12 @@ void main() {
 
     // Currently setting fragment to plain colour
     finalColour = Kd * diffuseColor;
-    finalColour+=renderColour+baseColour;
+    finalColour+=baseColour + highlightColour;
   }
 
   else
   {
-    finalColour=vec3(0.6);
-    alpha=0.2f;
+    finalColour=baseColour*2 + highlightColour;
   }
 
   // Must be last part of shading
