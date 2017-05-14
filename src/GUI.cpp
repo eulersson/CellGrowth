@@ -38,6 +38,9 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_GP_growtoLight,SIGNAL(clicked(bool)),m_gl,SLOT(setGrowToLight(bool)));
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_ui->m_particleTab,SLOT(setCurrentIndex(int)));
 
+  connect(m_ui->m_background_selector, SIGNAL(currentIndexChanged(int)), m_gl, SLOT(setBackgroundSkymap(int)));
+  connect(m_ui->m_blur_iterations, SIGNAL(valueChanged(int)), m_gl, SLOT(setBackgroundBlurIterations(int)));
+
   //Setting the RGB values inputted by the user on either slides or spinbox.
   connect(m_ui->m_RColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setRcolour(int)));
   connect(m_ui->m_GColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setGcolour(int)));
@@ -101,9 +104,7 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(resetAORadius(double)),m_ui->m_RadiusSB,SLOT(setValue(double)));
   connect(m_gl,SIGNAL(resetAOBias(double)),m_ui->m_BiasSB,SLOT(setValue(double)));
 
-  // ===========================================================================
-  // Help status bar
-  // ===========================================================================
+  // Tooltips
   QString str_particle_type =
     "Different algorithms have been coded show different behaviours. This option"
     "swaps between them.";
@@ -161,6 +162,8 @@ GUI::GUI(QWidget *parent) :
   m_ui->m_restart->setToolTip(str_restart);
 
   // Display tab
+  m_ui->label_background->setToolTip("Change sky background.");
+  m_ui->label_blur_iterations->setToolTip("How many times it blurs the background.");
   m_ui->m_showConnections->setToolTip("Show connections.");
   m_ui->label_shading_type->setToolTip("Shading type.");
   m_ui->label_light_color_r->setToolTip("Red component of the light colour.");

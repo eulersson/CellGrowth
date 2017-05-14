@@ -525,6 +525,9 @@ private:
 
 
 public slots:
+  void setBackgroundBlurIterations(int _value);
+
+  void setBackgroundSkymap(int _index);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Slot tunring nearest particles on and off.
