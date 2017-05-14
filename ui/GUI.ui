@@ -682,6 +682,132 @@
                </item>
                <item row="5" column="6">
                 <widget class="QSlider" name="m_GColour">
+<<<<<<< HEAD
+=======
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>255</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="m_showConnections">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="text">
+                  <string>Show connections</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                 <property name="tristate">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_shading_type">
+                 <property name="text">
+                  <string>Shading Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="6">
+                <widget class="QComboBox" name="m_shadingType">
+                 <property name="currentText">
+                  <string>ADS</string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>ADS</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>X Ray</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Ambient Occlusion</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>New Order</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="label_light_color_g">
+                 <property name="text">
+                  <string>Green</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="LightColour">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>LIGHT COLOUR</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_light_color_r">
+                 <property name="text">
+                  <string>Red</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_light_color_b">
+                 <property name="text">
+                  <string>Blue</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="4">
+                <widget class="QSpinBox" name="m_RColourSpinBox">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>255</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="6">
+                <widget class="QSlider" name="m_BColour">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>255</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="7" rowspan="3" colspan="3">
+                <widget class="QWidget" name="m_colourDisplay" native="true">
+>>>>>>> 6dae2fe485479c4931747513bc741294a0878ef3
                  <property name="palette">
                   <palette>
                    <active>
@@ -1124,6 +1250,16 @@
                    </disabled>
                   </palette>
                  </property>
+<<<<<<< HEAD
+=======
+                 <property name="autoFillBackground">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="4">
+                <widget class="QSpinBox" name="m_GColourSpinBox">
+>>>>>>> 6dae2fe485479c4931747513bc741294a0878ef3
                  <property name="maximum">
                   <number>255</number>
                  </property>
@@ -6542,6 +6678,7 @@
                  </property>
                 </widget>
                </item>
+<<<<<<< HEAD
                <item row="9" column="4" colspan="3">
                 <widget class="QSlider" name="m_FillLight">
                  <property name="maximum">
@@ -6557,6 +6694,10 @@
                </item>
                <item row="4" column="6">
                 <widget class="QSlider" name="m_RColour">
+=======
+               <item row="11" column="7" rowspan="3" colspan="3">
+                <widget class="QWidget" name="m_colourDisplayMaterial" native="true">
+>>>>>>> 6dae2fe485479c4931747513bc741294a0878ef3
                  <property name="palette">
                   <palette>
                    <active>
@@ -6999,6 +7140,53 @@
                    </disabled>
                   </palette>
                  </property>
+<<<<<<< HEAD
+=======
+                 <property name="autoFillBackground">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="4">
+                <widget class="QSpinBox" name="m_materialGSpinBox">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>127</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="4">
+                <widget class="QSpinBox" name="m_materialRSpinBox">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>127</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="4">
+                <widget class="QSpinBox" name="m_materialBSpinBox">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>127</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="label_AO_radius">
+                 <property name="text">
+                  <string>Radius</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="4">
+                <widget class="QSpinBox" name="m_BColourSpinBox">
+>>>>>>> 6dae2fe485479c4931747513bc741294a0878ef3
                  <property name="maximum">
                   <number>255</number>
                  </property>
@@ -7010,6 +7198,7 @@
                  </property>
                 </widget>
                </item>
+<<<<<<< HEAD
                <item row="8" column="0">
                 <widget class="QLabel" name="label_ambient">
                  <property name="text">
@@ -8389,6 +8578,22 @@
                    </widget>
                   </item>
                  </layout>
+=======
+               <item row="16" column="4" colspan="3">
+                <widget class="QDoubleSpinBox" name="m_BiasSB">
+                 <property name="minimum">
+                  <double>-5.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>3.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.010000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.030000000000000</double>
+                 </property>
+>>>>>>> 6dae2fe485479c4931747513bc741294a0878ef3
                 </widget>
                </item>
                <item row="8" column="5">
@@ -9762,6 +9967,142 @@
                  </layout>
                 </widget>
                </item>
+<<<<<<< HEAD
+=======
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_fill_light_impact">
+                 <property name="text">
+                  <string>Fill Light Impact</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="4" colspan="3">
+                <widget class="QSlider" name="m_FillLight">
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="value">
+                  <number>50</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="6">
+                <widget class="QSlider" name="m_RColour">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>255</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_ambient">
+                 <property name="text">
+                  <string>Ambient</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="4">
+                <widget class="QWidget" name="widget_2" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <item>
+                   <widget class="QSlider" name="m_ambientLightR">
+                    <property name="maximum">
+                     <number>255</number>
+                    </property>
+                    <property name="value">
+                     <number>255</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSlider" name="m_ambientLightG">
+                    <property name="maximum">
+                     <number>255</number>
+                    </property>
+                    <property name="value">
+                     <number>255</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSlider" name="m_ambientLightB">
+                    <property name="maximum">
+                     <number>255</number>
+                    </property>
+                    <property name="value">
+                     <number>255</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="8" column="5">
+                <widget class="QWidget" name="widget_3" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_2">
+                  <item>
+                   <widget class="QSlider" name="m_specularLightR">
+                    <property name="maximum">
+                     <number>255</number>
+                    </property>
+                    <property name="value">
+                     <number>127</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSlider" name="m_specularLightG">
+                    <property name="maximum">
+                     <number>255</number>
+                    </property>
+                    <property name="value">
+                     <number>127</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSlider" name="m_specularLightB">
+                    <property name="maximum">
+                     <number>255</number>
+                    </property>
+                    <property name="value">
+                     <number>127</number>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+>>>>>>> 6dae2fe485479c4931747513bc741294a0878ef3
                <item row="8" column="6">
                 <widget class="QLabel" name="label_specular">
                  <property name="text">
