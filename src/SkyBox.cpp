@@ -1,10 +1,52 @@
 #include "SkyBox.h"
 #include <QOpenGLFunctions_4_1_Core>
-
-
 SkyBox::SkyBox(InputManager *_input_manager) : m_input_manager(_input_manager), m_blur_iterations(5)
 {
 
+}
+
+void SkyBox::setBackground(QString _name)
+{
+  if (m_cubemap_texture->isCreated()) m_cubemap_texture->destroy();
+
+  qDebug(_name.toLatin1());
+
+
+  const QImage posx = QImage(QString(":/sky/%1_ft").arg(_name)).convertToFormat(QImage::Format_RGB888);
+  const QImage posy = QImage(QString(":/sky/%1_up").arg(_name)).convertToFormat(QImage::Format_RGB888);
+  const QImage posz = QImage(QString(":/sky/%1_rt").arg(_name)).convertToFormat(QImage::Format_RGB888);
+  const QImage negx = QImage(QString(":/sky/%1_bk").arg(_name)).convertToFormat(QImage::Format_RGB888);
+  const QImage negy = QImage(QString(":/sky/%1_dn").arg(_name)).convertToFormat(QImage::Format_RGB888);
+  const QImage negz = QImage(QString(":/sky/%1_lf").arg(_name)).convertToFormat(QImage::Format_RGB888);
+
+
+  if (posz.isNull()) qDebug("Null image");
+  qDebug("%d %d %d",posz.width(), posz.height(), posz.depth());
+
+  m_cubemap_texture->create();
+  m_cubemap_texture->setSize(posx.width(), posx.height(), posx.depth());
+  m_cubemap_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
+  m_cubemap_texture->allocateStorage();
+
+  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posx.constBits(),0);
+  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posy.constBits(),0);
+  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posz.constBits(),0);
+  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negx.constBits(),0);
+  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negy.constBits(),0);
+  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negz.constBits(),0);
+
+  m_cubemap_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
+  m_cubemap_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+  m_cubemap_texture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+
+  m_cubemap_texture->generateMipMaps();
+
+}
+
+void SkyBox::setBlurIterations(uint _value)
+{
+  qDebug("changed blur to %d", _value);
+  m_blur_iterations = _value;
 }
 
 SkyBox::~SkyBox()
@@ -13,8 +55,6 @@ SkyBox::~SkyBox()
 
 void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
 {
-
-
   GLfloat points[] = {
     -1.0f ,  1.0f , -1.0f ,
     -1.0f , -1.0f , -1.0f ,
@@ -86,34 +126,8 @@ void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
 
   m_sky_program->release();
 
-  const QImage posx = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_ft.png").convertToFormat(QImage::Format_RGB888);
-  const QImage posy = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_up.png").convertToFormat(QImage::Format_RGB888);
-  const QImage posz = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_rt.png").convertToFormat(QImage::Format_RGB888);
-  const QImage negx = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_bk.png").convertToFormat(QImage::Format_RGB888);
-  const QImage negy = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_dn.png").convertToFormat(QImage::Format_RGB888);
-  const QImage negz = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_lf.png").convertToFormat(QImage::Format_RGB888);
-
   m_cubemap_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
-  if (posz.isNull()) qDebug("Null image");
-  qDebug("%d %d %d",posz.width(), posz.height(), posz.depth());
-
-  m_cubemap_texture->create();
-  m_cubemap_texture->setSize(posx.width(), posx.height(), posx.depth());
-  m_cubemap_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
-  m_cubemap_texture->allocateStorage();
-
-  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posx.constBits(),0);
-  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posy.constBits(),0);
-  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapPositiveZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)posz.constBits(),0);
-  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeX, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negx.constBits(),0);
-  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeY, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negy.constBits(),0);
-  m_cubemap_texture->setData(0, 0, QOpenGLTexture::CubeMapNegativeZ, QOpenGLTexture::RGB, QOpenGLTexture::UInt8, (const void *)negz.constBits(),0);
-
-  m_cubemap_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
-  m_cubemap_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-  m_cubemap_texture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
-
-  m_cubemap_texture->generateMipMaps();
+  setBackground("badomen");
 
   // ===========================================================================
   // Set offscreen rendering

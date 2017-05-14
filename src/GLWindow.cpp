@@ -825,6 +825,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
       m_activeRenderPassIndex = m_ADSIndex;
       m_rendering_mode = GLWindow::ADS;
       emit changedShadingType(0);
+      emit setConnectionState(true);
       qDebug("ADS Render.");
       break;
 
@@ -833,6 +834,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
       m_rendering_mode = GLWindow::XRAY;
 
       emit changedShadingType(1);
+      emit setConnectionState(true);
       qDebug("X-Ray visualisation.");
       break;
 
@@ -840,6 +842,7 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
       m_activeRenderPassIndex = m_AOIndex;
       m_rendering_mode = GLWindow::AO;
       emit changedShadingType(2);
+      emit setConnectionState(false);
       qDebug("Ambient Occlusion.");
       break;
 
@@ -890,8 +893,6 @@ void GLWindow::mouseReleaseEvent(QMouseEvent *event)
 
   qDebug("Light Position length: %d", m_lightPos.length());
   qDebug("Fill Light Position length: %d", m_fillLightPos.length());
-
-
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
@@ -899,6 +900,43 @@ void GLWindow::wheelEvent(QWheelEvent *event)
   makeCurrent();
   setFocus();
   m_input_manager->wheelEvent(event);
+}
+
+void GLWindow::setBackgroundBlurIterations(int _value)
+{
+  qDebug("aiaiai  %d", _value);
+  m_skybox->setBlurIterations(_value);
+
+}
+
+void GLWindow::setBackgroundSkymap(int _index)
+{
+  switch (_index)
+  {
+  case 0:
+    m_skybox->setBackground("badomen");
+  case 1:
+    m_skybox->setBackground("criminal-impact");
+    break;
+  case 2:
+    m_skybox->setBackground("cwd");
+    break;
+  case 3:
+    m_skybox->setBackground("drakeq");
+    break;
+  case 4:
+    m_skybox->setBackground("forest");
+    break;
+  case 5:
+    m_skybox->setBackground("mandaris");
+    break;
+  case 6:
+    m_skybox->setBackground("misty");
+    break;
+  case 7:
+    m_skybox->setBackground("mnight");
+    break;
+  }
 }
 
 // Slots

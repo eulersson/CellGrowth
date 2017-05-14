@@ -33,6 +33,8 @@ class SkyBox
 {
 public:
   SkyBox(InputManager *_input_manager);
+  void setBackground(QString _name);
+  void setBlurIterations(uint _value);
   ~SkyBox();
   void prepare(int _width, int _height, QOpenGLFunctions_4_1_Core *_funcs);
   void draw(int _width, int _height, QOpenGLFunctions_4_1_Core *_funcs);
