@@ -98,7 +98,7 @@ vec4 ADSRender()
     vec3 fillLightDir = normalize(fillLight.position - WorldPosition);
 
     //Direction of the camera/eye
-    vec3 viewDir  = normalize(-WorldPosition);
+    vec3 viewDir  = normalize(WorldPosition);
 
     // Calculating ambient
     vec3 ambient = (material.ambient * light.ambient) + (material.ambient * fillLight.ambient);

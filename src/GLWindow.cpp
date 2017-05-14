@@ -372,21 +372,28 @@ void GLWindow::initializeGL()
   //Initializing uniforms send to shader.
   m_ssaoRadius = 5.0;
   m_ssaoBias = 0.025;
-  m_lightDiffuseR = 1.0;
-  m_lightDiffuseG = 1.0;
-  m_lightDiffuseB = 1.0;
-  m_materialR = 0.5;
-  m_materialG = 0.5;
-  m_materialB = 0.5;
-  m_fillLight = 0.5;
-  m_lightAmbientR = 1.0;
-  m_lightAmbientG = 1.0;
-  m_lightAmbientB = 1.0;
-  m_lightSpecularR = 0.5;
-  m_lightSpecularG = 0.5;
-  m_lightSpecularB = 0.5;
 
+  setRcolourMaterial(127);
+  setGcolourMaterial(127);
+  setBcolourMaterial(127);
 
+  setRcolour(246);
+  setGcolour(255);
+  setBcolour(171);
+
+  setAmbientLightR(100);
+  setAmbientLightG(50);
+  setAmbientLightB(0);
+
+  setSpecularLightR(255);
+  setSpecularLightG(10);
+  setSpecularLightB(10);
+
+  setAmbientLightR(100);
+  setAmbientLightG(50);
+  setAmbientLightB(0);
+
+  setFillLight(10);
 
   m_ssao_program->bind();
     m_ssao_program->setUniformValue("Radius", m_ssaoRadius);
