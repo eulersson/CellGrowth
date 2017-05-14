@@ -55,6 +55,7 @@ SkyBox::~SkyBox()
 
 void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
 {
+    //Creating a cube that goes around the scene.
   GLfloat points[] = {
     -1.0f ,  1.0f , -1.0f ,
     -1.0f , -1.0f , -1.0f ,
@@ -232,8 +233,6 @@ void SkyBox::draw(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
     m_fbo->release();
 
   }
-
-
 
 
 

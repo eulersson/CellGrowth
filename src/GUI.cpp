@@ -38,10 +38,11 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_GP_growtoLight,SIGNAL(clicked(bool)),m_gl,SLOT(setGrowToLight(bool)));
   connect(m_ui->m_particleType,SIGNAL(currentIndexChanged(int)),m_ui->m_particleTab,SLOT(setCurrentIndex(int)));
 
+  //Setting backgrounds
   connect(m_ui->m_background_selector, SIGNAL(currentIndexChanged(int)), m_gl, SLOT(setBackgroundSkymap(int)));
   connect(m_ui->m_blur_iterations, SIGNAL(valueChanged(int)), m_gl, SLOT(setBackgroundBlurIterations(int)));
 
-  //Setting the RGB values inputted by the user on either slides or spinbox.
+  //Setting the RGB values for light and materials
   connect(m_ui->m_RColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setRcolour(int)));
   connect(m_ui->m_GColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setGcolour(int)));
   connect(m_ui->m_BColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setBcolour(int)));
@@ -49,12 +50,21 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_GColourSpinBox, SIGNAL(valueChanged(int)),SLOT(onGreenLight(int)));
   connect(m_ui->m_BColourSpinBox, SIGNAL(valueChanged(int)),SLOT(onBlueLight(int)));
 
-  connect(m_ui->m_lightAmbient,SIGNAL(valueChanged(int)),m_gl,SLOT(setAmbientLight(int)));
-  connect(m_ui->m_specularLight,SIGNAL(valueChanged(int)),m_gl,SLOT(setSpecularLight(int)));
+  //Ambient Light
+  connect(m_ui->m_ambientLightR,SIGNAL(valueChanged(int)),m_gl,SLOT(setAmbientLightR(int)));
+  connect(m_ui->m_ambientLightG,SIGNAL(valueChanged(int)),m_gl,SLOT(setAmbientLightG(int)));
+  connect(m_ui->m_ambientLightB,SIGNAL(valueChanged(int)),m_gl,SLOT(setAmbientLightB(int)));
+
+  //Specular light
+  connect(m_ui->m_specularLightR,SIGNAL(valueChanged(int)),m_gl,SLOT(setSpecularLightR(int)));
+  connect(m_ui->m_specularLightG,SIGNAL(valueChanged(int)),m_gl,SLOT(setSpecularLightG(int)));
+  connect(m_ui->m_specularLightB,SIGNAL(valueChanged(int)),m_gl,SLOT(setSpecularLightB(int)));
+
+
+  //Setting fill light
   connect(m_ui->m_FillLight,SIGNAL(valueChanged(int)),m_gl,SLOT(setFillLight(int)));
 
-
-  //Materials
+  //Setting the material colour
   connect(m_ui->m_MaterialRColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setRcolourMaterial(int)));
   connect(m_ui->m_MaterialGColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setGcolourMaterial(int)));
   connect(m_ui->m_MaterialBColour,SIGNAL(valueChanged(int)),m_gl,SLOT(setBcolourMaterial(int)));
@@ -62,9 +72,10 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_materialGSpinBox, SIGNAL(valueChanged(int)),SLOT(onGreenMaterial(int)));
   connect(m_ui->m_materialBSpinBox, SIGNAL(valueChanged(int)),SLOT(onBlueMaterial(int)));
 
-  //AO Variables
+  //Ambient Occlusion variables
   connect(m_ui->m_RadiusSB,SIGNAL(valueChanged(double)),m_gl,SLOT(setSSAORadius(double)));
   connect(m_ui->m_BiasSB,SIGNAL(valueChanged(double)),m_gl,SLOT(setSSAOBias(double)));
+
 
   connect(m_gl,SIGNAL(resetBranchLength(double)),m_ui->m_GP_branchLength,SLOT(setValue(double)));
   connect(m_gl,SIGNAL(resetChildrenThreshold(int)),m_ui->m_GP_children,SLOT(setValue(int)));
@@ -88,16 +99,28 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(resetNearestParticle(bool)),m_ui->m_nearestPart,SLOT(setChecked(bool)));
   connect(m_gl,SIGNAL(resetGrowToLight(bool)),m_ui->m_GP_growtoLight,SLOT(setChecked(bool)));
 
-  //Setting the RGB value for the light diffuse.
+  //Resetting the RGB value for the light diffuse.
   connect(m_gl,SIGNAL(resetRColour(int)),m_ui->m_RColour,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetGColour(int)),m_ui->m_GColour,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetBColour(int)),m_ui->m_BColour,SLOT(setValue(int)));
-  connect(m_gl,SIGNAL(resetRColour(int)),m_ui->m_MaterialRColour,SLOT(setValue(int)));
-  connect(m_gl,SIGNAL(resetGColour(int)),m_ui->m_MaterialGColour,SLOT(setValue(int)));
-  connect(m_gl,SIGNAL(resetBColour(int)),m_ui->m_MaterialBColour,SLOT(setValue(int)));
-  connect(m_gl,SIGNAL(resetAmbientLight(int)),m_ui->m_lightAmbient,SLOT(setValue(int)));
-  connect(m_gl,SIGNAL(resetSpecularLight(int)),m_ui->m_specularLight,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetRMaterialColor(int)),m_ui->m_MaterialRColour,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetGMaterialColor(int)),m_ui->m_MaterialGColour,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetBMaterialColor(int)),m_ui->m_MaterialBColour,SLOT(setValue(int)));
+
+  //Resetting ambient light RGB
+  connect(m_gl,SIGNAL(resetAmbientLightR(int)),m_ui->m_ambientLightR,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetAmbientLightG(int)),m_ui->m_ambientLightG,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetAmbientLightB(int)),m_ui->m_ambientLightB,SLOT(setValue(int)));
+
+  //Resetting specular light RGB
+  connect(m_gl,SIGNAL(resetSpecularLightR(int)),m_ui->m_specularLightR,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetSpecularLightG(int)),m_ui->m_specularLightG,SLOT(setValue(int)));
+  connect(m_gl,SIGNAL(resetSpecularLightB(int)),m_ui->m_specularLightB,SLOT(setValue(int)));
+
+
+  //Resetting the fill light
   connect(m_gl,SIGNAL(resetFillLight(int)),m_ui->m_FillLight,SLOT(setValue(int)));
+
   connect(m_gl,SIGNAL(enableConnections(bool)),m_ui->m_showConnections,SLOT(setEnabled(bool)));
 
   //AO Variables
@@ -186,10 +209,11 @@ GUI::~GUI()
 }
 
 
+//Showing a display of the colours picket in the GUI for light colour and material colour.
 void GUI::onRedLight(int _red)
 {
-        m_colour_light.setRed(_red);
-        m_ui->m_colourDisplay->setPalette(QPalette(m_colour_light));
+    m_colour_light.setRed(_red);
+    m_ui->m_colourDisplay->setPalette(QPalette(m_colour_light));
 }
 void GUI::onGreenLight(int _green)
 {
