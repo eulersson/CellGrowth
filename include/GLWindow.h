@@ -32,8 +32,8 @@
 #include <QMainWindow>
 
 // Project
-#include "ParticleSystem.h"
 #include "InputManager.h"
+#include "ParticleSystem.h"
 #include "SkyBox.h"
 
 ////////////////////////////////////////////////////////////////////////////////

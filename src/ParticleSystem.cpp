@@ -79,15 +79,21 @@ void ParticleSystem::advance()
   {
     for (unsigned int i = 0; i < m_particleCount; ++i)
     {
-      m_particles[i]->calculate(m_particles, m_averageDistance, m_particleCount,
-                                m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
-      if(m_particleType == 'A')
+      switch(m_particleType)
       {
+      case 'A':
+        m_particles[i]->calculate(m_particles, m_automataRadius, m_automataTime);
         if(m_particles[i]->isAlive() == false)
         {
           m_iterID.push_back(i); //Pushes dead particles into a vector of IDs
           deleteParticle(); //Function call to deleteParticle
         }
+        break;
+      case 'L':
+        m_particles[i]->calculate(m_particles, m_averageDistance, m_cohesion, m_localCohesion, m_particleDeath);
+        break;
+      default:
+        break;
       }
     }
 
@@ -307,8 +313,17 @@ void ParticleSystem::splitRandomParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particles, m_averageDistance, m_particleCount,
-                              m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
+    switch(m_particleType)
+    {
+    case 'A':
+      m_particles[i]->calculate(m_particles, m_automataRadius, m_automataTime);
+      break;
+    case 'L':
+      m_particles[i]->calculate(m_particles, m_averageDistance, m_cohesion, m_localCohesion, m_particleDeath);
+      break;
+    default:
+      break;
+    }
   }
 }
 

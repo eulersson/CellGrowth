@@ -478,7 +478,7 @@ void GLWindow::paintGL()
   case GLWindow::ADS:
     glClearColor(0, 0, 0, 0);
     glDepthMask(GL_FALSE);
-    m_skybox->draw(width(), height(), context()->versionFunctions<QOpenGLFunctions_4_1_Core>());
+    m_skybox->draw(context()->versionFunctions<QOpenGLFunctions_4_1_Core>());
     glDepthMask(GL_TRUE);
     break;
 
@@ -896,8 +896,8 @@ void GLWindow::mouseReleaseEvent(QMouseEvent *event)
   setFocus();
   m_input_manager->mouseReleaseEvent(event);
 
-  qDebug("Light Position length: %d", m_lightPos.length());
-  qDebug("Fill Light Position length: %d", m_fillLightPos.length());
+  qDebug("Light Position length: %f", m_lightPos.length());
+  qDebug("Fill Light Position length: %f", m_fillLightPos.length());
 }
 
 void GLWindow::wheelEvent(QWheelEvent *event)
@@ -977,7 +977,7 @@ void GLWindow::setParticleType(int _type)
   emit resetAORadius(5.0);
   emit resetAOBias(0.025);
 
-  char particleType;
+  char particleType = 'L';
   if (_type == 0)
   {
     particleType = 'L'; //Linked particle

@@ -1,14 +1,13 @@
 #include "ArcBallCamera.h"
 
 ArcBallCamera::ArcBallCamera(
-      QVector3D _position)
-    : m_front(QVector3D(0.0f, 0.0f, 1.0f))
-    , m_worldUp(QVector3D(0.0f, 1.0f, 0.0f))
-    , m_right(QVector3D(1.0f, 0.0f, 0.0f))
-    , m_rotationPoint(0,0,0)
-    , m_view()
+    QVector3D _position)
+  : m_front(QVector3D(0.0f, 0.0f, 1.0f))
+  , m_right(QVector3D(1.0f, 0.0f, 0.0f))
+  , m_worldUp(QVector3D(0.0f, 1.0f, 0.0f))
+  , m_rotationPoint(0,0,0)
+  , m_view()
 {
-
   m_view.translate(_position);
 }
 
@@ -39,7 +38,7 @@ void ArcBallCamera::setRotationPoint(QVector3D rp)
   m_rotationPoint=rp;
 }
 
-void ArcBallCamera::processKeyboard(ARCCamera_Movement _direction, GLfloat _deltaTime)
+void ArcBallCamera::processKeyboard(ARCCamera_Movement _direction)
 {
   QVector3D dir;
   if (_direction == ARCFORWARD) {

@@ -37,12 +37,12 @@ public:
   void setBlurIterations(uint _value);
   ~SkyBox();
   void prepare(int _width, int _height, QOpenGLFunctions_4_1_Core *_funcs);
-  void draw(int _width, int _height, QOpenGLFunctions_4_1_Core *_funcs);
+  void draw(QOpenGLFunctions_4_1_Core *_funcs);
   QOpenGLTexture *getCubeMapTexture() {return m_cubemap_texture;}
 
 private:
-  uint m_blur_iterations;
   InputManager *m_input_manager;
+  uint m_blur_iterations;
 
   QOpenGLBuffer m_skybox_vbo;
   QOpenGLVertexArrayObject *m_skybox_vao;
