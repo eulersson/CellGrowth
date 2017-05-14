@@ -549,11 +549,6 @@
              </widget>
             </item>
            </layout>
-           <zorder>m_particleTab</zorder>
-           <zorder>m_splitTypeBox</zorder>
-           <zorder>particlesBox</zorder>
-           <zorder>m_restart</zorder>
-           <zorder>verticalSpacer</zorder>
           </widget>
           <widget class="QWidget" name="tab_2">
            <attribute name="title">
