@@ -58,19 +58,19 @@ void Particle::advance()
   m_pos += m_vel;
 }
 
-void Particle::calculate(
-    std::vector<std::unique_ptr<Particle>> &_particleList,
-    QVector3D _averageDistance,
-    uint _particleCount,
-    QVector3D _lightPos,
-    int _cohesionFactor,
-    int _localCohesionFactor,
-    bool _particleDeath,
-    int _automataRadius,
-    int _automataTime)
-{
+//void Particle::calculate(
+//    std::vector<std::unique_ptr<Particle>> &_particleList,
+//    QVector3D _averageDistance,
+//    uint _particleCount,
+//    QVector3D _lightPos,
+//    int _cohesionFactor,
+//    int _localCohesionFactor,
+//    bool _particleDeath,
+//    int _automataRadius,
+//    int _automataTime)
+//{
 
-}
+//}
 
 void Particle::calculate(std::vector<std::unique_ptr<Particle> > &_particleList, QVector3D _averageDistance, int _cohesionFactor, int _localCohesionFactor, bool _particleDeath)
 {

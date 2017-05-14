@@ -92,16 +92,9 @@ void ParticleSystem::advance()
       case 'L':
         m_particles[i]->calculate(m_particles, m_averageDistance, m_cohesion, m_localCohesion, m_particleDeath);
         break;
-      case 'G':
-        m_particles[i]->calculate(m_particles, m_averageDistance, m_particleCount,
-                                  m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
+      default:
         break;
       }
-
-
-
-
-
     }
 
     for (unsigned int i = 0; i < m_particleCount; ++i)
@@ -320,8 +313,17 @@ void ParticleSystem::splitRandomParticle()
 
   for (unsigned int i = 0; i < m_particleCount; ++i)
   {
-    m_particles[i]->calculate(m_particles, m_averageDistance, m_particleCount,
-                              m_lightPos, m_cohesion, m_localCohesion, m_particleDeath, m_automataRadius, m_automataTime);
+    switch(m_particleType)
+    {
+    case 'A':
+      m_particles[i]->calculate(m_particles, m_automataRadius, m_automataTime);
+      break;
+    case 'L':
+      m_particles[i]->calculate(m_particles, m_averageDistance, m_cohesion, m_localCohesion, m_particleDeath);
+      break;
+    default:
+      break;
+    }
   }
 }
 

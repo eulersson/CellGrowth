@@ -7,12 +7,12 @@
 #ifndef GROWTHPARTICLE_H
 #define GROWTHPARTICLE_H
 
+// Project
 #include "Particle.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @class GrowthParticle
-
-/// @brief Growth Particle Inheriting from  Particle class, imitates plant like
+/// @brief Growth Particle Inheriting from Particle class, imitates plant like
 /// growth.
 ////////////////////////////////////////////////////////////////////////////////
 class GrowthParticle: public Particle
@@ -26,12 +26,11 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position.
-  /// @param[in] _x x Position of the particle.
-  /// @param[in] _y y Position of the particle.
-  /// @param[in] _z z Position of the particle.
-  /// @param[in] _size size of particle
+  /// @param[in] _x X position of the particle.
+  /// @param[in] _y Y position of the particle.
+  /// @param[in] _z Z position of the particle.
+  /// @param[in] _size Size of particle
   //////////////////////////////////////////////////////////////////////////////
-
   GrowthParticle(
       qreal _x,
       qreal _y,
@@ -41,35 +40,37 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position as well as
   /// which particles it is connected to.
-  /// @param[in] _x x Position of the particle.
-  /// @param[in] _y y Position of the particle.
-  /// @param[in] _z z Position of the particle.
+  /// @param[in] _x X position of the particle.
+  /// @param[in] _y Y position of the particle.
+  /// @param[in] _z Z position of the particle.
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
-  /// @param[in] _size size of particle
+  /// @param[in] _size Size of particle
   //////////////////////////////////////////////////////////////////////////////
-
-  GrowthParticle(qreal _x,
+  GrowthParticle(
+      qreal _x,
       qreal _y,
       qreal _z,
-      std::vector<unsigned int> _connectedParticles,
-      float _size, float _branchLength);
-
-
+      std::vector<uint> _connectedParticles,
+      float _size,
+      float _branchLength);
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Called when particle needs to be split and creates a new branch from that Particle.
+  /// @brief Called when particle needs to be split and creates a new branch
+  /// from that Particle.
   /// @param[in] _lightDirection Light direction.
   /// @param[in] _particleList List of all particles.
   //////////////////////////////////////////////////////////////////////////////
-  bool split(QVector3D _lightPos,
-      std::vector<std::unique_ptr<Particle>> &_particleList, std::mt19937_64 _gen,bool _growToLight) override;
-
+  bool split(
+      QVector3D _lightPos,
+      std::vector<std::unique_ptr<Particle>> &_particleList,
+      std::mt19937_64 _gen,
+      bool _growToLight) override;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief sets the child threshold
-  /// @param[in] _amount amount of children allowed per branch.
+  /// @brief Sets the child threshold.
+  /// @param[in] _amount Amount of children allowed per branch.
   //////////////////////////////////////////////////////////////////////////////
-  void setChildThreshold(int _amount) override;
+  void setChildThreshold(uint _amount) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the branch length of a branch.
@@ -78,11 +79,6 @@ public:
   void setBranchLength(float _value) override;
 
 private:
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief hold the threshold of how many children/branches one Particle can have.
-  //////////////////////////////////////////////////////////////////////////////
-  unsigned int m_childrenTreshold;
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Finds the parent according to the levels to call the recursive
   /// collsion on it.
@@ -100,7 +96,7 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Tests directly for one on one collision between the particle and the
   /// input particle position.
-  /// @param[in] _particlePos position of the particle that is meant to be tested
+  /// @param[in] _particlePos Position of the particle that is meant to be tested
   /// against.
   //////////////////////////////////////////////////////////////////////////////
   bool testCollision(QVector3D _particlePos);
@@ -115,6 +111,11 @@ private:
       QVector3D _particle,
       std::vector<std::unique_ptr<Particle>> &_particleList) override;
 
+private:
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Holds the threshold of how many children/branches one Particle can have.
+  //////////////////////////////////////////////////////////////////////////////
+  uint m_childrenTreshold;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Length of a branches connecting to the particle

@@ -82,30 +82,30 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void advance();
 
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Calculates the new velocity of the particle based on the forces
-  /// that act on it.
-  /// @param [in] _particleList List of all particles
-  /// @param [in] _averageDistance Average distance between particles
-  /// @param [in] _particleCount Total number of particles in the system
-  /// @param [in] _lightPos Holds the position of the point light
-  /// @param [in] _cohesionFactor Controls the strength of cohesion
-  /// @param [in] _localCohesionFactor Controls the strength of local cohesion
-  /// @param [in] _particleDeath Toggles whether or not particle death is true
-  /// @param [in] _automataRadius Controls the radius in which automata are created
-  /// @param [in] _automataTime Controls the speed at which automata are created
-  //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(
-      std::vector<std::unique_ptr<Particle>> &_particleList,
-      QVector3D _averageDistance,
-      uint _particleCount,
-      QVector3D _lightPos,
-      int _cohesionFactor,
-      int _localCohesionFactor,
-      bool _particleDeath,
-      int _automataRadius,
-      int _automataTime
-  );
+//  //////////////////////////////////////////////////////////////////////////////
+//  /// @brief Calculates the new velocity of the particle based on the forces
+//  /// that act on it.
+//  /// @param [in] _particleList List of all particles
+//  /// @param [in] _averageDistance Average distance between particles
+//  /// @param [in] _particleCount Total number of particles in the system
+//  /// @param [in] _lightPos Holds the position of the point light
+//  /// @param [in] _cohesionFactor Controls the strength of cohesion
+//  /// @param [in] _localCohesionFactor Controls the strength of local cohesion
+//  /// @param [in] _particleDeath Toggles whether or not particle death is true
+//  /// @param [in] _automataRadius Controls the radius in which automata are created
+//  /// @param [in] _automataTime Controls the speed at which automata are created
+//  //////////////////////////////////////////////////////////////////////////////
+//  virtual void calculate(
+//      std::vector<std::unique_ptr<Particle>> &_particleList,
+//      QVector3D _averageDistance,
+//      uint _particleCount,
+//      QVector3D _lightPos,
+//      int _cohesionFactor,
+//      int _localCohesionFactor,
+//      bool _particleDeath,
+//      int _automataRadius,
+//      int _automataTime
+//  );
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the new velocity of the particle based on the forces
@@ -154,7 +154,7 @@ public:
   /// only applicable for Growth particle
   /// @param[in] _amount amount of children allowed per branch.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void setChildThreshold(int _amount) {}
+  virtual void setChildThreshold(uint _amount) {}
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the branch length of a branch.
