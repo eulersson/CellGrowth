@@ -54,11 +54,14 @@ public:
       std::vector<uint> _connectedParticles,
       float _size,
       float _branchLength);
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Called when particle needs to be split and creates a new branch
   /// from that Particle.
-  /// @param[in] _lightDirection Light direction.
+  /// @param[in] _lightPos Light position.
   /// @param[in] _particleList List of all particles.
+  /// @param[in] _gen Random number generator.
+  /// @param[in] _growToLight Whether they should aim the light or not.
   //////////////////////////////////////////////////////////////////////////////
   bool split(
       QVector3D _lightPos,

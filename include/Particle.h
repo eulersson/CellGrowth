@@ -15,7 +15,7 @@
 // Qt
 #include <QVector3D>
 
-// Custom
+// Project
 #include "PointLight.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,10 +34,10 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position.
-  /// @param[in] _x x Position of the particle.
-  /// @param[in] _y y Position of the particle.
-  /// @param[in] _z z Position of the particle.
-  /// @param[in] _size size of particle
+  /// @param[in] _x X position of the particle.
+  /// @param[in] _y Y position of the particle.
+  /// @param[in] _z Z position of the particle.
+  /// @param[in] _size Size of particle
   //////////////////////////////////////////////////////////////////////////////
   Particle(
       qreal _x,
@@ -48,18 +48,18 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Custom constructor allowing user input for position as well as
   /// which particles it is connected to.
-  /// @param[in] _x x Position of the particle.
-  /// @param[in] _y y Position of the particle.
-  /// @param[in] _z z Position of the particle.
+  /// @param[in] _x X position of the particle.
+  /// @param[in] _y Y position of the particle.
+  /// @param[in] _z Z position of the particle.
   /// @param[in] _connectedParticles List of particle IDs to be connected to
   /// the newly generated particle.
-  /// @param[in] _size size of particle
+  /// @param[in] _size Size of particle
   //////////////////////////////////////////////////////////////////////////////
   Particle(
       qreal _x,
       qreal _y,
       qreal _z,
-      std::vector<unsigned int> _connectedParticles,
+      std::vector<uint> _connectedParticles,
       float _size);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -81,31 +81,6 @@ public:
   /// inherited if other custom behaviours would be needed.
   //////////////////////////////////////////////////////////////////////////////
   void advance();
-
-//  //////////////////////////////////////////////////////////////////////////////
-//  /// @brief Calculates the new velocity of the particle based on the forces
-//  /// that act on it.
-//  /// @param [in] _particleList List of all particles
-//  /// @param [in] _averageDistance Average distance between particles
-//  /// @param [in] _particleCount Total number of particles in the system
-//  /// @param [in] _lightPos Holds the position of the point light
-//  /// @param [in] _cohesionFactor Controls the strength of cohesion
-//  /// @param [in] _localCohesionFactor Controls the strength of local cohesion
-//  /// @param [in] _particleDeath Toggles whether or not particle death is true
-//  /// @param [in] _automataRadius Controls the radius in which automata are created
-//  /// @param [in] _automataTime Controls the speed at which automata are created
-//  //////////////////////////////////////////////////////////////////////////////
-//  virtual void calculate(
-//      std::vector<std::unique_ptr<Particle>> &_particleList,
-//      QVector3D _averageDistance,
-//      uint _particleCount,
-//      QVector3D _lightPos,
-//      int _cohesionFactor,
-//      int _localCohesionFactor,
-//      bool _particleDeath,
-//      int _automataRadius,
-//      int _automataTime
-//  );
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates the new velocity of the particle based on the forces
@@ -141,49 +116,67 @@ public:
   /// @brief Moves the particles closest to the centre to create a bulge effect.
   /// @param [in] _particleCentre Position of the average centre of all particles
   //////////////////////////////////////////////////////////////////////////////
-  virtual void bulge(QVector3D _particleCentre) {}
+  virtual void bulge(QVector3D _particleCentre);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Adds food to random particles to create interesting visuals.
   /// @param [in] _particleCentre Position of the average centre of all particles
   //////////////////////////////////////////////////////////////////////////////
-  virtual void addFood(QVector3D _particleCentre) {}
+  virtual void addFood(QVector3D _particleCentre);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the child threshold.
   /// only applicable for Growth particle
   /// @param[in] _amount amount of children allowed per branch.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void setChildThreshold(uint _amount) {}
+  virtual void setChildThreshold(uint _amount);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief sets the branch length of a branch.
   /// only applicable for Growth particle
   /// @param[in] _value length of the branch.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void setBranchLength(float _value) {}
+  virtual void setBranchLength(float _value);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Particle dependent function for splitting, needs to be overwritten
-  /// on subclasses. Each type of particle will have a different one.
+  /// @brief Called when particle needs to be split and creates a new branch
+  /// from that Particle. Just for GrowthParticle.
+  /// @param[in] _lightPos Light position.
+  /// @param[in] _particleList List of all particles.
+  /// @param[in] _gen Random number generator.
+  /// @param[in] _growToLight Whether they should aim the light or not.
   //////////////////////////////////////////////////////////////////////////////
-  virtual bool split(QVector3D ,
-                     std::vector<std::unique_ptr<Particle>> &_particleList, std::mt19937_64 _gen,bool _growToLight) {return false;}
+  virtual bool split(
+      QVector3D _lightPos,
+      std::vector<std::unique_ptr<Particle>> &_particleList,
+      std::mt19937_64 _gen,
+      bool _growToLight);
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Called when particle needs to be split, Calculates which particles
+  /// are linked to the new and which to the old particle. For LinkedParticle.
+  /// @param[in] _particleList List of all particles
+  /// @param[in] _gen Random number generator.
+  //////////////////////////////////////////////////////////////////////////////
+  virtual bool split(
+      std::vector<std::unique_ptr<Particle>>& _particleList,
+      std::mt19937_64 _gen);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Particle dependent function for splitting, needs to be overwritten
-  /// on subclasses. Each type of particle will have a different one.
-  //////////////////////////////////////////////////////////////////////////////
-  virtual bool split(std::vector<std::unique_ptr<Particle>>&,std::mt19937_64) {return false;}
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Checks the current particle and its children recursively to see if
-  /// they collide with anything.
+  /// @brief Recursively calling on parent to run collisions on all children of
+  ///  a particle. For GrowthParticle.
+  /// @param[in] _particle Parent Particle.
+  /// @param[in] _particleList List of all Particles.
   //////////////////////////////////////////////////////////////////////////////
   virtual bool recursiveCollision(
-      QVector3D,
-      std::vector<std::unique_ptr<Particle>>&) { return false; }
+      QVector3D _particle,
+      std::vector<std::unique_ptr<Particle>> &_particleList);
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Particle position getter.
+  /// @param[out] _pos Will hold the particles position
+  //////////////////////////////////////////////////////////////////////////////
+  QVector3D getPosition();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle position getter. Sets the vector passed in.
@@ -192,17 +185,12 @@ public:
   void getPos(QVector3D &_pos);
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Returns the position of the particle.
-  //////////////////////////////////////////////////////////////////////////////
-  QVector3D getPosition(){return m_pos;}
-
-  //////////////////////////////////////////////////////////////////////////////
   /// @brief Boolean to toggle whether or not particle is alive.
   //////////////////////////////////////////////////////////////////////////////
-  virtual bool isAlive(){return true;}
+  virtual bool isAlive();
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief sets the Particles position
+  /// @brief Sets the Particles position
   /// @param[in] _x New x position of the Particle
   /// @param[in] _y New y position of the Particle
   /// @param[in] _z New z position of the Particle
@@ -231,7 +219,7 @@ public:
   /// @param[in] _ID ID of the particle that is to be connected to the current
   /// particle.
   //////////////////////////////////////////////////////////////////////////////
-  void connect(unsigned int _ID,std::vector<std::unique_ptr<Particle>> &_particleList);
+  void connect(uint _ID, std::vector<std::unique_ptr<Particle>> &_particleList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Deletes an ID from the connection list. In other words, it breaks
@@ -256,7 +244,7 @@ public:
   /// @brief Writes a list including all ID that are connected to the particle.
   /// @param[out] _returnList will hold the IDs.
   //////////////////////////////////////////////////////////////////////////////
-  void getConnectionsID(std::vector<unsigned int> &_returnList);
+  void getConnectionsID(std::vector<uint> &_returnList);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Writes a list with all positions of the particles connections.
@@ -284,15 +272,34 @@ public:
   /// the particles
   /// @param[in] _ID Holds the particle IDs
   //////////////////////////////////////////////////////////////////////////////
-  virtual void doubleConnect(unsigned int _ID, std::vector<std::unique_ptr<Particle> > &_particleList){}
-
+  virtual void doubleConnect(uint _ID, std::vector<std::unique_ptr<Particle> > &_particleList);
 
 protected:
-
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Particle position.
   //////////////////////////////////////////////////////////////////////////////
   QVector3D m_pos;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Unique ID of particle used for storing connections.
+  /// represents the index in the particle list
+  //////////////////////////////////////////////////////////////////////////////
+  uint m_ID;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Food level, increses when the particle is hit by light.
+  //////////////////////////////////////////////////////////////////////////////
+  bool m_foodLevel;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Particle size or radius.
+  //////////////////////////////////////////////////////////////////////////////
+  float m_size;
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Food threshold, when reached particle is split.
+  //////////////////////////////////////////////////////////////////////////////
+  uint m_foodThreshold;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Velocity that is used to move the particle each frame.
@@ -302,18 +309,7 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Counts the number of objects created from this class.
   //////////////////////////////////////////////////////////////////////////////
-  static unsigned int m_ID_counter;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Unique ID of particle used for storing connections.
-  /// represents the index in the particle list
-  //////////////////////////////////////////////////////////////////////////////
-  unsigned int m_ID;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Particle size or radius.
-  //////////////////////////////////////////////////////////////////////////////
-  float m_size;
+  static uint m_ID_counter;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Flag that is set when the particle needs to be split.
@@ -323,17 +319,7 @@ protected:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief holds IDs of all particles connected to this particle.
   //////////////////////////////////////////////////////////////////////////////
-  std::vector<unsigned int> m_connectedParticles;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Food level, increses when the particle is hit by light.
-  //////////////////////////////////////////////////////////////////////////////
-  bool m_foodLevel;
-
-  //////////////////////////////////////////////////////////////////////////////
-  /// @brief Food threshold, when reached particle is split.
-  //////////////////////////////////////////////////////////////////////////////
-  unsigned int m_foodThreshold;
+  std::vector<uint> m_connectedParticles;
 };
 
 #endif // PARTICLE_H

@@ -100,7 +100,7 @@ std::vector<unsigned int> AutomataParticle::getNeighbours(
       distance = m_pos - neighbourPos;
       float length = distance.length();
 
-      if (length <= m_size*4)
+      if (length <= m_size * 4)
       {
          neighbours.push_back(_particleList[i]->getID());
       }

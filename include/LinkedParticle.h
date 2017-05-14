@@ -100,6 +100,7 @@ public:
   /// @brief Called when particle needs to be split, Calculates which particles
   /// are linked to the new and which to the old particle.
   /// @param[in] _particleList List of all particles
+  /// @param[in] _gen Random number generator.
   //////////////////////////////////////////////////////////////////////////////
   bool split(
       std::vector<std::unique_ptr<Particle>> &_particleList,
