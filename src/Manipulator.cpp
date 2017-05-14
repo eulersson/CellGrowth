@@ -275,7 +275,7 @@ void Manipulator::setupRotCircleVBO(
   // OpenGL wants a flat array of GLfloats
   std::vector<GLfloat> m_pointPosArray;
   GLint numberOfPoints = _vertices.size();
-  for (size_t i = 0; i < numberOfPoints; i++)
+  for (GLint i = 0; i < numberOfPoints; i++)
   {
     m_pointPosArray.push_back(_vertices[i].x());
     m_pointPosArray.push_back(_vertices[i].y());
@@ -295,7 +295,7 @@ void Manipulator::setupRotCircleVBO(
 }
 
 void Manipulator::createSingleCircle(
-    int _segments,
+    uint _segments,
     float _thickness,
     float _r,
     int _axis,
@@ -307,7 +307,7 @@ void Manipulator::createSingleCircle(
   float amt=(2*M_PI)/_segments;
   QVector3D lastPoint = QVector3D(_op.x(),_op.y(),_op.z());
 
-  for(size_t i=0; i<=_segments;i++)
+  for(uint i=0; i<=_segments;i++)
   {
 
     float x=0;
@@ -444,7 +444,7 @@ void Manipulator::setupVBO(
   // OpenGL wants a flat array of GLfloats
   std::vector<GLfloat> m_pointPosArray;
   GLint numberOfPoints = _vertices.size();
-  for (size_t i = 0; i < numberOfPoints; i++)
+  for (GLint i = 0; i < numberOfPoints; i++)
   {
     m_pointPosArray.push_back(_vertices[i].x());
     m_pointPosArray.push_back(_vertices[i].y());

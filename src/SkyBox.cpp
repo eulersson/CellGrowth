@@ -9,9 +9,6 @@ void SkyBox::setBackground(QString _name)
 {
   if (m_cubemap_texture->isCreated()) m_cubemap_texture->destroy();
 
-  qDebug(_name.toLatin1());
-
-
   const QImage posx = QImage(QString(":/sky/%1_ft").arg(_name)).convertToFormat(QImage::Format_RGB888);
   const QImage posy = QImage(QString(":/sky/%1_up").arg(_name)).convertToFormat(QImage::Format_RGB888);
   const QImage posz = QImage(QString(":/sky/%1_rt").arg(_name)).convertToFormat(QImage::Format_RGB888);
@@ -191,7 +188,7 @@ void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
   m_blur_program->setUniformValue("tInputBG", 0);
 }
 
-void SkyBox::draw(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
+void SkyBox::draw(QOpenGLFunctions_4_1_Core* _funcs)
 {
   m_fbo->bind();
 

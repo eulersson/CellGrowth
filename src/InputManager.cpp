@@ -8,7 +8,6 @@
 
 InputManager::InputManager (QOpenGLWidget *_window) :
   m_camera(QVector3D(0.0f, 0.0f, -20.0f)),
-  m_window(_window),
   m_keys{0},
   m_mousePressed(false)
 {
@@ -29,19 +28,15 @@ void InputManager::onHover()
 
 void InputManager::doMovement(QVector3D _rp)
 {
-  // DeltaTime is simply one for now
-  // Will implement when needed
-  float deltaTime = 1;
-
   // Camera controls
   if(m_keys[Qt::Key_W])
-    m_camera.processKeyboard(ARCFORWARD, deltaTime);
+    m_camera.processKeyboard(ARCFORWARD);
   if(m_keys[Qt::Key_S])
-    m_camera.processKeyboard(ARCBACKWARD, deltaTime);
+    m_camera.processKeyboard(ARCBACKWARD);
   if(m_keys[Qt::Key_A])
-    m_camera.processKeyboard(ARCLEFT, deltaTime);
+    m_camera.processKeyboard(ARCLEFT);
   if(m_keys[Qt::Key_D])
-    m_camera.processKeyboard(ARCRIGHT, deltaTime);
+    m_camera.processKeyboard(ARCRIGHT);
 
   m_view.setToIdentity();
   m_view = m_camera.getViewMatrix();
@@ -108,7 +103,7 @@ void InputManager::setupCamera(float _fov, int _w, int _h, float _near, float _f
 
 void InputManager::loadLightMatricesToShader()
 {
-  for(int i = 0; i < m_programs.size(); i++)
+  for(size_t i = 0; i < m_programs.size(); i++)
   {
     QOpenGLShaderProgram *prgrm = m_programs[i];
     prgrm->bind();
@@ -159,7 +154,7 @@ QVector3D InputManager::getCameraPosition()
   return m_camera.getPosition();
 }
 
-void InputManager::mouseReleaseEvent(QMouseEvent *_event)
+void InputManager::mouseReleaseEvent(QMouseEvent*)
 {
   m_mousePressed=false;
   for(auto &s : m_objectList)

@@ -219,7 +219,7 @@ public:
   /// @param[in] _ID ID of the particle that is to be connected to the current
   /// particle.
   //////////////////////////////////////////////////////////////////////////////
-  void connect(uint _ID, std::vector<std::unique_ptr<Particle>> &_particleList);
+  void connect(uint _ID);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Deletes an ID from the connection list. In other words, it breaks

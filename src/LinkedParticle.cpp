@@ -317,7 +317,7 @@ bool LinkedParticle::split(
   // Link all the particles to the new particle
   for (size_t i = 0; i < relinkList.size(); i++)
   {
-    _particleList[relinkList[i]]->connect(newPartID, _particleList);
+    _particleList[relinkList[i]]->connect(newPartID);
   }
 
   // Link both, parent and child, to each other
@@ -342,5 +342,5 @@ void LinkedParticle:: doubleConnect(
   {
     if (connections[i] == m_ID) return;
   }
-  _particleList[_ID]->connect(m_ID, _particleList);
+  _particleList[_ID]->connect(m_ID);
 }
