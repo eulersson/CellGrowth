@@ -76,7 +76,8 @@ public:
   void processMouseMovement(float _offsetx,
                             float _offsety,
                             float _offsetz,
-                            QMatrix4x4 _view) override;
+                            QMatrix4x4 _view,
+                            QMatrix4x4 _proj) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Set object as clicked.

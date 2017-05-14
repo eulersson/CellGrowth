@@ -64,6 +64,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   void drawBackBuffer() override;
 
+
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Process mouse movements.
   /// @param[in] _offsetx Movement in x direction since last update.
@@ -73,7 +74,8 @@ public:
   void processMouseMovement(float _offsetx,
                             float _offsety,
                             float _offsetz,
-                            QMatrix4x4 _view) override;
+                            QMatrix4x4 _view,
+                            QMatrix4x4 _proj) override;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Set object as clicked.

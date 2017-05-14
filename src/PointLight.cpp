@@ -67,11 +67,17 @@ void PointLight::drawBackBuffer()
   m_manip.drawBackBuffer();
 }
 
+
 void PointLight::processMouseMovement(float _offsetx,
                                       float _offsety,
                                       float _offsetz,
-                                      QMatrix4x4 _view)
+                                      QMatrix4x4 _view,
+                                      QMatrix4x4 _proj)
 {
+
+  GLfloat scaleModifier = 0.03;
+  GLfloat w=(_proj * _view * m_model * QVector4D(0,0,0,1)).w();
+  w *= scaleModifier;
 
   QVector3D camRight=QVector3D(_view(0,0), _view(0,1), _view(0,2));
   QVector3D camUp=QVector3D(_view(1,0), _view(1,1), _view(1,2));
@@ -88,7 +94,7 @@ void PointLight::processMouseMovement(float _offsetx,
         float dotprodx = QVector3D::dotProduct(right, camRight);
         float dotprody = QVector3D::dotProduct(right, camUp);
         float dotprodz = QVector3D::dotProduct(right, camFront);
-        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+        float offset=(dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz)*w;
 
         movement = offset*m_sensitivity*right;
         break;
@@ -101,7 +107,7 @@ void PointLight::processMouseMovement(float _offsetx,
         float dotprodx = QVector3D::dotProduct(up, camRight);
         float dotprody = QVector3D::dotProduct(up, camUp);
         float dotprodz = QVector3D::dotProduct(up, camFront);
-        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+        float offset=(dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz)*w;
 
         movement = offset*m_sensitivity*up;
         break;
@@ -114,7 +120,7 @@ void PointLight::processMouseMovement(float _offsetx,
         float dotprodx = QVector3D::dotProduct(front, camRight);
         float dotprody = QVector3D::dotProduct(front, camUp);
         float dotprodz = QVector3D::dotProduct(front, camFront);
-        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+        float offset=(dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz)*w;
 
         movement = offset*m_sensitivity*front;
         break;
@@ -149,7 +155,6 @@ void PointLight::getMainProgram(QOpenGLShaderProgram **retshader)
 {
   *retshader=m_manipshaderp;
 }
-
 
 void PointLight::setupObject()
 {

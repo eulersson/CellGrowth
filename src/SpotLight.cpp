@@ -59,11 +59,17 @@ void SpotLight::drawBackBuffer()
 }
 
 
+
 void SpotLight::processMouseMovement(float _offsetx,
                                      float _offsety,
                                      float _offsetz,
-                                     QMatrix4x4 _view)
+                                     QMatrix4x4 _view,
+                                     QMatrix4x4 _proj)
 {
+
+  GLfloat scaleModifier = 0.03;
+  GLfloat w = (_proj * _view * m_model * QVector4D(0,0,0,1)).w();
+  w *= scaleModifier;
 
   QVector3D camRight=QVector3D(_view(0,0), _view(0,1), _view(0,2));
   QVector3D camUp=QVector3D(_view(1,0), _view(1,1), _view(1,2));
@@ -79,7 +85,7 @@ void SpotLight::processMouseMovement(float _offsetx,
         float dotprodx = QVector3D::dotProduct(m_x, camRight);
         float dotprody = QVector3D::dotProduct(m_x, camUp);
         float dotprodz = QVector3D::dotProduct(m_x, camFront);
-        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+        float offset=(dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz)*w;
 
         movement = offset*m_sensitivity*m_x;
         break;
@@ -91,7 +97,7 @@ void SpotLight::processMouseMovement(float _offsetx,
         float dotprodx = QVector3D::dotProduct(m_y, camRight);
         float dotprody = QVector3D::dotProduct(m_y, camUp);
         float dotprodz = QVector3D::dotProduct(m_y, camFront);
-        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+        float offset=(dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz)*w;
 
         movement = offset*m_sensitivity*m_y;
         break;
@@ -104,7 +110,7 @@ void SpotLight::processMouseMovement(float _offsetx,
         float dotprodx = QVector3D::dotProduct(m_z, camRight);
         float dotprody = QVector3D::dotProduct(m_z, camUp);
         float dotprodz = QVector3D::dotProduct(m_z, camFront);
-        float offset=dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz;
+        float offset=(dotprodx*_offsetx + dotprody*_offsety + dotprodz*_offsetz)*w;
 
         movement = offset*m_sensitivity*m_z;
         break;
@@ -116,7 +122,9 @@ void SpotLight::processMouseMovement(float _offsetx,
   rotate(_offsetx, _offsety);
 }
 
-QQuaternion SpotLight::create_from_angle(const double &xx, const double &yy, const double &zz, const double &a)
+QQuaternion SpotLight::create_from_angle(
+    const double &xx, const double &yy,
+    const double &zz, const double &a)
 {
     // Here we calculate the sin( theta / 2) once for optimization
     double factor = sin( a / 2.0 );
@@ -222,7 +230,6 @@ void SpotLight::getMainProgram(QOpenGLShaderProgram **retshader)
 {
   *retshader=m_manipshaderp;
 }
-
 
 
 void SpotLight::updateModelMatrix()
