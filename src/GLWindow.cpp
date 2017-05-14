@@ -66,7 +66,6 @@ void GLWindow::cleanup()
   m_world_normal_texture->destroy();
   m_occlusion_texture->destroy();
   m_blurred_occlusion_texture->destroy();
-  m_links_texture->destroy();
   m_noise_texture->destroy();
 
   // Deallocate textures
@@ -76,7 +75,6 @@ void GLWindow::cleanup()
   delete m_world_normal_texture;
   delete m_occlusion_texture;
   delete m_blurred_occlusion_texture;
-  delete m_links_texture;
   delete m_noise_texture;
 
   // Deallocate framebuffer objects
@@ -135,13 +133,6 @@ void GLWindow::prepareSSAOPipeline()
   m_blurred_occlusion_texture->setFormat(QOpenGLTexture::RGB16_UNorm);
   m_blurred_occlusion_texture->allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::Float16);
 
-  m_links_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-  m_links_texture->setSize(width(), height());
-  m_links_texture->setMinificationFilter(QOpenGLTexture::Nearest);
-  m_links_texture->setMagnificationFilter(QOpenGLTexture::Nearest);
-  m_links_texture->setFormat(QOpenGLTexture::RGB8_UNorm);
-  m_links_texture->allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::UInt8);
-
   //////////////////////////////////////////////////////////////////////////////
   /// gBuffer FBO preparation
   /////////////////////////////////////////////////////////////////////////////
@@ -157,16 +148,13 @@ void GLWindow::prepareSSAOPipeline()
   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, m_world_normal_texture->textureId(), 0);
   glBindTexture(GL_TEXTURE_2D, m_view_normal_texture->textureId());
   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, m_view_normal_texture->textureId(), 0);
-  glBindTexture(GL_TEXTURE_2D, m_links_texture->textureId());
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, m_links_texture->textureId(), 0);
-  const GLenum gbuffer_attachments[5] = {
+  const GLenum gbuffer_attachments[4] = {
     GL_COLOR_ATTACHMENT0,
     GL_COLOR_ATTACHMENT1,
     GL_COLOR_ATTACHMENT2,
-    GL_COLOR_ATTACHMENT3,
-    GL_COLOR_ATTACHMENT4
+    GL_COLOR_ATTACHMENT3
   };
-  glDrawBuffers(5, gbuffer_attachments);
+  glDrawBuffers(4, gbuffer_attachments);
 
   // Create and attach depth buffer (renderbuffer) =============================
   GLuint rbo_depth;
@@ -310,9 +298,7 @@ void GLWindow::prepareSSAOPipeline()
     m_lighting_program->setUniformValue("tWorldPosition" , 0);
     m_lighting_program->setUniformValue("tWorldNormal"   , 1);
     m_lighting_program->setUniformValue("tSSAO"          , 2);
-    m_lighting_program->setUniformValue("tLinks"         , 3);
-    m_lighting_program->setUniformValue("tSkybox"        , 4);
-
+    m_lighting_program->setUniformValue("tSkybox"        , 3);
 
     // Uniforms
     m_lighting_program->setUniformValue("drawLinks", true);
@@ -425,8 +411,6 @@ void GLWindow::paintGL()
       drawParticles();
       break;
     }
-
-    if (m_draw_links) drawLinks();
   m_gbuffer_fbo->release();
 
   //////////////////////////////////////////////////////////////////////////////
@@ -498,8 +482,7 @@ void GLWindow::paintGL()
   m_world_position_texture->bind(0);
   m_world_normal_texture->bind(1);
   m_blurred_occlusion_texture->bind(2);
-  m_links_texture->bind(3);
-  m_skybox->getCubeMapTexture()->bind(4);
+  m_skybox->getCubeMapTexture()->bind(3);
 
 
   m_quad_vao->bind();
@@ -535,6 +518,9 @@ void GLWindow::paintGL()
   // Draw manipulators
 
   for(auto &s : m_object_list) { s->draw(); }
+
+  if (m_draw_links) drawLinks();
+
   // Bring it back to previous state
   glDisable(GL_DEPTH_TEST);
 
@@ -558,13 +544,6 @@ void GLWindow::resizeGL(int _w, int _h)
 
 void GLWindow::initializeMatrices()
 {
-  m_projection_matrix.setToIdentity();
-  m_projection_matrix.perspective(
-        45.0f,
-        (float)width() / (float)height(),
-        0.1f,
-        250.0f);
-
   m_model_matrix.setToIdentity();
   m_model_matrix.translate(0.0, 0.0, 0.0);
 }
@@ -848,6 +827,10 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
       qDebug("Ambient Occlusion.");
       break;
 
+    case Qt::Key_B:
+      bulge();
+      break;
+
     default:
       break;
   }
@@ -987,6 +970,7 @@ void GLWindow::setShading(QString _type)
   }
   else if(_type=="Ambient Occlusion")
   {
+    m_draw_links = false;
     m_activeRenderPassIndex = m_AOIndex;
     m_rendering_mode = GLWindow::AO;
 

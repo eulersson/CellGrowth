@@ -41,7 +41,7 @@ void PointLight::draw()
   m_sunshaderp->setUniformValue(modelLoc, m_model);
   // Setup/Draw
   glEnable(GL_POINT_SPRITE);
-  glPointSize(22.0f);
+  glPointSize(8.0f);
   glDrawArrays(GL_POINTS, 0, 1);
   // Release and reset everything
   m_sunshaderp->release();

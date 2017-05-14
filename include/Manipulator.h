@@ -23,8 +23,10 @@
 const int DIRECTION_X = 0;
 const int DIRECTION_Y = 1;
 const int DIRECTION_Z = 2;
-const int ROTATION_Y = 3;
-const int ROTATION_Z = 4;
+const int ROTATION_X = 3;
+const int ROTATION_Y = 4;
+const int ROTATION_Z = 5;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// @brief Struct storing the individual data for each manipulator arrow.
@@ -141,7 +143,28 @@ public:
 
 private:
 
-
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Creates a circle around a given axis and returns its vertices.
+  /// @param[in] _segments A larger amount of segments creates a smoother circle.
+  /// @param[in] _thickness Greatly chnages how visible and easy to click the
+  /// circle is.
+  /// @param[in] _r The distance (radius) of the circle from the op point.
+  /// @param[in] _axis Axis around the circle is made. Use ROTATION_X, ROTATION_Y
+  ///  or ROTATION_Z.
+  /// @param[in] _numb If more than one circle is needed, you can enter either
+  /// 0 or 1.
+  /// @param[in] _op The point the circle should be made around. Should usually
+  /// be origin (0,0,0).
+  /// @param[out] _vertices A vector of all the vertex positions.
+  //////////////////////////////////////////////////////////////////////////////
+  void createSingleCircle(
+      int _segments,
+      float _thickness,
+      float _r,
+      int _axis,
+      int _numb,
+      QVector3D _op,
+      std::vector<QVector3D> &_vertices);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Creates and sets up the vbo for the provided arrow object

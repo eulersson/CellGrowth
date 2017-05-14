@@ -39,7 +39,6 @@ struct FillLight {
 uniform sampler2D tWorldPosition;   //Real position in 3D space
 uniform sampler2D tWorldNormal;
 uniform sampler2D tSSAO;
-uniform sampler2D tLinks;
 uniform samplerCube tSkyBox; // Cubemap
 
 
@@ -68,7 +67,6 @@ vec3 ViewPosition  = vec3(ViewMatrix * ModelMatrix * vec4(WorldPosition, 1.0)).x
 vec3 WorldNormal = normalize(texture(tWorldNormal, vTexCoords).xyz);
 vec3 ViewNormal  = normalize(normalMatrix * WorldNormal);
 float Occlusion = texture(tSSAO, vTexCoords).r;
-float Links = texture(tLinks, vTexCoords).r;
 vec4 SkyBox = texture(tSkyBox, WorldNormal);
 
 
@@ -161,19 +159,8 @@ vec4 AORender()
 }
 
 void main() {
-
     vec4 color = RenderTypeSelection();
     float alpha = WorldPosition.r == 0.0 ? 0.0 : 1.0;
-
-    // Composite the links on top if needed
-    if (drawLinks)
-    {
-        alpha = clamp(alpha + Links,0,1);
-        color = clamp(color + vec4(Links), vec4(0.0), vec4(1.0));
-    }
-
     color *= vec4(alpha);
-
-
     fColor = color ;
 }
