@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1288</width>
-    <height>699</height>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -54,7 +54,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout">
                <item row="0" column="0">
-                <widget class="QLabel" name="label">
+                <widget class="QLabel" name="label_particle_type">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -111,7 +111,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="label_2">
+                <widget class="QLabel" name="label_particle_size">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -176,7 +176,7 @@
                   </property>
                   <layout class="QGridLayout" name="gridLayout_5">
                    <item row="1" column="0">
-                    <widget class="QLabel" name="label_3">
+                    <widget class="QLabel" name="label_LP_cohesion">
                      <property name="text">
                       <string>Cohesion</string>
                      </property>
@@ -233,7 +233,7 @@
                     </widget>
                    </item>
                    <item row="2" column="0">
-                    <widget class="QLabel" name="label_4">
+                    <widget class="QLabel" name="label_LP_local_cohesion">
                      <property name="text">
                       <string>Local Cohesion</string>
                      </property>
@@ -273,7 +273,7 @@
                </attribute>
                <layout class="QGridLayout" name="gridLayout_3">
                 <item row="1" column="0">
-                 <widget class="QLabel" name="label_6">
+                 <widget class="QLabel" name="label_GP_branches">
                   <property name="text">
                    <string>Branches per particle</string>
                   </property>
@@ -303,7 +303,7 @@
                  </widget>
                 </item>
                 <item row="2" column="0">
-                 <widget class="QLabel" name="label_5">
+                 <widget class="QLabel" name="label_GP_branch_length">
                   <property name="text">
                    <string>Branch Length</string>
                   </property>
@@ -359,7 +359,7 @@
                </attribute>
                <layout class="QGridLayout" name="gridLayout_6">
                 <item row="0" column="0">
-                 <widget class="QLabel" name="label_12">
+                 <widget class="QLabel" name="label_AP_radius">
                   <property name="text">
                    <string>Radius</string>
                   </property>
@@ -379,7 +379,7 @@
                  </widget>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QLabel" name="label_13">
+                 <widget class="QLabel" name="label_AP_time">
                   <property name="text">
                    <string>Time</string>
                   </property>
@@ -507,7 +507,7 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_8">
+                <widget class="QLabel" name="label_split_type">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -585,7 +585,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
                <item row="16" column="0">
-                <widget class="QLabel" name="label_23">
+                <widget class="QLabel" name="label_AO_bias">
                  <property name="text">
                   <string>Bias</string>
                  </property>
@@ -624,9 +624,9 @@
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_9">
+                <widget class="QLabel" name="label_shading_type">
                  <property name="text">
-                  <string>Type of Shading</string>
+                  <string>Shading Type</string>
                  </property>
                 </widget>
                </item>
@@ -653,7 +653,7 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QLabel" name="label_10">
+                <widget class="QLabel" name="label_light_color_g">
                  <property name="text">
                   <string>Green</string>
                  </property>
@@ -673,14 +673,14 @@
                 </widget>
                </item>
                <item row="4" column="0">
-                <widget class="QLabel" name="label_7">
+                <widget class="QLabel" name="label_light_color_r">
                  <property name="text">
                   <string>Red</string>
                  </property>
                 </widget>
                </item>
                <item row="6" column="0">
-                <widget class="QLabel" name="label_11">
+                <widget class="QLabel" name="label_light_color_b">
                  <property name="text">
                   <string>Blue</string>
                  </property>
@@ -1132,9 +1132,12 @@
                 </widget>
                </item>
                <item row="8" column="0">
-                <widget class="QLabel" name="label_19">
+                <widget class="QLabel" name="label_ambient">
                  <property name="text">
                   <string>Ambient</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
@@ -1200,14 +1203,14 @@
                 </widget>
                </item>
                <item row="12" column="0">
-                <widget class="QLabel" name="label_16">
+                <widget class="QLabel" name="label_material_color_g">
                  <property name="text">
                   <string>Green</string>
                  </property>
                 </widget>
                </item>
                <item row="11" column="0">
-                <widget class="QLabel" name="label_15">
+                <widget class="QLabel" name="label_material_color_r">
                  <property name="text">
                   <string>Red</string>
                  </property>
@@ -1240,7 +1243,7 @@
                 </widget>
                </item>
                <item row="13" column="0">
-                <widget class="QLabel" name="label_17">
+                <widget class="QLabel" name="label_material_color_b">
                  <property name="text">
                   <string>Blue</string>
                  </property>
@@ -1751,7 +1754,7 @@
                 </widget>
                </item>
                <item row="15" column="0">
-                <widget class="QLabel" name="label_22">
+                <widget class="QLabel" name="label_AO_radius">
                  <property name="text">
                   <string>Radius</string>
                  </property>
@@ -1787,7 +1790,7 @@
                 </widget>
                </item>
                <item row="8" column="6">
-                <widget class="QLabel" name="label_20">
+                <widget class="QLabel" name="label_specular">
                  <property name="text">
                   <string>Specular</string>
                  </property>
@@ -1807,9 +1810,9 @@
                 </widget>
                </item>
                <item row="9" column="0">
-                <widget class="QLabel" name="label_24">
+                <widget class="QLabel" name="label_fill_light_impact">
                  <property name="text">
-                  <string>FillLight Impact</string>
+                  <string>Fill Light Impact</string>
                  </property>
                 </widget>
                </item>
@@ -1855,12 +1858,18 @@
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Cells Particle Simulator&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;----------------------------------------&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Particles grow and die according to a light. This is a cell simulation inspired by Andy Lomas.&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Select the type of shader you want in the &amp;quot;Display&amp;quot; tab. You can also change the render pass with keys 1(Ambient, Diffuse, Specular (ADS)), 2(X-Ray) and 3(Ambient Occlusion (AO)).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cantarell'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;Cells Particle Simulator&lt;/span&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Particles grow and die according to a light. This is a cell simulation inspired by Andy Lomas's morphogenetic creations.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Select the type of shader you want in the &lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:600;&quot;&gt;Display&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt; tab. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Change render pass with keys:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;      &lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; color:#111199;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt; Ambient, Diffuse, Specular (ADS)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;      &lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; color:#111199;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt; X-Ray &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;      &lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; color:#111199;&quot;&gt;3&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt; Ambient Occlusion&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:10px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Press &lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; color:#111199;&quot;&gt;B&lt;/span&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt; to Bulge the particles.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Play with the settings we expose, if unsure about what it does, place your cursor over the text to see the tooltip.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
              </widget>
             </item>
