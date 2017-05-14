@@ -47,7 +47,7 @@ GLWindow::GLWindow(QWidget*_parent) : QOpenGLWidget(_parent)
     m_timer.setInterval(0);
   }
   m_timer.start();
-  m_draw_links = true;
+  m_draw_links = false;
 }
 
 GLWindow::~GLWindow()
@@ -309,6 +309,8 @@ void GLWindow::prepareSSAOPipeline()
     m_ADSIndex  = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "ADSRender");
     m_XRayIndex = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "XRayRender");
     m_AOIndex   = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "AORender");
+    m_NewOrderIndex   = glGetSubroutineIndex(m_lighting_program->programId(), GL_FRAGMENT_SHADER, "NewOrderRender");
+
 
     // Setting the active renderpass.
     m_activeRenderPassIndex = m_ADSIndex;
@@ -373,6 +375,15 @@ void GLWindow::initializeGL()
   //Initializing SSAO uniform values used i GUI.
   m_ssaoRadius = 5.0;
   m_ssaoBias = 0.025;
+  m_lightDiffuseR = 1.0f;
+  m_lightDiffuseG = 1.0f;
+  m_lightDiffuseB = 1.0f;
+  m_materialR = 0.5f;
+  m_materialG = 0.5f;
+  m_materialB = 0.5f;
+  m_ambient = 0.5;
+  m_specular = 1.0;
+  m_fillLight = 0.5;
 
   m_ssao_program->bind();
     m_ssao_program->setUniformValue("Radius", m_ssaoRadius);
@@ -471,6 +482,11 @@ void GLWindow::paintGL()
   //Ambient Occlusion render pass.
   case GLWindow::AO:
     break;
+
+  //New Order artstyle render.
+  case GLWindow::newOrder:
+    break;
+
   default:
     break;
   }
@@ -827,6 +843,13 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
       qDebug("Ambient Occlusion.");
       break;
 
+  case Qt::Key_4:
+    m_activeRenderPassIndex = m_NewOrderIndex;
+    m_rendering_mode = GLWindow::newOrder;
+    emit changedShadingType(3);
+    qDebug("New Order Artstyle.");
+    break;
+
     case Qt::Key_B:
       bulge();
       break;
@@ -970,7 +993,7 @@ void GLWindow::setShading(QString _type)
   }
   else if(_type=="Ambient Occlusion")
   {
-    m_draw_links = false;
+    emit setConnectionState(false);
     m_activeRenderPassIndex = m_AOIndex;
     m_rendering_mode = GLWindow::AO;
 
@@ -979,6 +1002,12 @@ void GLWindow::setShading(QString _type)
   {
     m_activeRenderPassIndex = m_XRayIndex;
     m_rendering_mode = GLWindow::XRAY;
+  }
+
+  else if(_type=="New Order")
+  {
+    m_activeRenderPassIndex = m_NewOrderIndex;
+    m_rendering_mode = GLWindow::newOrder;
   }
   sendParticleDataToOpenGL();
 }
@@ -1184,6 +1213,19 @@ void GLWindow::restart()
   emit resetFillLight(50);
   emit resetAORadius(5.0);
   emit resetAOBias(0.025);
+
+
+  m_lightDiffuseR = 1.0f;
+  m_lightDiffuseG = 1.0f;
+  m_lightDiffuseB = 1.0f;
+  m_materialR = 0.5f;
+  m_materialG = 0.5f;
+  m_materialB = 0.5f;
+  m_ambient = 0.5;
+  m_specular = 1.0;
+  m_fillLight = 0.5;
+  m_activeRenderPassIndex = m_ADSIndex;
+  //m_draw_links = false;
 }
 
 void GLWindow::setChildThreshold(int _amount)
