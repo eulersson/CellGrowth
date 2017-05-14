@@ -47,7 +47,7 @@ GLWindow::GLWindow(QWidget*_parent) : QOpenGLWidget(_parent)
     m_timer.setInterval(0);
   }
   m_timer.start();
-  m_draw_links = false;
+  m_draw_links = true;
 }
 
 GLWindow::~GLWindow()
@@ -328,9 +328,6 @@ void GLWindow::prepareSSAOPipeline()
 void GLWindow::initializeGL()
 {
 
-    qDebug("Light Position length: %d", m_lightPos.length());
-    qDebug("Fill Light Position length: %d", m_fillLightPos.length());
-
   initializeOpenGLFunctions();
 
   m_input_manager = new InputManager(this);
@@ -369,21 +366,26 @@ void GLWindow::initializeGL()
   prepareSSAOPipeline();
 
   glViewport(0, 0, width(), height());
-
   m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 250.f);
 
-  //Initializing SSAO uniform values used i GUI.
+  //Initializing uniforms send to shader.
   m_ssaoRadius = 5.0;
   m_ssaoBias = 0.025;
-  m_lightDiffuseR = 1.0f;
-  m_lightDiffuseG = 1.0f;
-  m_lightDiffuseB = 1.0f;
-  m_materialR = 0.5f;
-  m_materialG = 0.5f;
-  m_materialB = 0.5f;
-  m_ambient = 0.5;
-  m_specular = 1.0;
+  m_lightDiffuseR = 1.0;
+  m_lightDiffuseG = 1.0;
+  m_lightDiffuseB = 1.0;
+  m_materialR = 0.5;
+  m_materialG = 0.5;
+  m_materialB = 0.5;
   m_fillLight = 0.5;
+  m_lightAmbientR = 1.0;
+  m_lightAmbientG = 1.0;
+  m_lightAmbientB = 1.0;
+  m_lightSpecularR = 0.5;
+  m_lightSpecularG = 0.5;
+  m_lightSpecularB = 0.5;
+
+
 
   m_ssao_program->bind();
     m_ssao_program->setUniformValue("Radius", m_ssaoRadius);
@@ -571,11 +573,12 @@ void GLWindow::loadLightToShader()
   m_ps.setLightPos(m_lightPos);
   m_ps.setLightPos(m_fillLightPos);
 
+  //Setting light struct values.
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("light.position", m_lightPos);
-    m_lighting_program->setUniformValue("light.ambient", QVector3D(m_ambient, m_ambient, m_ambient));
+    m_lighting_program->setUniformValue("light.ambient", QVector3D(m_lightAmbientR, m_lightAmbientG, m_lightAmbientB));
     m_lighting_program->setUniformValue("light.diffuse", QVector3D(m_lightDiffuseR, m_lightDiffuseG, m_lightDiffuseB));
-    m_lighting_program->setUniformValue("light.specular", QVector3D(m_specular, m_specular, m_specular));
+    m_lighting_program->setUniformValue("light.specular", QVector3D(m_lightSpecularR, m_lightSpecularG, m_lightSpecularB));
     m_lighting_program->setUniformValue("light.Linear", 0.09f);
     m_lighting_program->setUniformValue("light.Quadratic", 0.032f);
 
@@ -588,6 +591,7 @@ void GLWindow::loadLightToShader()
 
 void GLWindow::loadMaterialToShader()
 {
+    //Setting material struct values.
   m_lighting_program->bind();
     m_lighting_program->setUniformValue("material.ambient", QVector3D(m_materialR*0.5, m_materialG*0.5, m_materialB*0.5));
     m_lighting_program->setUniformValue("material.diffuse", QVector3D(m_materialR, m_materialG, m_materialB));
@@ -959,8 +963,15 @@ void GLWindow::setParticleType(int _type)
   emit resetRColour(255);
   emit resetGColour(255);
   emit resetBColour(255);
-  emit resetAmbientLight(100);
-  emit resetSpecularLight(100);
+  emit resetRMaterialColor(127);
+  emit resetGMaterialColor(127);
+  emit resetBMaterialColor(127);
+  emit resetAmbientLightR(255);
+  emit resetAmbientLightG(255);
+  emit resetAmbientLightB(255);
+  emit resetSpecularLightR(127);
+  emit resetSpecularLightG(127);
+  emit resetSpecularLightB(127);
   emit resetFillLight(50);
   emit resetAORadius(5.0);
   emit resetAOBias(0.025);
@@ -1080,8 +1091,14 @@ void GLWindow::setSplitType(int _type)
 
   if (_type==0) //LIGHT IS ON
   {
-    m_ambient = 1.0;
-    m_specular = 1.0;
+    m_lightAmbientR = 1.0;
+    m_lightAmbientG = 1.0;
+    m_lightAmbientB = 1.0;
+
+    m_lightSpecularR = 1.0;
+    m_lightSpecularG = 1.0;
+    m_lightSpecularB = 1.0;
+
     m_lightON = false;
     emit enableLightOn(false);
     emit enableLightOff(false);
@@ -1089,8 +1106,14 @@ void GLWindow::setSplitType(int _type)
 
   else if (_type==1) //LIGHT IS OFF
   {
-    m_ambient = 0;
-    m_specular = 0;
+    m_lightAmbientR = 0.0;
+    m_lightAmbientG = 0.0;
+    m_lightAmbientB = 0.0;
+
+    m_lightSpecularR = 0.0;
+    m_lightSpecularG = 0.0;
+    m_lightSpecularB = 0.0;
+
 
     emit enableLightOn(true);
     emit enableLightOff(true);
@@ -1124,6 +1147,11 @@ void GLWindow::setSSAOBias(double _bias)
     m_ssao_program->release();
 }
 
+
+/*-----------------------------------------------------------
+ * Setting RGB values for light and material. Converted from
+ * RGB space 0-255 and to 0.0-1.0 RGB space.
+------------------------------------------------------------*/
 void GLWindow::setRcolour(int _rColour)
 {
   m_lightDiffuseR = (float)_rColour/255.0f;
@@ -1140,14 +1168,35 @@ void GLWindow::setBcolour(int _bColour)
   m_lightDiffuseB = (float)_bColour/255.0f;
 }
 
-void GLWindow::setAmbientLight(int _ambient)
+void GLWindow:: setAmbientLightR(int _red)
 {
-    m_ambient = (float) _ambient/100;
+    m_lightAmbientR = (float) _red/255;
 }
 
-void GLWindow::setSpecularLight(int _specular)
+void GLWindow:: setAmbientLightG(int _green)
 {
-    m_specular = (float) _specular/100;
+    m_lightAmbientG = (float) _green/255;
+}
+
+
+void GLWindow:: setAmbientLightB(int _blue)
+{
+    m_lightAmbientB = (float) _blue/255;
+}
+
+void GLWindow::setSpecularLightR(int _red)
+{
+    m_lightSpecularR = (float) _red/255;
+}
+
+void GLWindow::setSpecularLightG(int _green)
+{
+    m_lightSpecularG = (float) _green/255;
+}
+
+void GLWindow::setSpecularLightB(int _blue)
+{
+    m_lightSpecularB = (float) _blue/255;
 }
 
 void GLWindow::setFillLight(int _amount)
@@ -1171,6 +1220,9 @@ void GLWindow::setBcolourMaterial(int _bColour)
     m_materialB = (float)_bColour/255.0f;
 }
 
+/*---------------------------------------------
+ * Setting RGB values ends here.
+----------------------------------------------*/
 
 void GLWindow::bulge()
 {
@@ -1182,8 +1234,14 @@ void GLWindow::bulge()
 void GLWindow::lightOn()
 {
   //Only for LinkedParticles
-  m_ambient = 1.0;
-  m_specular = 1.0;
+  m_lightAmbientR = 1.0;
+  m_lightAmbientG = 1.0;
+  m_lightAmbientB = 1.0;
+
+  m_lightSpecularR = 1.0;
+  m_lightSpecularG = 1.0;
+  m_lightSpecularB = 1.0;
+
   m_lightON = true;
   sendParticleDataToOpenGL();
 }
@@ -1191,8 +1249,13 @@ void GLWindow::lightOn()
 void GLWindow::lightOff()
 {
   //Only for LinkedParticles
-  m_ambient = 0.5;
-  m_specular = 0;
+  m_lightAmbientR = 0.5;
+  m_lightAmbientG = 0.5;
+  m_lightAmbientB = 0.5;
+
+  m_lightSpecularR = 0.0;
+  m_lightSpecularG = 0.0;
+  m_lightSpecularB = 0.0;
   m_lightON = false;
   sendParticleDataToOpenGL();
 }
@@ -1246,25 +1309,22 @@ void GLWindow::restart()
   emit resetRColour(255);
   emit resetGColour(255);
   emit resetBColour(255);
-  emit resetAmbientLight(100);
-  emit resetSpecularLight(100);
+  emit resetRMaterialColor(127);
+  emit resetGMaterialColor(127);
+  emit resetBMaterialColor(127);
+  emit resetAmbientLightR(255);
+  emit resetAmbientLightG(255);
+  emit resetAmbientLightB(255);
+  emit resetSpecularLightR(127);
+  emit resetSpecularLightG(127);
+  emit resetSpecularLightB(127);
   emit resetFillLight(50);
   emit resetAORadius(5.0);
   emit resetAOBias(0.025);
 
-
-  m_lightDiffuseR = 1.0f;
-  m_lightDiffuseG = 1.0f;
-  m_lightDiffuseB = 1.0f;
-  m_materialR = 0.5f;
-  m_materialG = 0.5f;
-  m_materialB = 0.5f;
-  m_ambient = 0.5;
-  m_specular = 1.0;
-  m_fillLight = 0.5;
   m_activeRenderPassIndex = m_ADSIndex;
-  //m_draw_links = false;
-}
+  emit setConnectionState(false);
+  }
 
 void GLWindow::setChildThreshold(int _amount)
 {
