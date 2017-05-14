@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1288</width>
-    <height>706</height>
+    <width>1280</width>
+    <height>786</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -563,6 +563,95 @@
             <string>Display</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QWidget" name="widget" native="true">
+              <layout class="QGridLayout" name="gridLayout_8">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_blur_iterations">
+                 <property name="text">
+                  <string>Blur Iterations</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="m_background_selector">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Badomen</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Criminal Impact</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Cwd</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Drakeq</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Forest</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Mandaris</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Misty</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Mnight</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_background">
+                 <property name="text">
+                  <string>Background</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QSlider" name="m_blur_iterations">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>20</number>
+                 </property>
+                 <property name="value">
+                  <number>5</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item>
              <widget class="QGroupBox" name="displayBox">
               <property name="enabled">
@@ -1158,31 +1247,6 @@
                  </property>
                  <property name="value">
                   <number>127</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="6">
-                <widget class="QSlider" name="m_RColour">
-                 <property name="maximum">
-                  <number>255</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>1</number>
-                 </property>
-                 <property name="pageStep">
-                  <number>10</number>
-                 </property>
-                 <property name="value">
-                  <number>255</number>
-                 </property>
-                 <property name="sliderPosition">
-                  <number>255</number>
-                 </property>
-                 <property name="tracking">
-                  <bool>true</bool>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -1829,6 +1893,19 @@
                  </property>
                 </widget>
                </item>
+               <item row="4" column="6">
+                <widget class="QSlider" name="m_RColour">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                 <property name="value">
+                  <number>255</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -1905,50 +1982,18 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections>
   <connection>
-   <sender>m_RColour</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>m_RColourSpinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>394</x>
-     <y>365</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>462</x>
-     <y>369</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_RColourSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>m_RColour</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>462</x>
-     <y>369</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>394</x>
-     <y>365</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>m_GColour</sender>
    <signal>valueChanged(int)</signal>
    <receiver>m_GColourSpinBox</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>394</x>
-     <y>394</y>
+     <x>436</x>
+     <y>321</y>
     </hint>
     <hint type="destinationlabel">
-     <x>462</x>
-     <y>398</y>
+     <x>258</x>
+     <y>329</y>
     </hint>
    </hints>
   </connection>
@@ -1959,12 +2004,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>462</x>
-     <y>398</y>
+     <x>258</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>394</x>
-     <y>394</y>
+     <x>436</x>
+     <y>321</y>
     </hint>
    </hints>
   </connection>
@@ -1975,12 +2020,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>394</x>
-     <y>423</y>
+     <x>436</x>
+     <y>357</y>
     </hint>
     <hint type="destinationlabel">
-     <x>462</x>
-     <y>427</y>
+     <x>258</x>
+     <y>365</y>
     </hint>
    </hints>
   </connection>
@@ -1991,12 +2036,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>462</x>
-     <y>427</y>
+     <x>258</x>
+     <y>365</y>
     </hint>
     <hint type="destinationlabel">
-     <x>394</x>
-     <y>423</y>
+     <x>436</x>
+     <y>357</y>
     </hint>
    </hints>
   </connection>
@@ -2007,12 +2052,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>295</x>
-     <y>574</y>
+     <x>436</x>
+     <y>539</y>
     </hint>
     <hint type="destinationlabel">
-     <x>209</x>
-     <y>578</y>
+     <x>258</x>
+     <y>547</y>
     </hint>
    </hints>
   </connection>
@@ -2023,12 +2068,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>225</x>
-     <y>576</y>
+     <x>258</x>
+     <y>547</y>
     </hint>
     <hint type="destinationlabel">
-     <x>276</x>
-     <y>578</y>
+     <x>436</x>
+     <y>539</y>
     </hint>
    </hints>
   </connection>
@@ -2039,12 +2084,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>319</x>
-     <y>607</y>
+     <x>436</x>
+     <y>575</y>
     </hint>
     <hint type="destinationlabel">
-     <x>231</x>
-     <y>605</y>
+     <x>258</x>
+     <y>583</y>
     </hint>
    </hints>
   </connection>
@@ -2055,12 +2100,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>297</x>
-     <y>632</y>
+     <x>436</x>
+     <y>611</y>
     </hint>
     <hint type="destinationlabel">
-     <x>231</x>
-     <y>634</y>
+     <x>258</x>
+     <y>619</y>
     </hint>
    </hints>
   </connection>
@@ -2071,12 +2116,12 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>218</x>
-     <y>627</y>
+     <x>258</x>
+     <y>619</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>632</y>
+     <x>436</x>
+     <y>611</y>
     </hint>
    </hints>
   </connection>
@@ -2087,12 +2132,44 @@ p, li { white-space: pre-wrap; }
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>234</x>
-     <y>598</y>
+     <x>258</x>
+     <y>583</y>
     </hint>
     <hint type="destinationlabel">
-     <x>281</x>
-     <y>605</y>
+     <x>436</x>
+     <y>575</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_RColour</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>m_RColourSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>235</x>
+     <y>280</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_RColourSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>m_RColour</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>277</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>339</x>
+     <y>278</y>
     </hint>
    </hints>
   </connection>
