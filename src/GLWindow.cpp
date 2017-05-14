@@ -1037,6 +1037,7 @@ void GLWindow::setShading(QString _type)
 {
   if (_type=="ADS")
   {
+    emit setConnectionState(true);
     m_activeRenderPassIndex = m_ADSIndex;
     m_rendering_mode = GLWindow::ADS;
 

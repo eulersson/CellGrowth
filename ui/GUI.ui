@@ -28,7 +28,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -672,7 +672,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="6">
+               <item row="6" column="6">
                 <widget class="QSlider" name="m_GColour">
                  <property name="palette">
                   <palette>
@@ -1180,7 +1180,7 @@
                  </item>
                 </widget>
                </item>
-               <item row="5" column="0">
+               <item row="6" column="0">
                 <widget class="QLabel" name="label_light_color_g">
                  <property name="text">
                   <string>Green</string>
@@ -1200,21 +1200,21 @@
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0">
+               <item row="5" column="0">
                 <widget class="QLabel" name="label_light_color_r">
                  <property name="text">
                   <string>Red</string>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="0">
+               <item row="7" column="0">
                 <widget class="QLabel" name="label_light_color_b">
                  <property name="text">
                   <string>Blue</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="4">
+               <item row="5" column="4">
                 <widget class="QSpinBox" name="m_RColourSpinBox">
                  <property name="palette">
                   <palette>
@@ -1639,7 +1639,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="6" column="6">
+               <item row="7" column="6">
                 <widget class="QSlider" name="m_BColour">
                  <property name="palette">
                   <palette>
@@ -2094,7 +2094,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="4" column="7" rowspan="3" colspan="3">
+               <item row="5" column="7" rowspan="3" colspan="3">
                 <widget class="QWidget" name="m_colourDisplay" native="true">
                  <property name="palette">
                   <palette>
@@ -2516,7 +2516,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="4">
+               <item row="6" column="4">
                 <widget class="QSpinBox" name="m_GColourSpinBox">
                  <property name="palette">
                   <palette>
@@ -3420,19 +3420,6 @@
                 <widget class="QLabel" name="label_material_color_r">
                  <property name="text">
                   <string>Red</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_18">
-                 <property name="font">
-                  <font>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>LIGHT STRENGTH</string>
                  </property>
                 </widget>
                </item>
@@ -6057,7 +6044,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="6" column="4">
+               <item row="7" column="4">
                 <widget class="QSpinBox" name="m_BColourSpinBox">
                  <property name="palette">
                   <palette>
@@ -6482,6 +6469,26 @@
                  </property>
                 </widget>
                </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="label_21">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>AMBIENT OCCLUSION</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_fill_light_impact">
+                 <property name="text">
+                  <string>Fill Light Impact</string>
+                 </property>
+                </widget>
+               </item>
                <item row="15" column="4" colspan="3">
                 <widget class="QDoubleSpinBox" name="m_RadiusSB">
                  <property name="minimum">
@@ -6514,26 +6521,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="14" column="0">
-                <widget class="QLabel" name="label_21">
-                 <property name="font">
-                  <font>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>AMBIENT OCCLUSION</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_fill_light_impact">
-                 <property name="text">
-                  <string>Fill Light Impact</string>
-                 </property>
-                </widget>
-               </item>
                <item row="9" column="4" colspan="3">
                 <widget class="QSlider" name="m_FillLight">
                  <property name="palette">
@@ -6551,7 +6538,7 @@
                     <colorrole role="Button">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6569,7 +6556,7 @@
                     <colorrole role="Midlight">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>205</red>
                        <green>255</green>
                        <blue>191</blue>
                       </color>
@@ -6578,7 +6565,7 @@
                     <colorrole role="Dark">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>127</red>
+                       <red>77</red>
                        <green>127</green>
                        <blue>64</blue>
                       </color>
@@ -6587,7 +6574,7 @@
                     <colorrole role="Mid">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>170</red>
+                       <red>103</red>
                        <green>170</green>
                        <blue>85</blue>
                       </color>
@@ -6632,7 +6619,7 @@
                     <colorrole role="Window">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6659,7 +6646,7 @@
                     <colorrole role="AlternateBase">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>205</red>
                        <green>255</green>
                        <blue>191</blue>
                       </color>
@@ -6697,7 +6684,7 @@
                     <colorrole role="Button">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6715,7 +6702,7 @@
                     <colorrole role="Midlight">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>205</red>
                        <green>255</green>
                        <blue>191</blue>
                       </color>
@@ -6724,7 +6711,7 @@
                     <colorrole role="Dark">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>127</red>
+                       <red>77</red>
                        <green>127</green>
                        <blue>64</blue>
                       </color>
@@ -6733,7 +6720,7 @@
                     <colorrole role="Mid">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>170</red>
+                       <red>103</red>
                        <green>170</green>
                        <blue>85</blue>
                       </color>
@@ -6778,7 +6765,7 @@
                     <colorrole role="Window">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6805,7 +6792,7 @@
                     <colorrole role="AlternateBase">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>205</red>
                        <green>255</green>
                        <blue>191</blue>
                       </color>
@@ -6834,7 +6821,7 @@
                     <colorrole role="WindowText">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>127</red>
+                       <red>77</red>
                        <green>127</green>
                        <blue>64</blue>
                       </color>
@@ -6843,7 +6830,7 @@
                     <colorrole role="Button">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6861,7 +6848,7 @@
                     <colorrole role="Midlight">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>205</red>
                        <green>255</green>
                        <blue>191</blue>
                       </color>
@@ -6870,7 +6857,7 @@
                     <colorrole role="Dark">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>127</red>
+                       <red>77</red>
                        <green>127</green>
                        <blue>64</blue>
                       </color>
@@ -6879,7 +6866,7 @@
                     <colorrole role="Mid">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>170</red>
+                       <red>103</red>
                        <green>170</green>
                        <blue>85</blue>
                       </color>
@@ -6888,7 +6875,7 @@
                     <colorrole role="Text">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>127</red>
+                       <red>77</red>
                        <green>127</green>
                        <blue>64</blue>
                       </color>
@@ -6906,7 +6893,7 @@
                     <colorrole role="ButtonText">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>127</red>
+                       <red>77</red>
                        <green>127</green>
                        <blue>64</blue>
                       </color>
@@ -6915,7 +6902,7 @@
                     <colorrole role="Base">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6924,7 +6911,7 @@
                     <colorrole role="Window">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6951,7 +6938,7 @@
                     <colorrole role="AlternateBase">
                      <brush brushstyle="SolidPattern">
                       <color alpha="255">
-                       <red>255</red>
+                       <red>155</red>
                        <green>255</green>
                        <blue>128</blue>
                       </color>
@@ -6984,12 +6971,16 @@
                  <property name="value">
                   <number>50</number>
                  </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
+                </widget>
+               </item>
+               <item row="8" column="6">
+                <widget class="QLabel" name="label_specular">
+                 <property name="text">
+                  <string>Specular</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="6">
+               <item row="5" column="6">
                 <widget class="QSlider" name="m_RColour">
                  <property name="palette">
                   <palette>
@@ -10196,10 +10187,10 @@
                  </layout>
                 </widget>
                </item>
-               <item row="8" column="6">
-                <widget class="QLabel" name="label_specular">
+               <item row="4" column="0">
+                <widget class="QLabel" name="label">
                  <property name="text">
-                  <string>Specular</string>
+                  <string>Diffuse</string>
                  </property>
                 </widget>
                </item>
