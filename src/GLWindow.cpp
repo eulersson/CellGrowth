@@ -366,7 +366,7 @@ void GLWindow::initializeGL()
   prepareSSAOPipeline();
 
   glViewport(0, 0, width(), height());
-  m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 250.f);
+  m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 1000.f);
   m_input_manager->updateScreenSize(width(), height());
 
   //Initializing uniforms send to shader.
@@ -557,7 +557,7 @@ void GLWindow::resizeGL(int _w, int _h)
 {
   qDebug("Window resized to %dx%d", _w, _h);
   m_input_manager->resized(_w, _h);
-  m_input_manager->setupCamera(45.0f, width(), height(), 0.1f, 250.0f);
+  m_input_manager->setupCamera(45.0f, width(), height(), 0.1f, 1000.0f);
   cleanup();
   prepareSSAOPipeline();
   m_ssao_program->bind();
