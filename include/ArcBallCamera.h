@@ -50,10 +50,6 @@ public:
   /// @brief Camera constructor setting all initial parameters.
   /// All parameters have default values.
   /// @param _position   Position of the camera.
-  /// @param _dist       Camera distance from rotation point.
-  /// @param _up         Up vector of camera.
-  /// @param _yaw        Yaw vector of camera.
-  /// @param _pitch      Pitch vector of camera.
   //////////////////////////////////////////////////////////////////////////////
   ArcBallCamera(QVector3D _position = QVector3D(0.0f, 0.0f, 0.0f));
 
@@ -106,7 +102,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Processes input received from a mouse scroll-wheel event.
   /// Only requires input on the vertical wheel-axis.
-  /// @param[in] steps The amount of steps the scroll wheel has moved.
+  /// @param[in] _steps The amount of steps the scroll wheel has moved.
   //////////////////////////////////////////////////////////////////////////////
   void processMouseScroll(int _steps);
 
@@ -114,6 +110,7 @@ private:
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Calculates a new distance to the rotation point based on a velocity
   /// input.
+  /// @param[in] _velocity The camera will be moved by this velocity value.
   //////////////////////////////////////////////////////////////////////////////
   void move(QVector3D _velocity);
 

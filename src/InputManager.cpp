@@ -84,12 +84,6 @@ void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
 }
 
 
-void InputManager::updateScreenSize(int _w, int _h)
-{
-  m_width=_w;
-  m_height=_h;
-}
-
 
 void InputManager::setupCamera(float _fov, int _w, int _h, float _near, float _far)
 {

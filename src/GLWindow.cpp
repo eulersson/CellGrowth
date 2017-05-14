@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// @file Window.cpp
+/// @file GLWindow.cpp
 /// @author Ramon Blanquer
 /// @author Fanny Marstrom
 /// @author Carola Gille
@@ -367,7 +367,6 @@ void GLWindow::initializeGL()
 
   glViewport(0, 0, width(), height());
   m_input_manager->setupCamera(45.0f, width(), height(), 0.1, 250.f);
-  m_input_manager->updateScreenSize(width(), height());
 
   //Initializing uniforms send to shader.
   m_ssaoRadius = 5.0;

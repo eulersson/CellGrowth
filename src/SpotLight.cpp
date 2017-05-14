@@ -123,20 +123,19 @@ void SpotLight::processMouseMovement(float _offsetx,
   rotate(_offsetx, _offsety);
 }
 
-QQuaternion SpotLight::create_from_angle(
-    const double &xx, const double &yy,
-    const double &zz, const double &a)
+QQuaternion SpotLight::createFromAngle(const double &_ax, const double &_ay,
+    const double &_az, const double &_offset)
 {
     // Here we calculate the sin( theta / 2) once for optimization
-    double factor = sin( a / 2.0 );
+    double factor = sin( _offset / 2.0 );
 
     // Calculate the x, y and z of the quaternion
-    double x = xx * factor;
-    double y = yy * factor;
-    double z = zz * factor;
+    double x = _ax * factor;
+    double y = _ay * factor;
+    double z = _az * factor;
 
     // Calcualte the w value by cos( theta / 2 )
-    double w = cos( a / 2.0 );
+    double w = cos( _offset / 2.0 );
 
     QQuaternion ret = QQuaternion(w, x, y, z);
     ret.normalize();
@@ -153,7 +152,7 @@ void SpotLight::rotate(float _offsetx, float _offsety)
     case ROTATION_Y:
       {
 
-      QQuaternion rotq=create_from_angle(0,1,0,qDegreesToRadians(_offsetx*rotm_sensitivity));
+      QQuaternion rotq=createFromAngle(0,1,0,qDegreesToRadians(_offsetx*rotm_sensitivity));
 
       m_quat=m_quat*rotq;
 
@@ -162,7 +161,7 @@ void SpotLight::rotate(float _offsetx, float _offsety)
 
     case ROTATION_Z:
       {
-      QQuaternion rotq=create_from_angle(0,0,1,qDegreesToRadians(_offsety*rotm_sensitivity));
+      QQuaternion rotq=createFromAngle(0,0,1,qDegreesToRadians(_offsety*rotm_sensitivity));
 
       m_quat=m_quat*rotq;
       break;

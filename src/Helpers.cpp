@@ -16,8 +16,15 @@
 // Qt
 #include <QOpenGLFunctions>
 
-// Recursion subdivision algorithm from:
-// http://www.opengl.org.ru/docs/pg/0208.html
+
+//////////////////////////////////////////////////////////////////////////////
+/// @brief // Recursion subdivision algorithm from:
+/// http://www.opengl.org.ru/docs/pg/0208.html
+/// @param[in] v1
+/// @param[in] v2
+/// @param[in] v3
+/// @param[in] _data
+//////////////////////////////////////////////////////////////////////////////
 void pushTriangle(float *v1, float *v2, float *v3, std::vector<GLfloat>& _data)
 {
   _data.push_back(v1[0]); _data.push_back(v1[1]); _data.push_back(v1[2]); // v1
@@ -25,6 +32,15 @@ void pushTriangle(float *v1, float *v2, float *v3, std::vector<GLfloat>& _data)
   _data.push_back(v3[0]); _data.push_back(v3[1]); _data.push_back(v3[2]); // v3
 }
 
+
+//////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @param[in] v1
+/// @param[in] v2
+/// @param[in] v3
+/// @param[in] depth
+/// @param[in] _data
+//////////////////////////////////////////////////////////////////////////////
 void subdivide(float *v1, float *v2, float *v3, long depth,std::vector<GLfloat>& _data)
 {
   GLfloat v12[3], v23[3], v31[3]; // midpoints
@@ -58,6 +74,13 @@ void subdivide(float *v1, float *v2, float *v3, long depth,std::vector<GLfloat>&
   subdivide(v12, v23, v31, depth-1, _data);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+/// \brief lerp
+/// \param a
+/// \param b
+/// \param f
+/// \return
+//////////////////////////////////////////////////////////////////////////////
 float lerp(float a, float b, float f)
 {
   return a + f * (b -a);

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// @file SelectObject.h
+/// @file SelectableObject.h
 /// @author Glenn Nygard
 /// @version 0.0.1
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@
 #include <QOpenGLVertexArrayObject>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// @class SelectObject
+/// @class SelectableObject
 /// @brief Abstract class for scene objects.
 ///
 /// This class will work as an abstract class containing all the objects of the
@@ -36,10 +36,10 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Create the object geometry.
-  /// @param[in] context Scene context
-  /// @param[out] masterUniqueColour The updated unique colour to be used as object identifier.
+  /// @param[out] _masterUniqueColour The updated unique colour to be used as
+  /// object identifier.
   //////////////////////////////////////////////////////////////////////////////
-  virtual void createGeometry(QVector3D &masterUniqueColour) = 0;
+  virtual void createGeometry(QVector3D &_masterUniqueColour) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Draw the object to the main buffer.
@@ -52,10 +52,12 @@ public:
   virtual void drawBackBuffer()=0;
 
   //////////////////////////////////////////////////////////////////////////////
-  /// @brief Process mouse movement and apply necessary transformations.
-  /// @param offsetx X movement since last update.
-  /// @param offsety Y movement since last update.
-  /// @param offsetz Z movement since last update.
+  /// @brief Process mouse movements.
+  /// @param[in] _offsetx Movement in x direction since last update.
+  /// @param[in] _offsety Movement in y direction since last update.
+  /// @param[in] _offsetz Movement in z direction since last update.
+  /// @param[in] _view Camera view matrix.
+  /// @param[in] _proj Camera projection matrix.
   //////////////////////////////////////////////////////////////////////////////
   virtual void processMouseMovement(float _offsetx,
                                     float _offsety,
@@ -65,10 +67,10 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Set object as currently clicked/not clicked.
-  /// @param uColour Unique colour to be checked.
-  /// @param state State the object should take (clicked or unclicked)
+  /// @param _uColour Unique colour to be checked.
+  /// @param _state State the object should take (clicked or unclicked)
   //////////////////////////////////////////////////////////////////////////////
-  virtual void setClicked(QVector3D uColour, bool state) = 0;
+  virtual void setClicked(QVector3D _uColour, bool _state) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Indicate mouse is hovering over the object.
@@ -113,7 +115,15 @@ public:
       return uColourVec;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Sets the scale of the lights in the scene.
+  /// @param[in] _lightScale Scale to be set.
+  //////////////////////////////////////////////////////////////////////////////
   void setLightScale(float _lightScale) { lightScale = _lightScale; }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief The default light scale value.
+  //////////////////////////////////////////////////////////////////////////////
   float lightScale = 0.04f;
 };
 

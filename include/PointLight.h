@@ -48,7 +48,6 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Create light geometry.
-  /// @param[in] _context Scene context.
   /// @param[out] _masterUniqueColour Object unique colour. Used to draw
   /// geometry to back buffer.
   //////////////////////////////////////////////////////////////////////////////
@@ -70,6 +69,8 @@ public:
   /// @param[in] _offsetx Movement in x direction since last update.
   /// @param[in] _offsety Movement in y direction since last update.
   /// @param[in] _offsetz Movement in z direction since last update.
+  /// @param[in] _view Camera view matrix.
+  /// @param[in] _proj Camera projection matrix.
   //////////////////////////////////////////////////////////////////////////////
   void processMouseMovement(float _offsetx,
                             float _offsety,
@@ -103,21 +104,17 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Returns main light shader program.
-  /// @param[in] retshader Get light main shader program.
+  /// @param[in] _retshader Get light main shader program.
   //////////////////////////////////////////////////////////////////////////////
   void getMainProgram(QOpenGLShaderProgram **_retshader);
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Initialises VBO/VAO of light object.
-  /// @param[in] _context QOpenGL scene context.
   //////////////////////////////////////////////////////////////////////////////
   void setupObject();
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Updates the light model matrix for use with the camera.
-  /// @param[in] _offsetx Movement in x direction since last update.
-  /// @param[in] _offsety Movement in y direction since last update.
-  /// @param[in] _offsetz Movement in z direction since last update.
   //////////////////////////////////////////////////////////////////////////////
   void updateModelMatrix();
 

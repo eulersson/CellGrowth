@@ -31,7 +31,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 class SkyBox
 {
+
 public:
+  ///
+  /// @brief Constructor
+  /// @param _input_manager InputManager to pair with the skybox.
+  ///
   SkyBox(InputManager *_input_manager);
   void setBackground(QString _name);
   void setBlurIterations(uint _value);
