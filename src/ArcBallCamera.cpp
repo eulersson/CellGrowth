@@ -1,12 +1,12 @@
 #include "ArcBallCamera.h"
 
 ArcBallCamera::ArcBallCamera(
-      QVector3D _position)
-    : m_front(QVector3D(0.0f, 0.0f, 1.0f))
-    , m_worldUp(QVector3D(0.0f, 1.0f, 0.0f))
-    , m_right(QVector3D(1.0f, 0.0f, 0.0f))
-    , m_rotationPoint(0,0,0)
-    , m_view()
+    QVector3D _position)
+  : m_front(QVector3D(0.0f, 0.0f, 1.0f))
+  , m_worldUp(QVector3D(0.0f, 1.0f, 0.0f))
+  , m_right(QVector3D(1.0f, 0.0f, 0.0f))
+  , m_rotationPoint(0,0,0)
+  , m_view()
 {
 
   m_view.translate(_position);

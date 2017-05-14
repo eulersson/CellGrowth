@@ -95,9 +95,47 @@ public:
   /// @param [in] _automataRadius Controls the radius in which automata are created
   /// @param [in] _automataTime Controls the speed at which automata are created
   //////////////////////////////////////////////////////////////////////////////
-  virtual void calculate(std::vector<std::unique_ptr<Particle>> &_particleList, QVector3D _averageDistance,
-                         unsigned int _particleCount, QVector3D _lightPos, int _cohesionFactor, int _localCohesionFactor,
-                         bool _particleDeath, int _automataRadius, int _automataTime) {}
+  virtual void calculate(
+      std::vector<std::unique_ptr<Particle>> &_particleList,
+      QVector3D _averageDistance,
+      uint _particleCount,
+      QVector3D _lightPos,
+      int _cohesionFactor,
+      int _localCohesionFactor,
+      bool _particleDeath,
+      int _automataRadius,
+      int _automataTime
+  );
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Calculates the new velocity of the particle based on the forces
+  /// that act on it. This is the base method to be overriden by LinkedParticle.
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _averageDistance Average distance between particles
+  /// @param [in] _cohesionFactor Controls the strength of cohesion
+  /// @param [in] _localCohesionFactor Controls the strength of local cohesion
+  /// @param [in] _particleDeath Toggles whether or not particle death is true
+  //////////////////////////////////////////////////////////////////////////////
+  virtual void calculate(
+      std::vector<std::unique_ptr<Particle>> &_particleList,
+      QVector3D _averageDistance,
+      int _cohesionFactor,
+      int _localCohesionFactor,
+      bool _particleDeath
+  );
+
+  //////////////////////////////////////////////////////////////////////////////
+  /// @brief Calculates the new velocity of the particle based on the forces
+  /// that act on it. This is the base method to be overriden by AutomataParticle.
+  /// @param [in] _particleList List of all particles
+  /// @param [in] _automataRadius Controls the radius in which automata are created
+  /// @param [in] _automataTime Controls the speed at which automata are created
+  //////////////////////////////////////////////////////////////////////////////
+  virtual void calculate(
+      std::vector<std::unique_ptr<Particle>> &_particleList,
+      int _automataRadius,
+      int _automataTime
+  );
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Moves the particles closest to the centre to create a bulge effect.
