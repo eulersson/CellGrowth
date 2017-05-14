@@ -94,7 +94,11 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
   m_view.rotate(rotq);
 
   // Rotation 2 around camera right axis.
-  rotq=createFromAngle(m_right.x(), m_right.y(), m_right.z(),qDegreesToRadians(_yoffset));
+  rotq=createFromAngle(
+        m_right.x(),
+        m_right.y(),
+        m_right.z(),
+        qDegreesToRadians(_yoffset));
   m_view.rotate(rotq);
 
   // Translate rotation point back.
@@ -120,6 +124,8 @@ void ArcBallCamera::processMouseMovement(GLfloat _xoffset, GLfloat _yoffset)
 void ArcBallCamera::refocus()
 {
   // Played on f-press
+  // Set a new front vector since the rotation
+  // will be used on an indentity matrix.
   QVector3D front=QVector3D(0,0,1);
   QVector3D pos = getPosition();
   QVector3D forwardVector = m_rotationPoint-pos;
@@ -129,7 +135,7 @@ void ArcBallCamera::refocus()
 
   if ( dot > 0.99999f)
   {
-      // Vectors point in same direction, rotation point is already framed.
+      // Rotation point is already framed.
       return;
   }
 
@@ -139,16 +145,19 @@ void ArcBallCamera::refocus()
   QVector3D rotAxis = QVector3D::crossProduct(front,forwardVector);
   rotAxis.normalize();
   // Create quaternion using absolute angle.
-  QQuaternion rotq=createFromAngle(rotAxis.x(), rotAxis.y(), rotAxis.z(), -rotAngle);
-
-  qDebug()<<rotAngle;
+  QQuaternion rotq=createFromAngle(
+        rotAxis.x(),
+        rotAxis.y(),
+        rotAxis.z(),
+        -rotAngle);
   QMatrix3x3 rotmat=rotq.toRotationMatrix();
 
   m_view.setToIdentity();
   m_view.rotate(rotq);
+
+
+
   m_view.translate(pos);
-
-
   // Update camera orientation vectors
   m_right.setX(-rotmat(0,0));
   m_right.setY(-rotmat(0,1));

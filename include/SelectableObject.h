@@ -60,7 +60,8 @@ public:
   virtual void processMouseMovement(float _offsetx,
                                     float _offsety,
                                     float _offsetz,
-                                    QMatrix4x4 _view) = 0;
+                                    QMatrix4x4 _view,
+                                    QMatrix4x4 _proj) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   /// @brief Set object as currently clicked/not clicked.

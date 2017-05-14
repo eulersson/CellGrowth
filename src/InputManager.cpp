@@ -63,12 +63,12 @@ void InputManager::getUniqueColour(const int _x, const int _y)
 //  img.save("/home/i7243466/Desktop/koko.jpg");
 
   QColor col = img.pixelColor(_x, _y);
+  setCurrentDepth(img.depth());
   //qDebug("%d %d %d", col.red(), col.green(), col.blue());
 
   QVector3D pixelColour = QVector3D(col.red(), col.green(), col.blue());
   setCurrentUniqueColour(pixelColour);
-
-   m_fbo->release();
+  m_fbo->release();
 }
 
 void InputManager::doSelection(const int _x, const int _y)
@@ -86,6 +86,13 @@ void InputManager::doSelection(const int _x, const int _y)
 void InputManager::addShaderProgram(QOpenGLShaderProgram* _program)
 {
   m_programs.push_back(_program);
+}
+
+
+void InputManager::updateScreenSize(int _w, int _h)
+{
+  m_width=_w;
+  m_height=_h;
 }
 
 
@@ -132,6 +139,11 @@ void InputManager::setCurrentUniqueColour(QVector3D _uc)
   m_currentUniqueColour=_uc;
 }
 
+void InputManager::setCurrentDepth(GLfloat _depth)
+{
+  m_currentDepth=_depth;
+}
+
 QMatrix4x4 InputManager::getProjectionMatrix()
 {
   return m_projection;
@@ -167,6 +179,7 @@ void InputManager::mousePressEvent(QMouseEvent *_event)
   }
 }
 
+
 void InputManager::mouseMoveEvent(QMouseEvent *_event)
 {
   GLfloat xpos = _event->pos().x();
@@ -188,13 +201,15 @@ void InputManager::mouseMoveEvent(QMouseEvent *_event)
     {
       // Get manipulator positions
       QVector3D mp = s->getPosition();
-
       m_clickZ=mp.z();
-      GLfloat localXoffset=xoffset; // This variable should not be needed, but the program acts up without it
       float zoffset=xoffset;
-
       // Process mouse movement in light class
-      s->processMouseMovement(localXoffset, yoffset, zoffset, m_view);
+      s->processMouseMovement(
+            xoffset,
+            yoffset,
+            zoffset,
+            m_view,
+            m_projection);
     }
   }
 
