@@ -558,13 +558,6 @@ void GLWindow::resizeGL(int _w, int _h)
 
 void GLWindow::initializeMatrices()
 {
-  m_projection_matrix.setToIdentity();
-  m_projection_matrix.perspective(
-        45.0f,
-        (float)width() / (float)height(),
-        0.1f,
-        250.0f);
-
   m_model_matrix.setToIdentity();
   m_model_matrix.translate(0.0, 0.0, 0.0);
 }
@@ -846,6 +839,10 @@ void GLWindow::keyPressEvent(QKeyEvent* ev)
       m_rendering_mode = GLWindow::AO;
       emit changedShadingType(2);
       qDebug("Ambient Occlusion.");
+      break;
+
+    case Qt::Key_B:
+      bulge();
       break;
 
     default:
