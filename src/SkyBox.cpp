@@ -98,8 +98,8 @@ void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
   };
 
   m_sky_program = new QOpenGLShaderProgram;
-  m_sky_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/skybox.vert");
-  m_sky_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/skybox.frag");
+  m_sky_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/skybox.vert");
+  m_sky_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/skybox.frag");
   m_sky_program->link();
 
   m_skybox_vao = new QOpenGLVertexArrayObject;
@@ -131,8 +131,8 @@ void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
   // Set offscreen rendering
   // ===========================================================================
   m_blur_program = new QOpenGLShaderProgram;
-  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/bgblur.vert");
-  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/bgblur.frag");
+  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/bgblur.vert");
+  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/bgblur.frag");
   m_blur_program->link();
 
   static const float quad[] = {

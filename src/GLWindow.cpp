@@ -342,23 +342,23 @@ void GLWindow::initializeGL()
   m_skybox->prepare(width(), height(), context()->versionFunctions<QOpenGLFunctions_4_1_Core>());
 
   m_geom_program = new QOpenGLShaderProgram;
-  m_geom_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/geom.vert");
-  m_geom_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/geom.frag");
+  m_geom_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":shader/geom.vert");
+  m_geom_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/geom.frag");
   m_geom_program->link();
 
   m_ssao_program = new QOpenGLShaderProgram;
-  m_ssao_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/ssao.vert");
-  m_ssao_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/ssao.frag");
+  m_ssao_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/ssao.vert");
+  m_ssao_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/ssao.frag");
   m_ssao_program->link();
 
   m_blur_program = new QOpenGLShaderProgram;
-  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/ssao.vert");
-  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/blur.frag");
+  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/ssao.vert");
+  m_blur_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/blur.frag");
   m_blur_program->link();
 
   m_lighting_program = new QOpenGLShaderProgram;
-  m_lighting_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/ssao.vert");
-  m_lighting_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/lighting.frag");
+  m_lighting_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/ssao.vert");
+  m_lighting_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/lighting.frag");
   m_lighting_program->link();
 
   prepareQuad();
@@ -637,8 +637,8 @@ void GLWindow::prepareQuad()
 void GLWindow::prepareParticles()
 {
   m_links_program = new QOpenGLShaderProgram(this);
-  m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/links.vert");
-  m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/links.frag");
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/links.vert");
+  m_links_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/links.frag");
   m_links_program->link();
 
   m_part_vao = new QOpenGLVertexArrayObject(this);
@@ -685,13 +685,13 @@ void GLWindow::drawLinks()
 void GLWindow::setupLights()
 {
   m_manipulator_program = new QOpenGLShaderProgram(this);
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/manip.vert");
-  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/manip.frag");
+  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/manip.vert");
+  m_manipulator_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/manip.frag");
   m_manipulator_program->link();
 
   m_sun_program = new QOpenGLShaderProgram(this);
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "resources/shaders/sun.vert");
-  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "resources/shaders/sun.frag");
+  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shader/sun.vert");
+  m_sun_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shader/sun.frag");
   m_sun_program->link();
 
   QVector3D masterUniqueColour=QVector3D(0.0f, 100.0f, 0.0f);
@@ -717,9 +717,6 @@ void GLWindow::generateSphereData(uint _num_subdivisions)
   }
 
   m_sphere_data.clear();
-
-  // Recursion subdivision algorithm from:
-  // httpresources/shaders//www.opengl.org.ru/docs/pg/0208.html
 
   GLfloat X = 0.525731112119133606;
   GLfloat Z = 0.850650808352039932;

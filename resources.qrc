@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/shader">
         <file alias="links.frag">resources/shaders/links.frag</file>
         <file alias="links.vert">resources/shaders/links.vert</file>
         <file alias="manip.frag">resources/shaders/manip.frag</file>
@@ -14,6 +14,8 @@
         <file alias="ssao.vert">resources/shaders/ssao.vert</file>
         <file alias="geom.frag">resources/shaders/geom.frag</file>
         <file alias="geom.vert">resources/shaders/geom.vert</file>
+        <file alias="bgblur.frag">resources/shaders/bgblur.frag</file>
+        <file alias="bgblur.vert">resources/shaders/bgblur.vert</file>
     </qresource>
     <qresource prefix="/sky">
         <file alias="badomen_bk">resources/cubemaps/badomen/badomen_bk.jpg</file>
