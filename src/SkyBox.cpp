@@ -86,12 +86,12 @@ void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
 
   m_sky_program->release();
 
-  const QImage posx = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_ft.png").convertToFormat(QImage::Format_RGB888);
-  const QImage posy = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_up.png").convertToFormat(QImage::Format_RGB888);
-  const QImage posz = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_rt.png").convertToFormat(QImage::Format_RGB888);
-  const QImage negx = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_bk.png").convertToFormat(QImage::Format_RGB888);
-  const QImage negy = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_dn.png").convertToFormat(QImage::Format_RGB888);
-  const QImage negz = QImage("resources/cubemaps/mp_crimimpact/criminal-impact_lf.png").convertToFormat(QImage::Format_RGB888);
+  const QImage posx = QImage("resources/cubemaps/misty/misty_ft.tga").convertToFormat(QImage::Format_RGB888);
+  const QImage posy = QImage("resources/cubemaps/misty/misty_up.tga").convertToFormat(QImage::Format_RGB888);
+  const QImage posz = QImage("resources/cubemaps/misty/misty_rt.tga").convertToFormat(QImage::Format_RGB888);
+  const QImage negx = QImage("resources/cubemaps/misty/misty_bk.tga").convertToFormat(QImage::Format_RGB888);
+  const QImage negy = QImage("resources/cubemaps/misty/misty_dn.tga").convertToFormat(QImage::Format_RGB888);
+  const QImage negz = QImage("resources/cubemaps/misty/misty_lf.tga").convertToFormat(QImage::Format_RGB888);
 
   m_cubemap_texture = new QOpenGLTexture(QOpenGLTexture::TargetCubeMap);
   if (posz.isNull()) qDebug("Null image");
