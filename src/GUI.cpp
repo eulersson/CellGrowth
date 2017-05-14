@@ -63,8 +63,6 @@ GUI::GUI(QWidget *parent) :
   connect(m_ui->m_RadiusSB,SIGNAL(valueChanged(double)),m_gl,SLOT(setSSAORadius(double)));
   connect(m_ui->m_BiasSB,SIGNAL(valueChanged(double)),m_gl,SLOT(setSSAOBias(double)));
 
-
-
   connect(m_gl,SIGNAL(resetBranchLength(double)),m_ui->m_GP_branchLength,SLOT(setValue(double)));
   connect(m_gl,SIGNAL(resetChildrenThreshold(int)),m_ui->m_GP_children,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetCohesion(int)),m_ui->m_LP_cohesion,SLOT(setValue(int)));
@@ -94,41 +92,88 @@ GUI::GUI(QWidget *parent) :
   connect(m_gl,SIGNAL(resetRColour(int)),m_ui->m_MaterialRColour,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetGColour(int)),m_ui->m_MaterialGColour,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetBColour(int)),m_ui->m_MaterialBColour,SLOT(setValue(int)));
-
   connect(m_gl,SIGNAL(resetAmbientLight(int)),m_ui->m_lightAmbient,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetSpecularLight(int)),m_ui->m_specularLight,SLOT(setValue(int)));
   connect(m_gl,SIGNAL(resetFillLight(int)),m_ui->m_FillLight,SLOT(setValue(int)));
-
-
   connect(m_gl,SIGNAL(enableConnections(bool)),m_ui->m_showConnections,SLOT(setEnabled(bool)));
 
   //AO Variables
   connect(m_gl,SIGNAL(resetAORadius(double)),m_ui->m_RadiusSB,SLOT(setValue(double)));
   connect(m_gl,SIGNAL(resetAOBias(double)),m_ui->m_BiasSB,SLOT(setValue(double)));
 
+  // ===========================================================================
   // Help status bar
-  m_ui->label_particle_type->setToolTip("Particle Type");
-  m_ui->label_particle_size->setToolTip("Particle Size");
-  m_ui->m_LP_particleDeath->setToolTip("Particle Death");
-  m_ui->m_LP_cohesion->setToolTip("Cohesion");
-  m_ui->m_LP_localCohesion->setToolTip("Local Cohesion");
-  m_ui->LP_bulge->setToolTip("Bulge");
-  m_ui->label_split_type->setToolTip("Split Type");
-  m_ui->m_LP_lightOn->setToolTip("Light On");
-  m_ui->m_LP_lightOff->setToolTip("Light Off");
-  m_ui->label_GP_branches->setToolTip("Branches per particle");
-  m_ui->label_GP_branch_length->setToolTip("Branch length");
-  m_ui->m_GP_growtoLight->setToolTip("Grow towards light");
-  m_ui->m_nearestPart->setToolTip("Nearest particle to light");
-  m_ui->label_AP_radius->setToolTip("Radius");
-  m_ui->label_AP_time->setToolTip("Time");
+  // ===========================================================================
+  QString str_particle_type =
+    "Different algorithms have been coded show different behaviours. This option"
+    "swaps between them.";
+  QString str_particle_size =
+    "Determines the radius of the particle.";
+  QString str_particle_death =
+    "Forces stop working after a time threshold.";
+  QString str_cohesion =
+    "How tight or loose the overall system is";
+  QString str_local_cohesion =
+    "How strong or weak are the links between particles that are directly connected";
+  QString str_bulge =
+    "A repulsion force is triggered.";
+  QString str_split_type =
+    "There are two modes of controlling how particles split, one is by pressing"
+    "spacebar key and the other one is by toggling the splitting state, in other"
+    "words by turning on or off the light";
+  QString str_light_on =
+    "For this option to work the splitting type has to be set to be controlled by"
+    "light. It toggles the splitting state.";
+  QString str_light_off =
+    "For this option to work the splitting type has to be set to be controlled by"
+    "light. It toggles the splitting state.";
+  QString str_GP_branches =
+    "How many branches per particle.";
+  QString str_GP_branch_length =
+    "Length of a branch.";
+  QString str_grow_to_light =
+    "Whether or not the light should be taken into account";
+  QString str_nearest_particle =
+    "Toggles either splitting randomly a particle or the newest.";
+  QString str_AP_radius =
+    "Cellular automata cell radius.";
+  QString str_AP_time =
+    "Cellular automata cell time step.";
+  QString str_restart =
+    "Resets the particle system.";
 
-  m_ui->m_restart->setToolTip("Restart");
+  // Particles tab
+  m_ui->label_particle_type->setToolTip(str_particle_type);
+  m_ui->label_particle_size->setToolTip(str_particle_size);
+  m_ui->m_LP_particleDeath->setToolTip(str_particle_death);
+  m_ui->m_LP_cohesion->setToolTip(str_cohesion);
+  m_ui->m_LP_localCohesion->setToolTip(str_local_cohesion);
+  m_ui->LP_bulge->setToolTip(str_bulge);
+  m_ui->label_split_type->setToolTip(str_split_type);
+  m_ui->m_LP_lightOn->setToolTip(str_light_on);
+  m_ui->m_LP_lightOff->setToolTip(str_light_off);
+  m_ui->label_GP_branches->setToolTip(str_GP_branches);
+  m_ui->label_GP_branch_length->setToolTip(str_GP_branch_length);
+  m_ui->m_GP_growtoLight->setToolTip(str_grow_to_light);
+  m_ui->m_nearestPart->setToolTip(str_nearest_particle);
+  m_ui->label_AP_radius->setToolTip(str_AP_radius);
+  m_ui->label_AP_time->setToolTip(str_AP_time);
+  m_ui->m_restart->setToolTip(str_restart);
 
-
-
-
-
+  // Display tab
+  m_ui->m_showConnections->setToolTip("Show connections.");
+  m_ui->label_shading_type->setToolTip("Shading type.");
+  m_ui->label_light_color_r->setToolTip("Red component of the light colour.");
+  m_ui->label_light_color_g->setToolTip("Green component of the light colour.");
+  m_ui->label_light_color_b->setToolTip("Blue component of the light colour.");
+  m_ui->label_ambient->setToolTip("Ambient contribution.");
+  m_ui->label_specular->setToolTip("Specular contribution.");
+  m_ui->label_fill_light_impact->setToolTip("Fill light impact.");
+  m_ui->label_material_color_r->setToolTip("Red component of the material color.");
+  m_ui->label_material_color_g->setToolTip("Green component of the material color.");
+  m_ui->label_material_color_b->setToolTip("Blue component of the material color.");
+  m_ui->label_AO_radius->setToolTip("How far to check for occluded regions.");
+  m_ui->label_AO_bias->setToolTip("Acts like a fit range on the occlusion factor.");
 }
 
 GUI::~GUI()
