@@ -1,8 +1,15 @@
-#include "SkyBox.h"
+// Qt
 #include <QOpenGLFunctions_4_1_Core>
+
+// Project
+#include "SkyBox.h"
+
 SkyBox::SkyBox(InputManager *_input_manager) : m_input_manager(_input_manager), m_blur_iterations(5)
 {
+}
 
+SkyBox::~SkyBox()
+{
 }
 
 void SkyBox::setBackground(QString _name)
@@ -46,9 +53,7 @@ void SkyBox::setBlurIterations(uint _value)
   m_blur_iterations = _value;
 }
 
-SkyBox::~SkyBox()
-{
-}
+
 
 void SkyBox::prepare(int _width, int _height, QOpenGLFunctions_4_1_Core* _funcs)
 {
