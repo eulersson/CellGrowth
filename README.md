@@ -3,7 +3,7 @@
 Programming project that explores visualization of different growth-like
 particle system based algorithms.
 
-[![Video](video-vimeo.png)](https://vimeo.com/220070559?p=0s)
+[![Video](video-thumbnail.png)](https://vimeo.com/220070559?p=0s)
 
 The components of our group and brief description of their area of work:
 
