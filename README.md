@@ -1,4 +1,4 @@
-# CellGrowthProjectCVA3
+# CellGrowth
 
 Programming project that explores visualization of different growth-like
 particle system based algorithms.
@@ -29,7 +29,7 @@ $ ./cells
 
 ## Documentation
 
-Find the online pages at https://docwhite.github.com/CellGrowthProjectCVA3 or
+Find the online pages at https://eulersson.github.com/CellGrowth or
 build them with Doxygen as follows:
 
 ```
