@@ -1,4 +1,4 @@
-# CellGrowth
+# Cell Growth
 
 Programming project that explores visualization of different growth-like
 particle system based algorithms.
@@ -7,32 +7,32 @@ particle system based algorithms.
 
 The components of our group and brief description of their area of work:
 
-Member           | Task
----------------- | -------------------------------------
-Lola Gille       | Particle links and splitting design.
-Glenn Nygard     | Light and interactive manipulators.
-Lydia Kenton     | Cell dynamics and force calculations.
-Esme Prior       | Cell dynamics and force calculations.
-Valeria Marstorm | Visualization, rendering and shading.
-Ramon Blanquer   | Director
-
-Check the wiki for a more detailed description of each task.
+| Member           | Task                                 |
+| ---------------- | ------------------------------------ |
+| Lola Gille       | Particle links and splitting design  |
+| Glenn Nygard     | Light and interactive manipulators   |
+| Lydia Kenton     | Cell dynamics and force calculations |
+| Esme Prior       | Cell dynamics and force calculations |
+| Valeria Marstorm | Visualization, rendering and shading |
+| Ramon Blanquer   | Director                             |
 
 ## Instructions
 
+There is a [User Manual](CellGrowthUserManual.pdf) in PDF format.
+
 ```
-$ cd CellGrowthProjectCVA3
-$ qmake Cells.pro
-$ make
-$ ./cells
+cd CellGrowthProjectCVA3
+qmake Cells.pro
+make
+./cells
 ```
 
 ## Documentation
 
-Find the online pages at https://eulersson.github.com/CellGrowth or
-build them with Doxygen as follows:
+Check the [Deployed Documentation](https://eulersson.github.com/CellGrowth) or
+build it:
 
 ```
-$ doxygen Doxyfile
-$ google-chrome docs/html/index.html
+doxygen Doxyfile
+google-chrome docs/html/index.html
 ```
